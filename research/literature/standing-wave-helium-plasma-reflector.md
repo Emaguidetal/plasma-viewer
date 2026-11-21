@@ -340,10 +340,13 @@ the 3D tree model. The 3D model hands a bridged rod to the drive model.
 | 100 kV/cm | 12.1 ns | 6 | 22 mm | none | 39 kV/cm |
 | 75 kV/cm | 39 ns | 6 (short) | 4 mm | none | 75 kV/cm |
 | 50 kV/cm | none | 0 | — | none | 50 kV/cm |
-| 100 kV/cm, 1 mJ | 10.6 ns | 10 | 21 mm | none | 38 kV/cm |
-| 100 kV/cm, 0.5 mJ | 13.9 ns | 4 | 22 mm | none | 40 kV/cm |
+| 100 kV/cm, 1 mJ (organic k = 4 seed: 818 e⁻) | 11.7 ns | 11 | 19 mm | none | 34 kV/cm |
+| 100 kV/cm, 0.75 mJ (organic seed: 259 e⁻) | 12.8 ns | 11 | 19 mm | none | 34 kV/cm |
+| 100 kV/cm, 0.5 mJ (organic seed: 63 e⁻) | 13.1 ns | 7 | 22 mm | none | 38 kV/cm |
+| 100 kV/cm, 1 mJ (k = 6 seed: 2128 e⁻) | 10.6 ns | 10 | 21 mm | none | 38 kV/cm |
+| 100 kV/cm, 0.5 mJ (k = 6 seed: 34 e⁻) | 13.9 ns | 4 | 22 mm | none | 40 kV/cm |
 | 100 kV/cm, focus 10 mm off | 17.0 ns | 6 | 23 mm | none | 46 kV/cm |
-| 100 kV/cm, focus 20 mm off | 57.9 ns | 5 (short) | 2 mm | none | 100 kV/cm |
+| 100 kV/cm, focus 20 mm off (same seed, placed where \|E\| ≈ 0.64 E0) | 57.9 ns | 5 (short) | 2 mm | none | 100 kV/cm |
 
 **What the 3D model shows**
 - **Rods grow along E from the laser line toward both broad walls.** Four to ten parallel rods form
@@ -356,10 +359,15 @@ the 3D tree model. The 3D model hands a bridged rod to the drive model.
   - At 200 kV/cm one central rod bridges at 4.7 ns. At 300 kV/cm three rods bridge at 1.5 ns.
   - So the bridging threshold lies between 150 and 200 kV/cm (nominal model field).
 - **The laser matters mainly near threshold.** At 100 kV/cm:
-  - laser energy moves onset from 10.6 ns (1 mJ) to 13.9 ns (0.5 mJ);
+  - with the organic k = 4 seed (the source identified below), 0.5 → 1 mJ moves onset from
+    13.1 to 11.7 ns; the older k = 6 seed law spread it more (13.9 to 10.6 ns);
   - a 10 mm focus offset delays it to 17 ns;
-  - a 20 mm offset almost removes it.
+  - a 20 mm offset almost removes it. In rod3d the seed count is the same; it is placed 15–25 mm
+    off centre where the mode field is only about 0.64 E0. So the focus effect here is a
+    **field-location effect**, not a smaller seed.
   - At 200–300 kV/cm the avalanche is fast enough that the seed size hardly matters.
+  - rod3d deposits the whole seed at t = 0 (instant-seed approximation; the real seed builds up
+    over the 1 ns pulse).
 
   This matches the reported behaviour: laser energy and focus change the plasma probability only
   at 20–50 kV/cm, and the laser alone with RF off gives no visible plasma.
@@ -395,56 +403,172 @@ The model estimates the electrons each source puts in the laser volume (0.75 mJ,
   would grow as the focus moves away and the beam volume increases. That is the opposite of the
   observed focus effect.
 - Background ionization leaves about 2e8 m⁻³ negative ions, since almost all free electrons attach
-  within about 0.1 ms. The same budget predicts RF-only breakdown in roughly 2–25% of pulses. This
-  is consistent with "RF alone rarely breaks down", but that frequency has not been measured.
+  within about 0.1 ms. With the nominal field calibration the same budget predicts RF-only
+  breakdown in 11–23% of pulses at 20–50 kV/cm.
+- **The measured RF-only (self-)breakdown is about 10% of shots** (sealed He, laser off). That fits
+  within ×2.5. Matching it exactly needs a background ion-pair rate of 0.4–0.9× the assumed value
+  (`source_scale_for_measured_ecal` in `results/seed_sources/seed_sources.json`). Field detachment
+  of all stored O₂⁻ would give almost 100% self-breakdown, so it is ruled out. The 10% figure
+  therefore supports a sparse, stochastic RF-only seed and a deterministic laser seed. This is a
+  consistency check, not a fit: the 10% is an operator estimate without a shot count, and a
+  detached fraction of only about 1e-4 of the stored ions would already give near-certain RF-only
+  breakdown.
 - The impurity species and level are assumed. A residual-gas analysis of the sealed cell would test
   this directly.
+- **Optics review caveats.**
+  - The organic 4-photon cross-section is a placeholder. A 2+2 resonance in aromatic species is
+    possible, so the seed is uncertain by at least 10^±2.
+  - The seed scales as E⁴/(w0⁴ M²), and neither w0 nor M² is measured.
+  - The 81 previous-shot O₂⁻ photodetachment electrons rise with focus offset (81 → 369 at
+    20 mm). If that reservoir were large, moving the focus would not remove breakdown. So the
+    previous-shot reservoir must be small.
+  - In rod3d, the observed focus effect comes mainly from where the seed sits in the mode field.
+  - The `seed_sources` focus scaling partly reflects the finite analysis window.
+  - Inverse-bremsstrahlung avalanche during the pulse could multiply the seed by about 1–10.
+    Self-focusing and defocusing are negligible.
+  - The laser alone gives about 1e15 m⁻³ at the focus, with no avalanche. This is consistent with
+    no visible plasma with the RF off.
 
 ![Seed electron budget for sealed He at 1.48 MPa: electrons per shot by source, their dependence on laser energy and focus offset, and the RF-only breakdown probability. Impurity MPI dominates, scales as about E⁴ and falls with focus offset, while photodetachment rises with offset. Simulated, not measured.](../simulations/rf_plasma/results/seed_sources/seed_sources.png)
 
-### 3. Plasma under continued RF drive (`rod_drive.py`)
+### 3. Plasma under continued RF drive (`rod_drive.py`, chained from `rod3d`)
 
 **Method**
-- Starts from the bridged rod.
-- A radial plasma–gas model: electron energy, ionization and recombination, gas heating and radial
-  conduction.
-- It is coupled to a cavity circuit: the rod is a resistance R in series with a post reactance X
-  (about 480 Ω), fed by the forward wave through Q_L.
-- Energy closes to ≤ 0.6% (3.6% at 300 kV/cm).
+- **Hand-off from rod3d (`--from-rod3d`).** The drive model starts from the bridged rod of the 3D
+  run at the frame just before bridging, with:
+  - the 3D modal field at that time (154 kV/cm for E200);
+  - the harmonic-mean line density, which conserves the rod's series resistance;
+  - the line-density-weighted radius (0.3 mm, which is the rod3d radius cap).
 
-**Results**
+  The drive stops 100 ns after the laser, or stays on for the "cw" cases (1 µs). Partial rods and
+  the energy already dissipated in rod3d are not carried over.
+- **Radial plasma–gas model.** Electron energy, CR ionisation and recombination, gas heating and
+  compressible radial expansion.
+- **Cavity circuit.** The rod is a resistance R in series with the post reactance X (about
+  300–600 Ω), fed by the forward wave through Q_L. A Crank–Nicolson step is used.
+- **Energy closure.** Circuit, coupling and plasma residuals are all below 1e-11.
+  - `sink_j` is the non-thermalised (1 − η) share of excitation and recombination energy, which
+    leaves the gas in this model.
+  - Line radiation is off here (`radiated_j` = 0).
+- **Validity flags.** Contraction (arc onset) is defined as the conducting radius falling below
+  half its running maximum after 10 ns. The skin-depth flag marks δ < 2 r_c, where a uniform axial
+  field is no longer valid.
 
-| Case | Forward power | Peak axis Tg | Peak ne | Final rod R | Lowest gap field |
-|---|---|---|---|---|---|
-| 100 kV/cm | 0.26 MW | 7.7 kK | 8.5e23 m⁻³ | 1.16 kΩ | 2.3 kV/cm |
-| 200 kV/cm | 1.05 MW | 12.0 kK | 1.6e24 m⁻³ | 446 Ω | 2.5 kV/cm |
-| 300 kV/cm | 2.37 MW | 14.8 kK | 1.7e24 m⁻³ | 258 Ω | 3.1 kV/cm |
-| 200 kV/cm, initial ne 1e23, r 50 µm | 1.05 MW | 11.7 kK | 4.1e24 m⁻³ | 452 Ω | 2.5 kV/cm |
-| 200 kV/cm, initial r 200 µm | 1.05 MW | 11.9 kK | 1.4e24 m⁻³ | 538 Ω | 2.8 kV/cm |
+**Results** (times after bridging; bridging is 4.7 ns after the laser at E200 and 1.5 ns at E300)
 
-**Two phases**
-- **Glow phase.** The gap field is about 25–30 kV/cm, Te is about 2.7 eV and the gas stays below
-  2–4 kK. It lasts 40–200 ns, shorter at higher field.
-- **Thermal glow-to-arc transition.** The gas heats to 8–15 kK. R drops below the post reactance,
-  the gap field falls to about 2.5–3 kV/cm, and the rod dissipates only 20–45 kW. Most of the
-  forward power is now reflected, so the cavity behaves as a shorted (switched) resonator.
+| Case | Forward power (nominal) | Drive | Field minimum in the first 20 ns | Arc onset (contraction) | δ < 2 r_c from | R < X from | Peak axis Tg | Final R |
+|---|---|---|---|---|---|---|---|---|
+| E200 | 1.05 MW | off at 100 ns | 5.3 kV/cm | none (glow) | — | — | 0.69 kK | 205 kΩ (afterglow) |
+| E300 | 2.37 MW | off at 100 ns | 3.3 kV/cm | none (glow) | — | — | 1.09 kK | 144 kΩ (afterglow) |
+| E200 cw | 1.05 MW | on | 5.3 kV/cm | 251 ns | 182 ns | 519 ns | 12.0 kK | 375 Ω |
+| E300 cw | 2.37 MW | on | 3.3 kV/cm | 201 ns | 123 ns | 258 ns | 15.1 kK | 210 Ω |
+| E200 cw, r0 = 100 µm | 1.05 MW | on | 24 kV/cm | 71 ns | 57 ns | 219 ns | 12.1 kK | 400 Ω |
+| E200 cw, power ÷ 3.91² (bound) | 0.069 MW | on | 14 kV/cm | 643 ns | 610 ns | — | 5.2 kK | 3.0 kΩ |
+| E200 cw, dt/2 and 2× radial cells | 1.05 MW | on | 5.6 kV/cm | 241 ns | 180 ns | 317 ns | 19.7 kK | 265 Ω |
 
-**Afterglow.** With the drive off at 100 ns, ne decays from about 1e24 to 1e20 m⁻³ in about
-300 ns.
+**Phases seen in every chained run**
+1. **Hand-off transient (0–3 ns).** The rod is handed over at the full pre-bridge field.
+   - It over-ionises: axis ne reaches 2e23–1e24 m⁻³.
+   - It loads the cavity to Q ≈ 4–5, so the stored energy (45 mJ at E200) dumps into the rod in
+     about 1 ns.
+   - The modal field collapses to 3–5 kV/cm.
+   - For less than 1 ns R < X and δ < 2 r_c. This transient is reported separately
+     (`transient_*` keys).
+2. **Glow (about 3 ns until contraction).** The cavity refills to a self-limited field of about
+   25 kV/cm.
+   - Te ≈ 2–2.8 eV, axis ne ≈ 2–5e21 m⁻³, R ≈ 5–9 kΩ ≫ X.
+   - The gas stays cool (0.6–1.1 kK).
+   - **With the drive stopped 100 ns after the laser (the experimental timing), the rod never
+     leaves this phase.** It decays in the afterglow to about 2e19 m⁻³ by 400 ns.
+3. **Thermal contraction (arc), only under continued drive.**
+   - The gas heats, the core rarefies, and the conducting radius collapses from about 0.6 mm to
+     0.06–0.12 mm.
+   - Axis Tg rises to 12–20 kK and the modal field falls to about 2–5 kV/cm.
+   - R later drops below X. The post is then reactance-limited: the field is suppressed by
+     detuning the high-Q cavity. It is not a short.
 
-**Robustness.** The result is insensitive to the initial ne and radius. All variants converge to
-R ≈ 450–540 Ω and a gap field of about 2.5 kV/cm.
+**Robustness and sensitivity**
+- **Contraction time:** converges to 4% (251 → 241 ns with dt/2 and twice the radial cells).
+- **Post-contraction values:** peak Tg (12 → 20 kK), final R and the R < X time **do not
+  converge**. They are qualitative.
+- **Initial radius:** contraction is sensitive to it; 0.3 → 0.1 mm moves it from 251 to 71 ns.
+  The 0.3 mm hand-off radius is a rod3d cap, so the true time is uncertain by about 3×.
+- **Power calibration:** with forward power reduced by e_cal² to a measured-equivalent bound,
+  contraction moves to 643 ns.
+- Either way, **the arc needs well over 100 ns of continued drive**. With the laser at 4.9 µs of a
+  5 µs pulse, the model predicts a diffuse glow column, not an arc, in the experiment.
+- **Validity limit:** the skin-depth limit is crossed 15–80 ns **before** contraction in every
+  case. The contraction itself and everything after it lie outside the uniform-field model.
 
-![Bridged rod under continued RF drive. Panels: (a) gap field, with a glow plateau of about 25–30 kV/cm followed by collapse to about 3 kV/cm; (b) rod resistance falling below the post reactance X; (c) rod power and reflected power; (d) axis electron density, including the afterglow decay when the drive stops at 100 ns; (e) axis gas temperature (8–15 kK after the transition) and Te; (f) radial ne and gas-density profiles showing the hot, rarefied core. Simulated, not measured.](../simulations/rf_plasma/results/rod_drive/rod_drive.png)
+![Bridged rod under RF drive, chained from rod3d. Panels: (a) TE10 modal field at the post, with the hand-off collapse, the glow plateau at about 25 kV/cm, the drive-off at 100 ns and the late collapse under continued drive; (b) rod resistance and post reactance X; (c) rod and reflected power (nominal, uncalibrated); (d) axis ne, including the afterglow; (e) axis Tg with arc onset (dots) and the end of skin-depth validity (crosses); (f) radial ne and gas-density profiles of the E200 cw case. Simulated, not measured.](../simulations/rf_plasma/results/rod_drive/rod_drive.png)
+
+### 4. 3D dynamics of the laser-induced plasma (`plasma_story3d.py`)
+
+An interactive viewer stitches the executed models on one time slider, from the laser pulse
+(−1.5 ns) to 0.4 µs (RF off 100 ns after the laser) or 1 µs (RF kept on):
+[`results/story3d/laser_plasma_3d.html`](../simulations/rf_plasma/results/story3d/laser_plasma_3d.html)
+(online: <https://emaguidetal.github.io/plasma-viewer/switch/laser_plasma_3d.html>).
+- **Left:** the full cavity with the TE101 modal envelope (cones), the laser with its focus and
+  ±Rayleigh range, and the plasma coloured by log ne. After bridging the rod is drawn in a false
+  colour of its axis gas temperature.
+- **Upper right:** side view x–y along E around the seeded region.
+- **Lower right:** history of the modal field, the axial rod field, peak ne and axis Tg. A line
+  marks the bridge hand-off.
+- Cases: E200 and E300 (RF off at 100 ns, and RF kept on); E100 (no bridge); E100 with focus 20 mm
+  off.
+
+**Sequence (E200, RF kept on)**
+- −1.5 to 0 ns: the impurity multiphoton seed builds up on the laser line to about 1e15 m⁻³.
+  There is no avalanche without RF.
+- 1.3 ns: the first rods are born.
+- 1.3–4.7 ns: six rods grow along E toward both broad walls, and the modal field falls from 200 to
+  about 150 kV/cm.
+- 4.7 ns: the central rod bridges.
+- 5–8 ns: hand-off transient; the field collapses.
+- About 8–255 ns: glow at about 25 kV/cm.
+- About 255 ns after the laser: thermal contraction. After this the values are outside model
+  validity.
+
+**Expert review during the work.** Plasma, RF and optics reviewer agents (doctoral level) reviewed
+the first version. All three required fixes:
+
+| Finding | Action |
+|---|---|
+| Backward-Euler circuit step left a 9 mJ energy residual (E300) | Crank–Nicolson step; residual now < 1e-13 |
+| Hand-off used a geometric-mean density and a later frame | Harmonic-mean line density (conserves R), last frame before the bridge |
+| "Arc" was defined by R < X, and "cavity shorted" was used | Arc onset = thermal contraction; R < X labelled "reactance-limited post (detuned cavity)" |
+| 20 ns sampling hid the hand-off collapse | Dense 0.1 ns sampling for the first 20 ns; transient flags reported separately |
+| Skin depth ≈ conductor radius in the arc | Recorded per step; validity flag in summaries, figure and viewer |
+| No convergence test | dt/2 and 2× radial cells: contraction time converges, arc peak does not (stated) |
+| Initial radius is a rod3d cap | r0 = 100 µm sensitivity run (3.5× earlier contraction) |
+| e_cal is not applied to power | Nominal power labelled; ÷ e_cal² bound run |
+| rod3d used the k = 6 seed law, not the organic k = 4 source | `seed_model = "organic"`; energy runs repeated |
+| Focus-20 mm label claimed a smaller seed | Relabelled as a field-location effect |
+| Seed drawn at 1e18 m⁻³ | True density (about 1e15 m⁻³) and cumulative I^k build-up shown |
+| Viewer: glow label up to 3 kK, frozen partial rods, wrong side-view scale, hover bugs | Phase labels from contraction and validity flags; partial rods shown 20 ns only; Tg false colour stated |
+
+**Suggested measurements to close the remaining gaps**
+- Beam profile and M² at the focus (the seed scales as E⁴/(w0⁴M²)).
+- Residual-gas analysis of the sealed fill (impurity identity and level).
+- Breakdown probability against laser energy (slope k) and against focus position, with shot
+  counts.
+- Probability against shot interval (tests a previous-shot O₂⁻ reservoir).
+- Charge collection from the laser alone (absolute seed).
+- Time-resolved emission or a fast camera over the last 100 ns of the pulse (glow vs arc).
 
 ### Limitations
 - The tip law is effective and calibrated on two resolved runs, with about ×1.6 scatter. The 3D
   rods do not resolve streamer heads or branching.
 - The field model is quasi-static: thin wires in an electrostatic image lattice, scaled by the
   cavity mode amplitude.
-  - At the end of the drive the skin depth (133 µm) is about equal to the conductor radius
-    (110 µm), which is a marginal limitation.
+- The drive model loses validity (δ < 2 r_c) before thermal contraction. The arc phase and the
+  afterglow temperature are qualitative.
+- Heat conduction moves heat about 30 µm per 100 ns at 13 kK. The model does not include it, so
+  the contraction may come somewhat later than computed.
+- The bare-box TE101 resonance is 3.00 GHz, against the 2.95 GHz drive. The model implicitly
+  assumes iris tuning. Wall loss is neglected (Q0 = ∞).
 - The absolute field scale is not calibrated to the experiment (see the e_cal = 3.91 caveat).
+  Forward power and stored energy are nominal, about 15× the measured-equivalent values.
 - The recombination coefficient at 1.48 MPa and the impurity identity and level are assumptions.
 - The first-rod birth time at 200 kV/cm (1.26 ns) is earlier than the 1.96 ns launch in the
   resolved line run. Rod birth uses a line-density criterion, not a resolved launch.

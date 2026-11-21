@@ -1,0 +1,157 @@
+{
+ "name": "E100_1mJ_org",
+ "config": {
+  "name": "E100_1mJ_org",
+  "p_pa": 1480276.4,
+  "t_k": 300.0,
+  "f_hz": 2950000000.0,
+  "e0_v_m": 10000000.0,
+  "rf_phase": 0.0,
+  "x_focus_m": 0.0,
+  "energy_j": 0.001,
+  "seed_model": "organic",
+  "stochastic": true,
+  "rng_seed": 1,
+  "dx_c": 0.00025,
+  "x_half": 0.005,
+  "h": 0.0005,
+  "r_s": 6e-06,
+  "n_inc": 9e+20,
+  "e_m_td": 5.0,
+  "c_v": 0.8478,
+  "r_min": 1e-05,
+  "r_max": 0.0003,
+  "alpha_rec": 1e-14,
+  "n_sat": 1e+24,
+  "max_ion_step": 0.5,
+  "tau_amp_s": 3.57e-08,
+  "cavity_feedback": true,
+  "drive_off_s": 1.0000000000000001e-07,
+  "walls": true,
+  "n_img": [
+   1,
+   3,
+   1
+  ],
+  "t_end_s": 2.0000000000000002e-07,
+  "steps_per_period": 64,
+  "frame_dt_s": 1e-10,
+  "stop_after_bridge_s": 1e-09
+ },
+ "wall_s": 491.1432647705078,
+ "nodes": 407,
+ "n_seed_electrons": 817.9309976690015,
+ "t_first_birth_ns": 11.742584745763,
+ "n_rods": 11,
+ "n_long_rods": 11,
+ "long_rod_x_mm": [
+  0.25000000000000716,
+  -0.7499999999999938,
+  1.0000000000000078,
+  -1.4999999999999944,
+  1.7500000000000084,
+  -2.249999999999995,
+  2.5000000000000093,
+  -3.499999999999996,
+  3.50000000000001,
+  4.250000000000011,
+  -4.2499999999999964
+ ],
+ "t_bridge_ns": null,
+ "n_bridged": 0,
+ "e0_min_kv_cm": 0.000991823267691626,
+ "energy_from_cavity_j": 0.034057133445866625,
+ "ohmic_j": 0.033380678402336085,
+ "energy_residual_rel": 0.019862359952857445,
+ "charge_residual_c": -2.2601773702344803e-23,
+ "rods": [
+  {
+   "x_mm": 0.25000000000000716,
+   "born_ns": 11.742584745763,
+   "length_mm": 19.000000000000018,
+   "bridged_ns": null,
+   "top_wall": false,
+   "bottom_wall": false
+  },
+  {
+   "x_mm": -0.7499999999999938,
+   "born_ns": 11.95444915254267,
+   "length_mm": 19.000000000000018,
+   "bridged_ns": null,
+   "top_wall": false,
+   "bottom_wall": false
+  },
+  {
+   "x_mm": 1.0000000000000078,
+   "born_ns": 12.251059322034209,
+   "length_mm": 18.000000000000014,
+   "bridged_ns": null,
+   "top_wall": false,
+   "bottom_wall": false
+  },
+  {
+   "x_mm": -1.4999999999999944,
+   "born_ns": 12.79661016949186,
+   "length_mm": 19.000000000000018,
+   "bridged_ns": null,
+   "top_wall": false,
+   "bottom_wall": false
+  },
+  {
+   "x_mm": 1.7500000000000084,
+   "born_ns": 13.119703389830857,
+   "length_mm": 18.000000000000014,
+   "bridged_ns": null,
+   "top_wall": false,
+   "bottom_wall": false
+  },
+  {
+   "x_mm": -2.249999999999995,
+   "born_ns": 13.797669491525802,
+   "length_mm": 18.000000000000014,
+   "bridged_ns": null,
+   "top_wall": false,
+   "bottom_wall": false
+  },
+  {
+   "x_mm": 2.5000000000000093,
+   "born_ns": 14.141949152542766,
+   "length_mm": 16.000000000000014,
+   "bridged_ns": null,
+   "top_wall": false,
+   "bottom_wall": false
+  },
+  {
+   "x_mm": -3.499999999999996,
+   "born_ns": 15.487288135593671,
+   "length_mm": 16.000000000000014,
+   "bridged_ns": null,
+   "top_wall": false,
+   "bottom_wall": false
+  },
+  {
+   "x_mm": 3.50000000000001,
+   "born_ns": 15.508474576271638,
+   "length_mm": 14.000000000000012,
+   "bridged_ns": null,
+   "top_wall": false,
+   "bottom_wall": false
+  },
+  {
+   "x_mm": 4.250000000000011,
+   "born_ns": 15.683262711864865,
+   "length_mm": 12.00000000000001,
+   "bridged_ns": null,
+   "top_wall": false,
+   "bottom_wall": false
+  },
+  {
+   "x_mm": -4.2499999999999964,
+   "born_ns": 16.684322033898805,
+   "length_mm": 14.000000000000012,
+   "bridged_ns": null,
+   "top_wall": false,
+   "bottom_wall": false
+  }
+ ]
+}

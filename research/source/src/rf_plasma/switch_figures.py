@@ -155,46 +155,55 @@ let timer=null; document.getElementById('pl').onclick=()=>{{if(timer){{clearInte
     return out
 
 
-def rod_drive_figure(cases=("drive_E100", "drive_E200", "drive_E300", "drive_E200_off100",
-                            "drive_E200_n1e23_r50", "drive_E200_r200")):
+def rod_drive_figure(cases=("chain_E200", "chain_E300", "chain_E200_cw", "chain_E300_cw", "chain_E200_cw_r100",
+                            "chain_E200_cw_lowP", "chain_E200_cw_dt2"), ref="chain_E200_cw"):
     fig, ax = plt.subplots(2, 3, figsize=(16, 9))
     for name in cases:
         f = RD / name / "rod_drive.npz"
         if not f.exists():
             continue
         d = np.load(f)
+        sm = json.loads((RD / name / "summary.json").read_text(encoding="utf-8"))
         t = 1e9 * d["t_s"]
-        ax[0, 0].plot(t, d["e_gap_v_m"] / 1e5, label=name)
-        ax[0, 1].semilogy(t, d["r_ohm"], label=name)
-        ax[0, 2].semilogy(t, np.maximum(d["p_rod_w"], 1), label=name)
-        ax[1, 0].semilogy(t, d["ne_axis_m3"], label=name)
-        ax[1, 1].plot(t, d["tg_axis_k"], label=name)
-        ax[1, 1].plot(t, 1e3 * d["te_axis_ev"], ls=":", color=ax[1, 1].lines[-1].get_color())
-    ax[0, 1].plot([], [], "k--", label="post reactance X")
-    d = np.load(RD / "drive_E200" / "rod_drive.npz")
-    ax[0, 1].semilogy(1e9 * d["t_s"], d["x_ohm"], "k--")
-    ax[0, 2].semilogy(1e9 * d["t_s"], np.maximum(d["p_refl_w"], 1), "k--", label="reflected (drive_E200)")
-    ax[0, 0].set(ylabel="gap field (kV/cm)", title="(a) field across the rod")
-    ax[0, 1].set(ylabel="ohm", title="(b) rod resistance R (and post reactance X)")
-    ax[0, 2].set(ylabel="W", title="(c) power into rod / reflected")
+        ls = "--" if name.endswith("dt2") else "-"
+        ax[0, 0].semilogx(t, d["e_gap_v_m"] / 1e5, ls, label=name)
+        c = ax[0, 0].lines[-1].get_color()
+        ax[0, 1].loglog(t, d["r_ohm"], ls, color=c, label=name)
+        ax[0, 2].loglog(t, np.maximum(d["p_rod_w"], 1), ls, color=c, label=name)
+        ax[1, 0].loglog(t, d["ne_axis_m3"], ls, color=c, label=name)
+        ax[1, 1].semilogx(t, d["tg_axis_k"], ls, color=c, label=name)
+        for key, mk in (("t_contraction_s", "o"), ("t_skin_invalid_s", "x")):
+            if sm.get(key):
+                i = int(np.searchsorted(d["t_s"], sm[key]))
+                ax[1, 1].plot(t[i], d["tg_axis_k"][i], mk, color=c, ms=7)
+    ax[1, 1].plot([], [], "ko", label="thermal contraction (arc onset)")
+    ax[1, 1].plot([], [], "kx", label="skin depth < 2 r_c (validity ends)")
+    d = np.load(RD / ref / "rod_drive.npz")
+    ax[0, 1].loglog(1e9 * d["t_s"], d["x_ohm"], "k:", label=f"post reactance X ({ref})")
+    ax[0, 2].loglog(1e9 * d["t_s"], np.maximum(d["p_refl_w"], 1), "k:", label=f"reflected ({ref})")
+    ax[0, 0].set(ylabel="kV/cm", title="(a) TE10 modal field |V|/b at the post")
+    ax[0, 1].set(ylabel="ohm", title="(b) rod resistance R and post reactance X")
+    ax[0, 2].set(ylabel="W", title="(c) power into the rod / reflected (nominal power)")
     ax[1, 0].set(ylabel="m^-3", title="(d) axis electron density")
-    ax[1, 1].set(ylabel="K", title="(e) axis gas temperature (solid), 1000 x Te in eV (dotted)")
+    ax[1, 1].set(ylabel="K", title="(e) axis gas temperature")
     for a in ax.flat[:5]:
         a.set_xlabel("time after bridging (ns)")
-        a.legend(fontsize=7)
-    # (f) radial profiles of the nominal case
+        a.set_xlim(0.1, 1000)
+        a.legend(fontsize=6)
     r = 1e3 * d["r_m"]
-    for k in np.linspace(0, len(d["t_s"]) - 1, 6).round().astype(int):
+    for k in np.unique(np.searchsorted(d["t_s"], np.array([0, 3, 30, 150, 240, 260, 400, 1000]) * 1e-9)
+                       .clip(0, len(d["t_s"]) - 1)):
         ax[1, 2].semilogy(r, np.maximum(d["prof_ne"][k], 1e15), label=f"{1e9 * d['t_s'][k]:.0f} ns")
     a2 = ax[1, 2].twinx()
-    for k in np.linspace(0, len(d["t_s"]) - 1, 6).round().astype(int):
+    for k in np.unique(np.searchsorted(d["t_s"], np.array([0, 3, 30, 150, 240, 260, 400, 1000]) * 1e-9)
+                       .clip(0, len(d["t_s"]) - 1)):
         a2.plot(r, d["prof_rho"][k], ls=":", lw=0.8)
     a2.set_ylabel("rho / rho0 (dotted)")
     ax[1, 2].set(xlabel="r (mm)", ylabel="ne (m^-3, solid)", xlim=(0, 1.5), ylim=(1e18, 1e25),
-                 title="(f) drive_E200 radial profiles")
+                 title=f"(f) {ref} radial profiles")
     ax[1, 2].legend(fontsize=7)
-    fig.suptitle("Bridged plasma rod under continued RF drive: WR-284 cavity envelope + radial plasma/gas model, "
-                 "1.48 MPa He")
+    fig.suptitle("Bridged rod under RF drive, chained from rod3d (WR-284, 1.48 MPa He). Nominal, uncalibrated power; "
+                 "values after the x markers are outside model validity. Simulated, not measured.", fontsize=10)
     fig.tight_layout()
     out = RD / "rod_drive.png"
     fig.savefig(out, dpi=130)

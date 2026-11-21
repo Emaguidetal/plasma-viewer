@@ -63,6 +63,8 @@ class RodConfig:
     rf_phase: float = 0.0
     x_focus_m: float = 0.0          # laser focus along x relative to the field maximum a/2
     energy_j: float = 0.75e-3
+    seed_model: str = "power6"      # "power6": breakdown_probability k=6 law; "organic": seed_sources (4-photon
+                                    # organic-impurity MPI + background O2- photodetachment)
     stochastic: bool = True         # Poisson number of seed electrons per node and Furry gain
     rng_seed: int = 1
     dx_c: float = 0.25e-3           # spacing of laser-line nodes (candidate rod sites)
@@ -216,7 +218,11 @@ class Rod3D:
         xs = np.arange(-cfg.x_half, cfg.x_half + 1e-12, cfg.dx_c) + cfg.x_focus_m
         st = Setup(p_pa=cfg.p_pa, axis="x", focus_m=cfg.x_focus_m, energy_j=cfg.energy_j)
         zz = np.linspace(xs[0] - cfg.dx_c / 2, xs[-1] + cfg.dx_c / 2, 40 * len(xs) + 1)
-        lam_s = seed_per_length(st, cfg.energy_j, zz)
+        if cfg.seed_model == "organic":
+            from .seed_sources import Budget, seed_line_density
+            lam_s = seed_line_density(Budget(p_pa=cfg.p_pa, energy_j=cfg.energy_j, focus_m=cfg.x_focus_m), zz)
+        else:
+            lam_s = seed_per_length(st, cfg.energy_j, zz)
         counts = np.add.reduceat(0.5 * (lam_s[1:] + lam_s[:-1]) * np.diff(zz), np.arange(0, len(zz) - 1, 40))
         rng = np.random.default_rng(cfg.rng_seed)
         if cfg.stochastic:
@@ -609,6 +615,7 @@ def main(argv=None):
     r.add_argument("--frame-ps", type=float, default=50.0)
     r.add_argument("--deterministic", action="store_true")
     r.add_argument("--calibration", type=Path, default=RESULTS / "tip_calibration.json")
+    r.add_argument("--seed-model", choices=("power6", "organic"), default="power6")
     a = ap.parse_args(argv)
     if a.cmd == "calibrate":
         best = calibrate_tip_law(a.runs)
@@ -620,7 +627,7 @@ def main(argv=None):
     cfg = RodConfig(name=a.name, e0_v_m=a.e0_kv_cm * 1e5, x_focus_m=a.focus_mm * 1e-3, energy_j=a.energy_mj * 1e-3,
                     rng_seed=a.seed, h=a.h_mm * 1e-3, dx_c=a.dx_mm * 1e-3, t_end_s=a.t_end_ns * 1e-9,
                     rf_phase=a.phase, cavity_feedback=not a.no_feedback, stochastic=not a.deterministic,
-                    drive_off_s=a.drive_off_ns * 1e-9, frame_dt_s=a.frame_ps * 1e-12)
+                    drive_off_s=a.drive_off_ns * 1e-9, frame_dt_s=a.frame_ps * 1e-12, seed_model=a.seed_model)
     for k in ("c_v", "e_m_td", "n_inc"):
         if k in cal:
             cfg = replace(cfg, **{k: cal[k]})

@@ -88,15 +88,27 @@ $env:PYTHONPATH = "src"
 & .\.venv\Scripts\python.exe -m rf_plasma.rod3d calibrate He1p48MPa_E200_z8 He1p48MPa_E100_z8
 & .\.venv\Scripts\python.exe -m rf_plasma.rod3d run --name E200 --e0-kv-cm 200 --t-end-ns 200 --drive-off-ns 100 --frame-ps 100
 & .\.venv\Scripts\python.exe -m rf_plasma.rod3d run --name E100_f10 --e0-kv-cm 100 --focus-mm 10 --t-end-ns 200 --drive-off-ns 100 --frame-ps 100
+& .\.venv\Scripts\python.exe -m rf_plasma.rod3d run --name E100_org --e0-kv-cm 100 --seed-model organic --t-end-ns 200 --drive-off-ns 100 --frame-ps 100
 & .\.venv\Scripts\python.exe -m rf_plasma.seed_sources
-& .\.venv\Scripts\python.exe -m rf_plasma.rod_drive --name drive_E200 --e0-kv-cm 200 --t-end-ns 400
-& .\.venv\Scripts\python.exe -m rf_plasma.rod_drive --name drive_E200_off100 --e0-kv-cm 200 --t-end-ns 400 --drive-off-ns 100
+# bridged rod handed off from the rod3d run (drive off 100 ns after the laser, or kept on)
+& .\.venv\Scripts\python.exe -m rf_plasma.rod_drive --name chain_E200 --from-rod3d E200 --drive-off-ns 100 --t-end-ns 400
+& .\.venv\Scripts\python.exe -m rf_plasma.rod_drive --name chain_E200_cw --from-rod3d E200 --t-end-ns 1000
+# sensitivity: measured-equivalent power bound (1/3.91^2), radius, resolution
+& .\.venv\Scripts\python.exe -m rf_plasma.rod_drive --name chain_E200_cw_lowP --from-rod3d E200 --t-end-ns 1000 --power-scale 0.0654
+& .\.venv\Scripts\python.exe -m rf_plasma.rod_drive --name chain_E200_cw_dt2 --from-rod3d E200 --t-end-ns 1000 --dt-max-ns 0.025 --nr 300
 & .\.venv\Scripts\python.exe -m rf_plasma.switch_figures
+& .\.venv\Scripts\python.exe -m rf_plasma.plasma_story3d
 ```
 
 - Outputs go to `results\rod3d\<case>` (`rod3d.npz`, `summary.json`, and an
-  interactive `rod3d_3d.html` with a time slider), `results\seed_sources`
-  and `results\rod_drive`.
+  interactive `rod3d_3d.html` with a time slider), `results\seed_sources`,
+  `results\rod_drive` and `results\story3d\laser_plasma_3d.html` (the unified
+  3D viewer: laser seed → rod growth → glow → contraction or afterglow).
+- `--seed-model organic` uses the 4-photon impurity + photodetachment seed from
+  `seed_sources`; the default `power6` is the older I^6 law.
+- `rod_drive` summaries report the arc onset (`t_contraction_s`), the end of
+  skin-depth validity (`t_skin_invalid_s`), R < X (`t_r_below_x_s`) and the
+  hand-off transient (`transient_*`). Forward power is nominal (uncalibrated).
 - Other options: `--energy-mj`, `--seed`, `--phase`, `--h-mm`, `--n0` and
   `--r0-um`.
 - For parallel runs, set `OMP_NUM_THREADS=1` (and the MKL/OpenBLAS

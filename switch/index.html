@@ -15,6 +15,15 @@ model needed a ×3.91 field calibration to match the measured thresholds, so abs
 by a similar factor.</span>
 <a href="../index.html">← dynamics viewer</a> · <a href="https://github.com/Emaguidetal/plasma-viewer/tree/main/research">data, source and report</a></p>
 
+<div class="card"><h2>0. Laser-induced plasma dynamics in 3D</h2>
+<p><a href="laser_plasma_3d.html"><b>Open the 3D viewer →</b></a> One time slider follows the full sequence in the WR-284 cavity:
+laser seed (about 1e15 m<sup>−3</sup> on the laser line) → rods growing along E (first rod 1.3 ns at 200 kV/cm) →
+bridge between the broad walls (4.7 ns) → cavity field collapse → glow column at about 25 kV/cm →
+thermal contraction to an arc only if the RF drive continues. Cases: 200 and 300 kV/cm with the drive off at 100 ns or continuous,
+and 100 kV/cm with the focus 20 mm off (a field-location effect, no bridge).</p>
+<p class="note">Reviewed by plasma, RF and optics expert agents; all three asked for fixes, which were applied before publishing
+(Crank–Nicolson circuit step, harmonic-mean hand-off, sustained vs transient validity flags, true-density seed display, phase labels driven by the model flags).</p></div>
+
 <div class="card"><h2>1. Rod growth along E in 3D</h2>
 <p>Interactive viewers (drag to orbit, slider for time). Each shows a 24 mm window around the laser crossing:
 <a href="rod3d_E300.html">300 kV/cm</a> ·
@@ -43,12 +52,16 @@ It scales as about E<sup>4</sup> and falls with focus offset, as observed. Photo
 <img src="seed_sources.png" alt="Seed budget by source, energy and focus dependence, and RF-only breakdown probability. Simulated, not measured."></div>
 
 <div class="card"><h2>3. Plasma under continued RF drive</h2>
-<p>After bridging:
+<p>The bridged rod from the 3D model is handed to a radial drive model (circuit + 1D radial plasma and gas):</p>
 <ul>
-<li><b>Glow phase:</b> gap field about 25–30 kV/cm, Te about 2.7 eV, gas below 2–4 kK, lasting 40–200 ns.</li>
-<li><b>Thermal glow-to-arc transition:</b> the gas heats to 8–15 kK and the rod resistance falls below the post reactance
-(446 Ω at 200 kV/cm). The gap field drops to about 2.5 kV/cm, the rod takes only 20–45 kW, and most of the forward power is reflected.</li>
-<li><b>Afterglow:</b> with the drive off, ne decays from about 1e24 to 1e20 m<sup>−3</sup> in about 300 ns.</li>
-</ul></p>
-<img src="rod_drive.png" alt="Bridged rod under continued drive: gap field, resistance vs post reactance, power, axis density, gas temperature and radial profiles. Simulated, not measured."></div>
+<li><b>Hand-off transient (0–3 ns):</b> ne 2e23–1e24 m<sup>−3</sup>, loaded Q falls to 4–5 and the gap field drops to 3–5 kV/cm.</li>
+<li><b>Glow:</b> the field recovers to about 25 kV/cm, rod resistance 5–9 kΩ, gas below 1–2 kK.</li>
+<li><b>Arc (thermal contraction):</b> only with continued drive, 251 ns after bridging at 200 kV/cm and 201 ns at 300 kV/cm
+(sensitivity range 71–643 ns for a 100 µm initial radius or 0.069 MW forward power). Gas reaches 12–15 kK.</li>
+<li><b>Drive off at 100 ns:</b> no arc; the column stays a glow (peak gas 0.7 / 1.1 kK) and decays.</li>
+</ul>
+<p class="note">In the experiment the laser fires at 4.9 µs of a 5 µs RF pulse, so the model predicts a glow column, not an arc.
+Caveats: the skin-depth limit of the radial model is crossed before contraction (123–610 ns), the arc peak is not
+time-step converged, and the forward power is nominal.</p>
+<img src="rod_drive.png" alt="Bridged rod under continued drive: gap field, resistance, power, axis density, gas temperature for the chained cases. Simulated, not measured."></div>
 </body></html>

@@ -1,0 +1,121 @@
+{
+ "name": "E100_0p5mJ_org",
+ "config": {
+  "name": "E100_0p5mJ_org",
+  "p_pa": 1480276.4,
+  "t_k": 300.0,
+  "f_hz": 2950000000.0,
+  "e0_v_m": 10000000.0,
+  "rf_phase": 0.0,
+  "x_focus_m": 0.0,
+  "energy_j": 0.0005,
+  "seed_model": "organic",
+  "stochastic": true,
+  "rng_seed": 1,
+  "dx_c": 0.00025,
+  "x_half": 0.005,
+  "h": 0.0005,
+  "r_s": 6e-06,
+  "n_inc": 9e+20,
+  "e_m_td": 5.0,
+  "c_v": 0.8478,
+  "r_min": 1e-05,
+  "r_max": 0.0003,
+  "alpha_rec": 1e-14,
+  "n_sat": 1e+24,
+  "max_ion_step": 0.5,
+  "tau_amp_s": 3.57e-08,
+  "cavity_feedback": true,
+  "drive_off_s": 1.0000000000000001e-07,
+  "walls": true,
+  "n_img": [
+   1,
+   3,
+   1
+  ],
+  "t_end_s": 2.0000000000000002e-07,
+  "steps_per_period": 64,
+  "frame_dt_s": 1e-10,
+  "stop_after_bridge_s": 1e-09
+ },
+ "wall_s": 232.09369349479675,
+ "nodes": 303,
+ "n_seed_electrons": 62.92651929345331,
+ "t_first_birth_ns": 13.146186440678315,
+ "n_rods": 7,
+ "n_long_rods": 7,
+ "long_rod_x_mm": [
+  -0.24999999999999328,
+  1.0000000000000078,
+  -1.2499999999999942,
+  -1.999999999999995,
+  -4.2499999999999964,
+  1.7500000000000084,
+  -2.7499999999999956
+ ],
+ "t_bridge_ns": null,
+ "n_bridged": 0,
+ "e0_min_kv_cm": 0.003950609172434729,
+ "energy_from_cavity_j": 0.03352695437002002,
+ "ohmic_j": 0.032894011866501954,
+ "energy_residual_rel": 0.01887861618516037,
+ "charge_residual_c": -1.715325421380712e-23,
+ "rods": [
+  {
+   "x_mm": -0.24999999999999328,
+   "born_ns": 13.146186440678315,
+   "length_mm": 22.00000000000002,
+   "bridged_ns": null,
+   "top_wall": false,
+   "bottom_wall": false
+  },
+  {
+   "x_mm": 1.0000000000000078,
+   "born_ns": 14.475635593220746,
+   "length_mm": 19.000000000000018,
+   "bridged_ns": null,
+   "top_wall": false,
+   "bottom_wall": false
+  },
+  {
+   "x_mm": -1.2499999999999942,
+   "born_ns": 14.804025423729236,
+   "length_mm": 19.000000000000018,
+   "bridged_ns": null,
+   "top_wall": false,
+   "bottom_wall": false
+  },
+  {
+   "x_mm": -1.999999999999995,
+   "born_ns": 14.804025423729236,
+   "length_mm": 19.000000000000018,
+   "bridged_ns": null,
+   "top_wall": false,
+   "bottom_wall": false
+  },
+  {
+   "x_mm": -4.2499999999999964,
+   "born_ns": 15.561440677966555,
+   "length_mm": 17.000000000000014,
+   "bridged_ns": null,
+   "top_wall": false,
+   "bottom_wall": false
+  },
+  {
+   "x_mm": 1.7500000000000084,
+   "born_ns": 15.985169491525895,
+   "length_mm": 17.000000000000014,
+   "bridged_ns": null,
+   "top_wall": false,
+   "bottom_wall": false
+  },
+  {
+   "x_mm": -2.7499999999999956,
+   "born_ns": 17.69067796610224,
+   "length_mm": 18.000000000000014,
+   "bridged_ns": null,
+   "top_wall": false,
+   "bottom_wall": false
+  }
+ ]
+}

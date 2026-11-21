@@ -6,7 +6,7 @@ observations (Krasik / Leopold experiments, user report)?
   O2  at high RF field the laser energy hardly matters;
   O3  at 20-50 kV/cm the laser energy changes the breakdown probability between ~70 % and 100 %;
   O4  moving the focus along the beam changes the probability from 0 to 100 %;
-  O5  (assumed, not yet reported) RF alone rarely breaks down, otherwise the laser would not be needed.
+  O5  RF alone (no laser) breaks down in about 10 % of pulses (reported by the user, sealed He).
 
 Candidates (all per shot, counted inside the high-field part of the beam, |x| < x_hf where the TE101 field
 is within 10 % of its maximum):
@@ -51,6 +51,7 @@ SPECIES = {"He": 24.587, "N2": 15.581, "H2O": 12.621, "O2": 12.070, "organic (8.
 K3_O2_HE = 3e-44            # m^6/s, e + O2 + He -> O2- + He (order 1e-32 cm^6/s; unverified, x3)
 SIGMA_PD_O2M = 8e-23        # m^2, O2- photodetachment near 2.3 eV (order 1e-18 cm^2; unverified, x3)
 MU_ION = 1.255e-4           # m^2/Vs, He ion mobility at 1.48 MPa (streamer2d table); used for all ions
+P_RF_ONLY_MEASURED = 0.10   # RF-only breakdown probability per pulse, user report (O5)
 FN_A, FN_B = 1.54e-6, 6.83e9  # Fowler-Nordheim constants (A eV / V^2, eV^-3/2 V/m)
 
 
@@ -205,6 +206,16 @@ def budget(b: Budget, nx=801):
     return dict(budget=asdict(b), background=bg, x_hf_m=xh, rows=rows)
 
 
+def seed_line_density(b: Budget, x):
+    """Laser seed per metre along the beam used by rod3d (seed_model='organic'): 4-photon MPI of the organic
+    impurity plus photodetachment of the background O2- (the previous-shot reservoir is excluded: its
+    saturated, focus-independent yield would contradict the measured focus dependence)."""
+    st = b.setup()
+    n_org = b.n_gas * b.ppm["organic (8.8 eV)"] * 1e-6
+    return (mpi_per_length(st, SPECIES["organic (8.8 eV)"], n_org, x, b.energy_j)
+            + photodetach_per_length(st, background(b)["n_neg_bg_m3"], x, b.energy_j))
+
+
 def energy_slope(b: Budget, source_fn, e1=0.5e-3, e2=1.0e-3):
     n1 = source_fn(replace(b, energy_j=e1))
     n2 = source_fn(replace(b, energy_j=e2))
@@ -250,6 +261,10 @@ def main(out=OUT):
         lineages_ecal=rf_only(b, e0, 3.91, bg["n_e_m3"], bg["s_pairs_m3_s"]).tolist(),
         lineages_negative_ions_detached=rf_only(b, e0, 1.0, bg["n_ion_m3"], bg["s_pairs_m3_s"]).tolist(),
         fn_electrons_per_pulse=fowler_nordheim(b, e0).tolist())
+    # O5: lineages scale linearly with the background ion-pair rate, so the measured probability fixes that rate
+    lam_meas = -math.log(1 - P_RF_ONLY_MEASURED)
+    res["rf_only"]["measured_probability"] = P_RF_ONLY_MEASURED
+    res["rf_only"]["source_scale_for_measured_ecal"] = [lam_meas / max(v, 1e-300) for v in res["rf_only"]["lineages_ecal"]]
     (out / "seed_sources.json").write_text(json.dumps(res, indent=1, default=float), encoding="utf-8")
     figures(res, out)
     return res
@@ -292,6 +307,8 @@ def figures(res, out=OUT):
     for k, l in (("lineages_nominal", "free e- only, BOLOS swarm"), ("lineages_ecal", "field x 3.91 (e_cal)"),
                  ("lineages_negative_ions_detached", "if all O2- were field-detached")):
         a.semilogy(r["e0_kv_cm"], 1 - np.exp(-np.maximum(r[k], 1e-30)), "o-", label=l)
+    a.axhline(P_RF_ONLY_MEASURED, color="k", ls="--", label="measured, sealed He (~10 %)")
+    a.axvspan(20, 50, color="0.85", zorder=0, label="experimental operating range")
     a.set_xlabel("cavity peak field E0 (kV/cm)"); a.set_ylabel("RF-only breakdown probability per 5 us pulse")
     a.set_ylim(1e-6, 2); a.legend(fontsize=7); a.set_title("RF-only check (O5)")
     fig.tight_layout()

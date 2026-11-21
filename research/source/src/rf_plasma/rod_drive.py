@@ -10,19 +10,22 @@ inductive post with a plasma resistance. This module couples
   equivalent of the generator behind the iris; P_forward = G_ext V0^2 / 8).
 * Rod: shunt post admittance Y_rod = 1 / (R + j X); X from Marcuvitz (Waveguide Handbook, sec. 5.11,
   centred inductive post) for the instantaneous conducting radius; R = b / int sigma dA with
-  Re sigma = e^2 n_e nu / (m_e (nu^2 + omega^2)), nu = N k_m(eps) + nu_ei (skin depth >> radius checked).
+  Re sigma = e^2 n_e nu / (m_e (nu^2 + omega^2)), nu = N k_m(eps) + nu_ei. Uniform E_ax needs skin depth >>
+  radius: the skin depth is recorded and the first time it falls below 2 r_c is reported, separately for the
+  hand-off transient (t <= 20 ns) and for the sustained run (t > 10 ns: t_skin_invalid_s).
 * Plasma: radial cylindrical Euler (gas_dynamics.Euler1D, passive plasma tracers in the energy) plus the
   collisional-radiative helium cell (plasma3d_cr.kinetic_cell_cr) with the Joule power density
   p = Re(sigma) |E_ax|^2 / 2, E_ax = I_rod R / b uniform in r (tangential continuity). Strang splitting.
-* Electrode sheaths, wall erosion, radial diffusion and heat conduction (<10 um per 100 ns at 1.5 MPa) and
-  3D current redistribution are neglected; the CR closure is restricted to moderate ionization.
+* Electrode sheaths, wall erosion, radial diffusion and heat conduction (<10 um per 100 ns in cold gas, but
+  about 30 um per 100 ns at 13 kK, comparable to the contracted arc) and 3D current redistribution are
+  neglected; the CR closure is restricted to moderate ionization. Values after contraction are qualitative.
 """
 from __future__ import annotations
 
 import argparse
 import json
 import math
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, replace
 from pathlib import Path
 
 import numpy as np
@@ -169,10 +172,12 @@ def run(c: DriveConfig, out_root: Path = OUT, save=True, verbose=True):
     e_init = (u[:3] * area).sum(axis=1)
     w_cav0 = 0.5 * cap * abs(v) ** 2
     t = 0.0
-    times = np.linspace(0, c.t_end_s, c.samples)
+    # 0.1 ns sampling over the first 20 ns resolves the rod-loaded (low-Q) field collapse after bridging
+    early = np.linspace(0, min(20e-9, c.t_end_s), int(min(20e-9, c.t_end_s) / 0.1e-9) + 1)
+    times = np.unique(np.round(np.concatenate([early, np.linspace(0, c.t_end_s, c.samples)]), 15))
     rec = {k: [] for k in ("t_s", "e_gap_v_m", "e_axial_v_m", "r_ohm", "x_ohm", "p_rod_w", "p_net_in_w",
                            "p_refl_w", "w_cav_j", "r_cond_m", "ne_axis_m3", "tg_axis_k", "te_axis_ev",
-                           "rho_axis_rel", "i_rod_a")}
+                           "rho_axis_rel", "i_rod_a", "skin_depth_m", "q_loaded")}
     prof = {k: [] for k in ("ne", "tg", "te", "rho", "p", "vel", "sigma")}
     e_dep = e_sink = e_rad = 0.0
     w_in = w_rod = 0.0
@@ -198,7 +203,9 @@ def run(c: DriveConfig, out_root: Path = OUT, save=True, verbose=True):
             idr = i_d if drive_on else 0.0
             z_rod = complex(r_ohm, x_ohm)
             y_rod = 1 / z_rod
-            v1 = (2 * cap / dt * v + idr) / (2 * cap / dt + g_ext + y_rod)
+            # Crank-Nicolson: discrete energy closes exactly with the midpoint power bookkeeping below
+            ya = 0.5 * (g_ext + y_rod)
+            v1 = ((2 * cap / dt - ya) * v + idr) / (2 * cap / dt + ya)
             vm = 0.5 * (v + v1)
             i_rod = vm * y_rod
             p_rod = 0.5 * abs(i_rod) ** 2 * r_ohm
@@ -235,6 +242,8 @@ def run(c: DriveConfig, out_root: Path = OUT, save=True, verbose=True):
         rec["r_cond_m"].append(r_c); rec["ne_axis_m3"].append(float(ne[0])); rec["tg_axis_k"].append(float(tg[0]))
         rec["te_axis_ev"].append(float(te[0])); rec["rho_axis_rel"].append(float(rho[0] / (c.n_gas * M_HE)))
         rec["i_rod_a"].append(abs(i_rod))
+        rec["skin_depth_m"].append(math.sqrt(2 / (w * MU0 * max(sig.max(), 1e-30))))
+        rec["q_loaded"].append(w * cap / (g_ext + (1 / z_rod).real))
         for k, val in (("ne", ne), ("tg", tg), ("te", te), ("rho", rho / (c.n_gas * M_HE)), ("p", pres),
                        ("vel", vel), ("sigma", sig)):
             prof[k].append(np.asarray(val, float).copy())
@@ -244,6 +253,18 @@ def run(c: DriveConfig, out_root: Path = OUT, save=True, verbose=True):
                   f"steps={steps}", flush=True)
     e_fin = (u[:3] * area).sum(axis=1)
     w_cav = 0.5 * cap * abs(v) ** 2
+    ts = np.array(rec["t_s"]); rcs = np.array(rec["r_cond_m"]); eg = np.array(rec["e_gap_v_m"])
+    # arc onset = thermal contraction: conducting radius below half its running maximum (after the start-up)
+    late = ts > 10e-9
+    contr = late & (rcs < 0.5 * np.maximum.accumulate(np.where(late, rcs, 0.0)))
+    if c.drive_off_s >= 0:
+        contr &= ts < c.drive_off_s
+    skin_bad = np.array(rec["skin_depth_m"]) < 2 * rcs
+    rx = np.array(rec["r_ohm"]) < np.array(rec["x_ohm"])
+    first = lambda m: float(ts[np.argmax(m)]) if m.any() else None
+    early_m = ts <= 20e-9
+    # the hand-off at the full pre-bridge field gives a ~ns over-ionisation transient; report it separately
+    # from the sustained (t > 10 ns) R < X and skin-depth onsets
     plasma_gain = e_fin[2] + solver.boundary_out[2] - e_init[2]
     summary = dict(config=asdict(c), cavity=cc, p_forward_w=p_fwd, w_cav0_j=w_cav0,
                    x_post_initial_ohm=rec["x_ohm"][0], r_initial_ohm=rec["r_ohm"][0],
@@ -256,6 +277,12 @@ def run(c: DriveConfig, out_root: Path = OUT, save=True, verbose=True):
                    ne_axis_max_m3=max(rec["ne_axis_m3"]), r_min_ohm=min(rec["r_ohm"]),
                    r_end_ohm=rec["r_ohm"][-1], r_cond_end_m=rec["r_cond_m"][-1],
                    skin_depth_end_m=float(math.sqrt(2 / (w * MU0 * max(sig.max(), 1e-30)))),
+                   t_contraction_s=first(contr), t_r_below_x_s=first(rx & late),
+                   t_skin_invalid_s=first(skin_bad & late),
+                   transient_r_below_x_s=first(rx & early_m), transient_skin_invalid_s=first(skin_bad & early_m),
+                   q_loaded_min_first_20ns=float(np.array(rec["q_loaded"])[early_m].min()),
+                   e_gap_min_first_20ns_kv_cm=float(eg[early_m].min() / 1e5),
+                   t_e_gap_min_first_20ns_s=float(ts[early_m][np.argmin(eg[early_m])]),
                    limitations=["single bridged rod at the field maximum; post reactance from the thin-post "
                                 "Marcuvitz formula at the 90 % conductance radius",
                                 "slowly varying envelope at the drive frequency (cavity detuning by the post "
@@ -276,6 +303,35 @@ def run(c: DriveConfig, out_root: Path = OUT, save=True, verbose=True):
     return summary
 
 
+def from_rod3d(name, t_off_after_laser_s=100e-9, root=None):
+    """Hand-off from a bridged rod3d run: cavity field, channel density and radius at the bridge time.
+    Returns DriveConfig kwargs; drive_off_s is converted to time after bridging."""
+    root = root or Path(__file__).resolve().parents[2] / "results" / "rod3d"
+    s = json.loads((root / name / "summary.json").read_text(encoding="utf-8"))
+    if s["t_bridge_ns"] is None:
+        raise ValueError(f"rod3d case {name} never bridges")
+    with np.load(root / name / "rod3d.npz") as z:
+        h = {k: z[k] for k in z.files}
+    tb = s["t_bridge_ns"] * 1e-9
+    k = int(np.searchsorted(h["t_s"], tb, side="right")) - 1   # last frame at or before the bridge (as the viewer)
+    k = min(max(k, 0), len(h["t_s"]) - 1)
+    m = int(h["m_frame"][k])
+    kind, rod, lam, rad = h["kind"][:m], h["rod"][:m], h["lam"][k, :m], h["rad"][:m]
+    ch = kind == 1
+    rods = np.unique(rod[ch & (rod >= 0)])
+    ext = {r: np.ptp(h["pos"][:m][rod == r, 1]) for r in rods}
+    rb = max(ext, key=ext.get)                       # bridged rod = largest extent along E
+    sel = ch & (rod == rb)
+    r0 = float(np.average(rad[sel], weights=lam[sel]))
+    # series resistance ~ sum ds / lambda: the harmonic mean line density preserves it (uniform mobility)
+    lam_h = float(1.0 / np.mean(1.0 / np.maximum(lam[sel], 1e-30)))
+    e_start = float(np.interp(tb, h["hist_t_s"], h["hist_e0_v_m"]))
+    return dict(e0_v_m=s["config"]["e0_v_m"], e_start_v_m=e_start,
+                n0_m3=lam_h / (math.pi * r0 ** 2), r0_m=r0,
+                drive_off_s=max(t_off_after_laser_s - tb, 0.0) if t_off_after_laser_s >= 0 else -1.0,
+                t_bridge_s=tb)
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(prog="rod_drive")
     ap.add_argument("--name", required=True)
@@ -283,13 +339,30 @@ def main(argv=None):
     ap.add_argument("--drive-off-ns", type=float, default=-1.0)
     ap.add_argument("--t-end-ns", type=float, default=300.0)
     ap.add_argument("--n0", type=float, default=3e23)
-    ap.add_argument("--r0-um", type=float, default=100.0)
+    ap.add_argument("--r0-um", type=float, default=None, help="initial radius (default 100 um, or rod3d hand-off)")
     ap.add_argument("--nr", type=int, default=150)
+    ap.add_argument("--dt-max-ns", type=float, default=0.05)
+    ap.add_argument("--power-scale", type=float, default=1.0,
+                    help="scale forward power and stored cavity energy (fields by its square root), e.g. 1/3.91^2 "
+                         "for the measured-equivalent bound; line density is kept")
+    ap.add_argument("--from-rod3d", default=None,
+                    help="start from the bridged rod of this rod3d case; --drive-off-ns is then after the laser")
     a = ap.parse_args(argv)
     c = DriveConfig(name=a.name, e0_v_m=a.e0_kv_cm * 1e5,
                     drive_off_s=a.drive_off_ns * 1e-9 if a.drive_off_ns >= 0 else -1.0,
-                    t_end_s=a.t_end_ns * 1e-9, n0_m3=a.n0, r0_m=a.r0_um * 1e-6, nr=a.nr,
-                    samples=int(a.t_end_ns / 1.0) + 1)
+                    t_end_s=a.t_end_ns * 1e-9, n0_m3=a.n0, r0_m=(a.r0_um or 100.0) * 1e-6, nr=a.nr,
+                    dt_max_s=a.dt_max_ns * 1e-9, samples=int(a.t_end_ns / 1.0) + 1)
+    if a.from_rod3d:
+        hand = from_rod3d(a.from_rod3d, a.drive_off_ns * 1e-9 if a.drive_off_ns >= 0 else -1.0)
+        print("hand-off from rod3d:", json.dumps(hand), flush=True)
+        hand.pop("t_bridge_s")
+        if a.r0_um:                                   # keep the handed-off line density at a new radius
+            hand["n0_m3"] *= (hand["r0_m"] / (a.r0_um * 1e-6)) ** 2
+            hand["r0_m"] = a.r0_um * 1e-6
+        c = replace(c, **hand)
+    if a.power_scale != 1.0:
+        s = math.sqrt(a.power_scale)
+        c = replace(c, e0_v_m=c.e0_v_m * s, e_start_v_m=(c.e_start_v_m or c.e0_v_m) * s)
     run(c)
 
 
