@@ -1,0 +1,36 @@
+{
+  "status": "illustrative",
+  "description": "Unmeasured 3 GHz reference case; gas and pulse duration are varied in comparisons.",
+  "gas": {
+    "species": "Ar",
+    "gauge_pressure_pa": 689475.7293168,
+    "ambient_pressure_pa": 101325.0,
+    "temperature_k": 300.0
+  },
+  "rf": {
+    "frequency_hz": 3000000000.0,
+    "empty_focus_field_peak_v_m": 10000000.0
+  },
+  "laser": {
+    "wavelength_m": 5.32e-7,
+    "energy_at_focus_j": 0.001,
+    "intensity_fwhm_s": 3.0e-10,
+    "waist_radius_m": 2.0e-5,
+    "beam_quality_m2": 1.0,
+    "phase_refractive_index": 1.0,
+    "group_refractive_index": 1.0
+  },
+  "copper": {
+    "conductivity_s_m": 58000000.0,
+    "relative_permeability": 1.0
+  },
+  "rectangular": {
+    "width_m": 0.072136,
+    "height_m": 0.034036,
+    "closed_cavity_length_m": 0.06927
+  },
+  "circular": {
+    "diameter_m": 0.09,
+    "taper_length_m": 0.10
+  }
+}

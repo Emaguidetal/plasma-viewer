@@ -1,0 +1,95 @@
+{
+  "cavity_dx1mm": {
+    "scan": [
+      {
+        "aperture_m": 0.02,
+        "f0_hz": 2950365813.5935254,
+        "tau_amp_s": 3.570385308640414e-08,
+        "q_loaded": 330.933571754884,
+        "cells": 323136,
+        "dt_s": 1.8873165375155412e-12,
+        "wall_s": 424.98428201675415
+      },
+      {
+        "aperture_m": 0.025,
+        "f0_hz": 2923217368.8300667,
+        "tau_amp_s": 1.5456825181322336e-08,
+        "q_loaded": 141.9486538062552,
+        "cells": 323136,
+        "dt_s": 1.8873165375155412e-12,
+        "wall_s": 135.17145609855652
+      },
+      {
+        "aperture_m": 0.03,
+        "f0_hz": 2872159646.779643,
+        "tau_amp_s": 5.6580269646153074e-09,
+        "q_loaded": 51.05325795245983,
+        "cells": 323136,
+        "dt_s": 1.8873165375155412e-12,
+        "wall_s": 137.61995029449463
+      },
+      {
+        "aperture_m": 0.035,
+        "f0_hz": 2786467773.256321,
+        "tau_amp_s": 3.4054849883727664e-09,
+        "q_loaded": 29.811434027939136,
+        "cells": 323136,
+        "dt_s": 1.8873165375155412e-12,
+        "wall_s": 142.81030130386353
+      }
+    ],
+    "chosen": {
+      "aperture_m": 0.02,
+      "f0_hz": 2950365813.5935254,
+      "tau_amp_s": 3.570385308640414e-08,
+      "q_loaded": 330.933571754884,
+      "cells": 323136,
+      "dt_s": 1.8873165375155412e-12,
+      "wall_s": 424.98428201675415
+    },
+    "q_target": 400.0,
+    "note": "PEC walls: Q_L is external (iris) only; illustrative choice of coupling",
+    "prefill": {
+      "file": "prefill_cavity_dx1mm.npz",
+      "f_drive_hz": 2950365813.5935254,
+      "steps": 60407,
+      "focus_peak_per_unit": 5.463149888664546,
+      "amplitude_for_target": 1830445.8423791253,
+      "settle_rel_change": 0.00034455691048496107,
+      "wall_s": 531.3153901100159
+    }
+  },
+  "taper_dx1mm": {
+    "prefill": {
+      "file": "prefill_taper_dx1mm.npz",
+      "f_drive_hz": 3000000000.0,
+      "steps": 5298,
+      "focus_peak_per_unit": 0.1573160700884899,
+      "amplitude_for_target": 63566296.783126,
+      "settle_rel_change": 0.00017301381559042817,
+      "wall_s": 410.12123942375183
+    }
+  },
+  "guide_dx1mm": {
+    "prefill": {
+      "file": "prefill_guide_dx1mm.npz",
+      "f_drive_hz": 3000000000.0,
+      "steps": 5298,
+      "focus_peak_per_unit": 0.26171106584271664,
+      "amplitude_for_target": 38210077.08558189,
+      "settle_rel_change": 0.00021025223970938534,
+      "wall_s": 213.09912610054016
+    }
+  },
+  "guide_dx0.5mm": {
+    "prefill": {
+      "file": "prefill_guide_dx0.5mm.npz",
+      "f_drive_hz": 3000000000.0,
+      "steps": 10597,
+      "focus_peak_per_unit": 0.13083348627177915,
+      "amplitude_for_target": 76433031.67223638,
+      "settle_rel_change": 0.00023003286004819046,
+      "wall_s": 1273.3530848026276
+    }
+  }
+}

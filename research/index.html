@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Laser-induced plasma research</title>
+  <style>
+    body { font: 16px/1.55 system-ui, sans-serif; max-width: 900px; margin: 3rem auto; padding: 0 1.25rem; color: #20242a; }
+    h1, h2 { line-height: 1.2; }
+    li { margin: .45rem 0; }
+    .note { border-left: 4px solid #bf7b20; background: #fff7e8; padding: .8rem 1rem; }
+  </style>
+</head>
+<body>
+  <p><a href="../">← Plasma viewer</a> · <a href="../scans.html">Parameter scans</a></p>
+  <h1>Laser-induced plasma research</h1>
+  <p>Research reports, literature reviews, model source, input data, tests, and published scan results for laser-triggered RF breakdown in high-pressure helium and related RF-plasma studies.</p>
+  <p><a href="../research-download.zip"><strong>Download the research package (ZIP)</strong></a></p>
+
+  <h2>Reports and literature</h2>
+  <ul>
+    <li><a href="literature/standing-wave-helium-plasma-reflector.md">Standing-wave helium-plasma reflector: report and latest breakdown-probability results</a> · <a href="documents/standing-wave-helium-plasma-reflector.pdf">PDF</a></li>
+    <li><a href="literature/helium-low-field-ionization-data.md">Helium low-field ionization and impurity data</a></li>
+    <li><a href="literature/experimental-data-krasik-leopold.md">Krasik–Leopold experimental data review</a></li>
+    <li><a href="literature/laser-induced-plasma-in-gases.md">Laser-induced plasma in gases</a> · <a href="documents/laser-induced-plasma-in-gases.pdf">PDF</a></li>
+    <li><a href="literature/laser-induced-plasma-rf-waveguide.md">Laser-induced plasma in an RF waveguide</a> · <a href="documents/laser-induced-plasma-rf-waveguide.pdf">PDF</a></li>
+    <li><a href="literature/coupled-3d-rf-laser-plasma-simulation.md">Coupled 3D RF-laser-plasma simulation</a> · <a href="documents/coupled-3d-rf-laser-plasma-simulation.pdf">PDF</a></li>
+    <li><a href="literature/rf-plasma-simulation-benchmarks.md">RF-plasma simulation benchmarks</a> · <a href="documents/rf-plasma-simulation-benchmarks.pdf">PDF</a></li>
+    <li><a href="literature/gas-kinetics-coefficients.md">Gas-kinetics coefficients</a> · <a href="documents/gas-kinetics-coefficients.pdf">PDF</a></li>
+    <li><a href="literature/he-rate-data-verification.md">Helium rate-data verification</a></li>
+    <li><a href="literature/simulation-agents.md">Simulation agents</a> · <a href="documents/simulation-agents.pdf">PDF</a></li>
+    <li><a href="literature/experimental_data.json">Structured experimental data</a></li>
+  </ul>
+
+  <h2>Latest model and data</h2>
+  <ul>
+    <li><a href="data/breakdown_probability/breakdown_probability.png">Breakdown probability, delay, and focus-position figure</a></li>
+    <li><a href="data/breakdown_probability/breakdown_probability.json">Breakdown-probability scan data (JSON)</a></li>
+    <li><a href="../scans.html">Interactive parameter-scan explorer</a></li>
+    <li><a href="data/coupled3d/table_scan_pE%2Bscan_laser%2Banchor%2Bconv.csv">Combined pressure, field, laser, anchor, and convergence scan (CSV)</a></li>
+    <li><a href="data/coupled3d/table_scan_pE%2Bscan_laser%2Banchor%2Bconv.json">Combined scan data (JSON)</a></li>
+    <li><a href="data/coupled3d/figures_scan/scan_summary.json">Scan summary</a></li>
+    <li><a href="data/coupled3d/figures_scan/exp_compare.md">Experimental comparison notes</a></li>
+    <li><a href="data/stochastic_seed/anchor_weakseed.json">Weak-seed jitter results (JSON)</a></li>
+  </ul>
+
+  <h2>Code, inputs, and checks</h2>
+  <p><a href="source/README.md">Project README</a> · <a href="source/pyproject.toml">Python project metadata</a> · <a href="https://github.com/Emaguidetal/plasma-viewer/tree/main/research/source/src/rf_plasma">Model source files</a> · <a href="https://github.com/Emaguidetal/plasma-viewer/tree/main/research/source/cases">Gas and swarm input data</a> · <a href="https://github.com/Emaguidetal/plasma-viewer/tree/main/research/source/tests">Tests</a></p>
+  <p>The published model source is provided with the derived swarm tables and tests. Original LXCat cross-section downloads are not redistributed because their headers state “All rights reserved.” The reported results are numerical modeling, not validated experimental predictions; see the reports for assumptions and limitations.</p>
+
+  <h2>Scope of this upload</h2>
+  <p class="note">This package includes reports, source, inputs, tests, scan tables, and figures. It does not include 3.23 GB of intermediate time-resolved binary field archives, the local Python virtual environment, or bundled solver binaries; those are large, machine-specific run artifacts rather than the curated results package. The saved metrics and plotted summaries for the reported scans are included.</p>
+</body>
+</html>
