@@ -216,7 +216,7 @@ a{color:#7dcfff}h1{font-size:25px}.notice{background:#283040;padding:12px;border
 button,select{background:#39445b;color:white;padding:7px;border:1px solid #62728b;border-radius:4px}
 @media(max-width:1000px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:650px){.grid{grid-template-columns:1fr}}
 </style><main>
-<p><a href="../">Project viewer</a> · <a href="dynamics_overview.png">Overview</a> · <a href="validation.png">Refinement diagnostics</a> · <a href="shock_validation.png">Sod shock benchmark</a> · <a href="pic_diagnostics.png">PIC checks</a> · <a href="dynamics_data.json">Viewer data</a> · <a href="validation.json">Validation metrics</a></p>
+<p><a href="../">Project viewer</a> · <a href="orientation3d.html"><b>3D: laser ⟂ vs ∥ RF field</b></a> · <a href="dynamics_overview.png">Overview</a> · <a href="validation.png">Refinement diagnostics</a> · <a href="shock_validation.png">Sod shock benchmark</a> · <a href="pic_diagnostics.png">PIC checks</a> · <a href="dynamics_data.json">Viewer data</a> · <a href="validation.json">Validation metrics</a></p>
 <h1>RF → electron avalanche → gas expansion and radiation</h1>
 <div class="notice"><b>Three distinct calculations, not one full-device PIC simulation.</b>
 The short RF stage is a transient 3D Maxwell/CR-fluid calculation with a number-conserving empirical seed along x, perpendicular to Ey.
@@ -225,7 +225,7 @@ PIC displays real particles from a separate imposed-field, fixed-neutral local c
 <div class="controls"><select id="case"></select><select id="stage"><option value="rf">3D RF / laser / fluid stage</option><option value="gas">Local RF-off afterglow</option></select>
 <button id="play">Play</button><input id="time" type="range" min="0" value="0"><b id="clock"></b></div>
 <div class="grid">
-<section class="panel"><h2>RF electric field Ey</h2><canvas id="rf" width="500" height="300"></canvas><p class="small" id="rfnote"></p></section>
+<section class="panel"><h2>RF electric field Ey (x–z plane; E points out of the screen)</h2><canvas id="rf" width="500" height="300"></canvas><p class="small" id="rfnote"></p></section>
 <section class="panel"><h2>Fluid electron density</h2><canvas id="ne" width="500" height="300"></canvas><p class="small" id="nenote"></p></section>
 <section class="panel"><h2>Laser focal optics</h2><canvas id="optics" width="500" height="300"></canvas><p class="small" id="optnote"></p></section>
 <section class="panel"><h2>Radiation / optical emission</h2><canvas id="uv" width="500" height="300"></canvas><p class="small" id="uvnote"></p></section>
@@ -264,7 +264,7 @@ heat('ne',f.ne_xz[I],true,8,Math.log10(c.scales.ne),'ne [m^-3]; shared scales ac
 let w0=b.laser_waist_m,zr=Math.PI*w0*w0/532e-9,a=[],power=f.laser_power_w[I];for(let ix=0;ix<81;ix++){a[ix]=[];let x=(ix-40)*.000375,w=w0*Math.sqrt(1+(x/zr)**2);for(let j=0;j<61;j++){let z=(j-30)*5e-6;a[ix][j]=2*power/(Math.PI*w*w)*Math.exp(-2*z*z/(w*w))}}
 heat('optics',a,true,8,Math.log10(c.scales.optics),'I [W/m^2]; x: ±15 mm; signed transverse z: ±150 um');
 lines('gas',f.time_s.map(x=>x*1e9),[{name:'maximum displayed bulk Tg / 300 K',y:f.tg_xz.map(a=>Math.max(300,max(a.flat()))/300)}],'RF window time [ns]; bulk gas is isochoric here');
-note('clock',`RF window: ${(f.time_s[I]*1e9).toFixed(2)} ns; laser at 2 ns`);note('rfnote','Actual Yee-field snapshots, no imposed 3.9× field multiplier.');
+note('clock',`RF window: ${(f.time_s[I]*1e9).toFixed(2)} ns; laser at 2 ns`);note('rfnote','Actual Yee-field snapshots, no imposed 3.9× field multiplier. This is a top view (looking down through the broad wall): the laser line runs left–right along x, and E runs along y, into/out of the screen, across the 34 mm gap, so the laser is perpendicular to E. See the 3D orientation viewer for both geometries.');
 note('nenote',`Fluid ne is not a PIC density map. Maps average ~2 mm and sample ${(1e12*(f.time_s[1]-f.time_s[0])).toFixed(1)} ps; dense focus probe is exported. Sub-mm structure unresolved.`);
 note('optnote',`Prescribed Gaussian, peak I ${(c.scales.optics).toExponential(3)} W/m², zR ${(zr*1e3).toFixed(2)} mm. Bulk-grid IB depth ${b.optical_depth_during_pulse.toExponential(2)} is NOT a physical beam-attenuation/refraction validation.`);
 note('uvnote',`CR UV/excimer diagnostic; conditional visible continuum maximum ${max(f.visible_xz[I].flat()).toExponential(2)} W/m³.`);

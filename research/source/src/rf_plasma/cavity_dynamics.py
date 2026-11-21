@@ -38,6 +38,32 @@ def perpendicular_seed(active, focus, dx, beam):
     return density, float(density.sum() * dx ** 3)
 
 
+def parallel_seed(active, focus, dx, beam):
+    """Return node density and total count for a y-directed beam, parallel to Ey.
+
+    The beam enters through the broad wall and crosses the narrow gap along the
+    RF field at x = focus_i, z = focus_k; the focus is the Ey-edge centre.
+    """
+    fi, fj, fk = focus
+    y = (np.arange(active.shape[1]) - (fj + 0.5)) * dx
+    density = np.zeros(active.shape)
+    density[fi, :, fk] = seed_per_length(beam, beam.energy_j, y) * dx / dx ** 3
+    density[~active] = 0
+    return density, float(density.sum() * dx ** 3)
+
+
+LASER_AXES = {"x": ("x perpendicular to Ey", perpendicular_seed),
+              "y": ("y parallel to Ey", parallel_seed)}
+
+
+def beam_line(values, focus, axis):
+    """Values on the seeded node line along the laser axis."""
+    fi, fj, fk = focus
+    if axis == "x":
+        return 0.5 * (values[:, fj, fk] + values[:, fj + 1, fk])
+    return values[fi, :, fk]
+
+
 def coarsen_plane(values):
     indices = [np.arange(0, n, 2) for n in values.shape]
     counts = [np.minimum(2, n - i) for n, i in zip(values.shape, indices)]
@@ -103,9 +129,11 @@ def advance_cells(coords, state, tg, gas_energy, work, dt, n0, prm, tabs, ln_e0,
 
 
 def run(out: Path, field_kv_cm=100.0, duration_ns=18.0, frames_count=180, threads=2,
-        block=4, laser=True):
+        block=4, laser=True, laser_axis="x"):
     if out.exists():
         raise FileExistsError(f"refusing to overwrite {out}")
+    if laser_axis not in LASER_AXES:
+        raise ValueError(f"laser_axis must be one of {sorted(LASER_AXES)}")
     if not 0 < field_kv_cm <= 200 or not 2 < duration_ns <= 40 or frames_count < 20:
         raise ValueError("bounded run requires 0<E<=200 kV/cm, 2<t<=40 ns and at least 20 frames")
     if not isinstance(block, int) or not 1 <= block <= 16:
@@ -134,7 +162,7 @@ def run(out: Path, field_kv_cm=100.0, duration_ns=18.0, frames_count=180, thread
     beam = Setup(axis="x", energy_j=0.75e-3, n_ref_m3=1e17, n_sat_m3=1e16)
     n0 = beam.n_gas
     gm = load_gas_model("He", beam.wavelength_m, allow_unverified=True, extended=True, cr=True)
-    source, count = perpendicular_seed(active, focus, dx, beam)
+    source, count = LASER_AXES[laser_axis][1](active, focus, dx, beam)
     if not laser:
         source[:] = 0
         count = 0.0
@@ -162,8 +190,14 @@ def run(out: Path, field_kv_cm=100.0, duration_ns=18.0, frames_count=180, thread
     mapped_work = 0.0
     probe_t, probe_ey = [], []
     data = {k: [] for k in ("time_s", "ey_xz", "ne_xz", "tg_xz", "uv_xz", "visible_xz",
+                            "ey_xy", "ne_xy", "ey_yz", "ne_yz", "ne_line", "ey_line",
+                            "ex_lattice", "ey_lattice", "ez_lattice",
                             "field_focus_v_m", "electrons", "em_energy_j", "gas_heat_j",
                             "sink_j", "seed_electrons", "laser_power_w", "optical_depth")}
+    lat_i = np.arange(0, active.shape[0] - 1, 4)
+    lat_j = np.arange(1, active.shape[1] - 1, 4)
+    lat_k = np.arange(lay.gas_k_lo, lay.gas_k_hi, 4)
+    lattice = np.ix_(lat_i, lat_j, lat_k)
     handoff = None
     t_laser = 2e-9
     laser_sigma = beam.fwhm_s / math.sqrt(8 * math.log(2))
@@ -199,7 +233,9 @@ def run(out: Path, field_kv_cm=100.0, duration_ns=18.0, frames_count=180, thread
                       gm.ln_e0, gm.h, gm.ln_i0, gm.hi, gm.ppt_tab, wp2, nu, ledger)
         fd.set_bulk_plasma(wp2, nu)
         ne = state[0] + state[1] + 2 * state[5]
-        opacity = ne[1:-1, fj, fk] * k3.QE ** 2 * nu[1:-1, fj, fk] / (
+        line_ne = beam_line(ne, focus, laser_axis)[1:-1]
+        line_nu = beam_line(nu, focus, laser_axis)[1:-1]
+        opacity = line_ne * k3.QE ** 2 * line_nu / (
             k3.ME * k3.EPS0 * k3.C0 * (2 * math.pi * k3.C0 / beam.wavelength_m) ** 2)
         optical_depth = float(opacity.sum() * dx)
         power = peak_power * math.exp(-0.5 * ((t - t_laser) / laser_sigma) ** 2) if laser else 0.0
@@ -217,6 +253,13 @@ def run(out: Path, field_kv_cm=100.0, duration_ns=18.0, frames_count=180, thread
                                 ("tg_xz", tg[:, fj, :]), ("uv_xz", (resonance + excimer)[:, fj, :]),
                                 ("visible_xz", visible[:, fj, :])):
                 data[key].append(coarsen_plane(values).astype(np.float32))
+            for key, values in (("ey_xy", fd.Ey[:, :, fk]), ("ne_xy", ne[:, :, fk]),
+                                ("ey_yz", coarsen_plane(fd.Ey[fi])), ("ne_yz", coarsen_plane(ne[fi])),
+                                ("ne_line", beam_line(ne, focus, laser_axis)),
+                                ("ey_line", fd.Ey[:, fj, fk] if laser_axis == "x" else fd.Ey[fi, :, fk]),
+                                ("ex_lattice", fd.Ex[lattice]), ("ey_lattice", fd.Ey[lattice]),
+                                ("ez_lattice", fd.Ez[lattice])):
+                data[key].append(np.asarray(values, dtype=np.float32))
             for key, value in (("field_focus_v_m", fd.Ey[fi, fj, fk]),
                                ("electrons", ne[active].sum() * dx ** 3),
                                ("em_energy_j", fd.energy(lay.energy_k_lo, lay.energy_k_hi)),
@@ -229,7 +272,7 @@ def run(out: Path, field_kv_cm=100.0, duration_ns=18.0, frames_count=180, thread
                 handoff = dict(time_s=t, state_yz=state[:, fi].copy(), tg_yz=tg[fi].copy(),
                                gas_energy_yz=gas_energy[fi].copy())
             print(f"E={field_kv_cm:g} kV/cm t={t*1e9:.2f} ns N={data['electrons'][-1]:.3g}", flush=True)
-    if handoff is None:
+    if handoff is None and laser_axis == "x":
         raise ArithmeticError("no snapshot meets the declared low-ionization afterglow EOS limits")
     out.mkdir(parents=True)
     map_x = np.arange(0, active.shape[0], 2)
@@ -238,8 +281,14 @@ def run(out: Path, field_kv_cm=100.0, duration_ns=18.0, frames_count=180, thread
                         probe_time_s=np.asarray(probe_t), probe_ey_v_m=np.asarray(probe_ey),
                         x_m=(map_x+np.minimum(map_x+1,active.shape[0]-1))*0.5*dx,
                         z_m=(map_z+np.minimum(map_z+1,active.shape[2]-1))*0.5*dx,
-                        active_xz=coarsen_plane(active[:, fj, :].astype(float)))
-    np.savez_compressed(out / "handoff.npz", **handoff, n0=n0, dx=dx, focus=np.asarray(focus))
+                        active_xz=coarsen_plane(active[:, fj, :].astype(float)),
+                        active_xy=active[:, :, fk].astype(np.uint8),
+                        lattice_x_m=lat_i * dx, lattice_y_m=(lat_j + 0.5) * dx,
+                        lattice_z_m=lat_k * dx, focus_index=np.asarray(focus),
+                        node_shape=np.asarray(active.shape), gas_k_range=np.asarray([lay.gas_k_lo, lay.gas_k_hi]),
+                        seed_density_line_m3=beam_line(source, focus, laser_axis))
+    if handoff is not None:
+        np.savez_compressed(out / "handoff.npz", **handoff, n0=n0, dx=dx, focus=np.asarray(focus))
     bl = ledger.sum(axis=0) * dx ** 3
     final_electron = state[2].sum() * k3.QE * dx ** 3
     final_chem = chemical_energy(state, gm.prm).sum() * dx ** 3
@@ -253,7 +302,7 @@ def run(out: Path, field_kv_cm=100.0, duration_ns=18.0, frames_count=180, thread
                    loaded_prefill_step_count=loaded_step_count, rf_clock_offset_s=loaded_step_count*dt,
                    laser_rf_phase_rad=float((2*math.pi*port.f*(loaded_step_count*dt+t_laser)) % (2*math.pi)),
                    rf_source_convention="sin(2*pi*f*absolute_RF_clock)", laser_enabled=laser,
-                   laser_axis="x perpendicular to Ey", laser_energy_j=beam.energy_j,
+                   laser_axis=LASER_AXES[laser_axis][0], laser_energy_j=beam.energy_j,
                    laser_fwhm_s=beam.fwhm_s, laser_waist_m=beam.w0_m, laser_time_s=t_laser,
                    seed_model="empirical saturated I^6 active-site kernel; not measured",
                    seed_time_profile="empirical Gaussian-CDF injection with laser FWHM, not a multiphoton rate",
@@ -278,13 +327,14 @@ def run(out: Path, field_kv_cm=100.0, duration_ns=18.0, frames_count=180, thread
                    gas_heat_j=float(bl[6]), escaped_sink_j=float(bl[7]),
                    modeled_radiative_energy_j=float(bl[9]+bl[10]),
                    unresolved_sink_energy_j=float(bl[7]-bl[9]-bl[10]),
-                   handoff_time_s=handoff["time_s"], provenance=gm.provenance,
+                   handoff_time_s=handoff["time_s"] if handoff else None, provenance=gm.provenance,
                    limitations=["bulk-node-averaged optical seed: sub-mm plasma structure unresolved",
                                 "gas is isochoric during this short 3D RF stage",
                                 "radiation uses existing lumped CR escape rates; visible free-free is conditional",
                                 "RF energy/flux diagnostic uses staggered fields and is not an exact discrete identity",
                                 "source increment is inserted at block end before a full kinetic block; coupling is first order",
                                 "no diffusion in this restricted 3D demonstration",
+                                "plasma can only develop on laser-seeded nodes; growth of a rod along E away from the seed line is not modeled here",
                                 "RF remains on; separate handoff assumes RF quench, not the continuing experiment"])
     (out / "summary.json").write_text(json.dumps(summary, indent=2), encoding="utf-8")
     return summary
@@ -299,6 +349,8 @@ if __name__ == "__main__":
     p.add_argument("--threads", type=int, default=2)
     p.add_argument("--block", type=int, default=4)
     p.add_argument("--no-laser", action="store_true")
+    p.add_argument("--laser-axis", choices=sorted(LASER_AXES), default="x",
+                   help="x: across the broad dimension, perpendicular to Ey (experiment); y: through the broad wall, parallel to Ey")
     a = p.parse_args()
     print(json.dumps(run(a.output, a.field_kv_cm, a.duration_ns, threads=a.threads,
-                         block=a.block, laser=not a.no_laser), indent=2))
+                         block=a.block, laser=not a.no_laser, laser_axis=a.laser_axis), indent=2))

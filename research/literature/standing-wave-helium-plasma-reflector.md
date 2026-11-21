@@ -220,6 +220,74 @@ and is not evidence of measured local field enhancement. None of these
 additions settles the unknown experimental seed, actual impurity mixture,
 or the low-field discrepancy.
 
+### Laser orientation relative to the RF field, in 3D (perpendicular vs parallel)
+
+- **[3D orientation viewer](../simulations/rf_plasma/results/dynamics/orientation3d.html)**
+  ([online](https://emaguidetal.github.io/plasma-viewer/dynamics/orientation3d.html)):
+  - two orbitable 3D cavity views with E arrows and the laser line;
+  - front views of the focus plane, matching slide 9 of the Magid et al. talk;
+  - electron density along each laser line, and time histories.
+- Data: [orientation_metrics.json](../simulations/rf_plasma/results/dynamics/orientation_metrics.json).
+- Code: [orientation_visuals.py](../simulations/rf_plasma/src/rf_plasma/orientation_visuals.py)
+  and `cavity_dynamics.py --laser-axis {x,y}`.
+
+**Geometry.** WR-284 has a = 72.14 mm along x (broad wall) and b = 34.04 mm along y (narrow gap).
+- In TE10 the RF field points only along y, across the short gap between the two broad walls.
+  It varies as sin(πx/a), so it is largest at mid-width.
+- In the experiment (Magid, Hadas, Zorkin, Elkabets, Ginzburg, Cohen, Leopold & Krasik, IPSTA
+  talk, slides 9 and 13):
+  - the laser enters through the narrow side walls and crosses the guide along x, so it is
+    **perpendicular** to E;
+  - the plasma appears as a rod along E that bridges the two broad walls;
+  - the camera looks down through the broad wall.
+- The cavity dynamics model above and the breakdown-probability model use this perpendicular
+  geometry.
+- The `coupled3d` laser-trigger runs and the axisymmetric `streamer2d` model below put the laser
+  along y, **parallel** to E (as in the parallel-beam variant of Yatom et al. 2016).
+- The earlier dynamics map showed Ey in the x–z plane, so E pointed out of the screen; this made
+  the two geometries hard to tell apart.
+
+**Matched runs.** Both geometries use the same model:
+- He at 200 psig, 0.75 mJ, 1 ns, 20 µm waist;
+- an 18 ns RF window and a 1 mm mesh;
+- the same seed kernel and coupling.
+
+Only the laser axis changes.
+
+| 200 kV/cm empty-cavity focus peak | Perpendicular (experiment) | Parallel |
+|---|---|---|
+| Injected seed electrons | 2,948 | 2,952 |
+| Final electrons | 3.98e14 | 1.11e14 |
+| Peak ne on the laser line | 8.2e21 m⁻³ | 3.5e23 m⁻³ |
+| Line ne reaches 1e19 / 1e21 m⁻³ | 2.85 / 3.34 ns | 2.85 / 3.34 ns |
+| Ionized length (ne ≥ 1e19 m⁻³) at the end | 37 mm along x | 33 mm, the full gap wall to wall |
+| Max \|Ey\| in focus plane / empty-cavity peak | 1.78 (357 kV/cm at 3.6 ns) | 3.97 (795 kV/cm at 4.0 ns) |
+| Late focus field / pre-laser | 0.115 | 0.151 |
+| Net RF work on the plasma | 0.021 J | 0.079 J |
+| Gas heating | 0.015 J | 0.031 J |
+
+At 50 kV/cm neither geometry breaks down: final electrons are 4,730 (perpendicular) and 4,752
+(parallel). The seed is confined to about ±5 mm around the focus, where the field is the same in
+both cases.
+
+**Interpretation**
+- **Parallel beam.** The beam itself ionizes a conducting rod across the gap. That rod shorts the
+  field across the gap and absorbs about 4× more RF energy. The field at its ends rises to about
+  4× the empty-cavity value.
+- **Perpendicular beam.** The beam ionizes a line along x. The field along that line, and so the
+  plasma, falls off as sin(πx/a) away from the centre. In the experiment the reflecting rod must
+  then grow along E from the laser line to the broad walls.
+  - This 3D model cannot show that growth: plasma develops only on laser-seeded nodes, and there
+    is no drift, diffusion or streamer transport.
+  - The axisymmetric channel-growth model (below) covers the growth separately.
+- The two geometries reach 1e19 and 1e21 m⁻³ at the same times. This means the avalanche
+  starts at the focus in both, so the axis does not change the onset. Yatom 2016 reported plasma a
+  few ns earlier with a parallel beam; this mesh does not resolve a difference of that size.
+- The field enhancement is limited by the 1 mm mesh, which cannot resolve sub-mm channel tips.
+  Treat it as a lower bound.
+
+![Matched 3D runs at 50 and 200 kV/cm. At 50 kV/cm the perpendicular and parallel cases overlap (no breakdown). At 200 kV/cm both reach the same onset; the parallel beam ionizes the full 34 mm gap while the perpendicular beam ionizes about 37 mm along x. Simulated, not measured.](../simulations/rf_plasma/results/dynamics/orientation_comparison.png)
+
 ## Breakdown probability vs laser energy and focus position (He 200 psig, laser ⟂ E)
 
 **Experimental observations to explain**
@@ -376,8 +444,9 @@ Reproduce: `python -c "from rf_plasma.breakdown_probability import main; main(n_
     spread before the field collapses.
   - Channel heating in the 20 µm core reaches Tg ≈ 1–3 × 10⁵ K. This is a known overestimate of a
     thin, unexpanded core; read it as qualitative.
-- **2D axisymmetric streamer.** This model has photoionization-free ionization-front propagation
-  along E ([radius/length](../simulations/rf_plasma/results/streamer2d/figures/radius_length_vs_time.png),
+- **2D axisymmetric streamer.** The channel axis lies along E, so it describes the rod that bridges
+  the broad walls; the seed is the parallel-geometry laser line. This model has
+  photoionization-free ionization-front propagation along E ([radius/length](../simulations/rf_plasma/results/streamer2d/figures/radius_length_vs_time.png),
   [diameter vs measured](../simulations/rf_plasma/results/streamer2d/figures/diameter_vs_measured.png)).
   - The diameter is 0.15–0.21 mm at 10 ns.
   - The front speed is 4.5–7 × 10⁵ m/s at 22.3 kV/cm and about 1 × 10⁵ m/s at 16.6 kV/cm.
@@ -506,7 +575,9 @@ Reproduce: `python -c "from rf_plasma.breakdown_probability import main; main(n_
 ![Guide 8 MV/m: RF-only vs RF + 10 mJ laser](../simulations/rf_plasma/results/coupled3d/laser_trigger_He_1MPa/viewer/overview_guide_E8.png)
 
 **Setup.** `coupled3d.run_case` runs a 3D Yee FDTD solve of WR-284 at 3 GHz, 1 mm mesh, with
-PEC (copper) walls. The plasma current feeds back as a Drude term on every step. Bulk electron
+PEC (copper) walls. The laser runs along y, **parallel** to the RF field, not in the
+perpendicular experimental geometry (see the orientation section above). The plasma current
+feeds back as a Drude term on every step. Bulk electron
 kinetics use Boltzmann swarm tables for helium. A subgrid laser filament has 48 radial rings per
 cell along y. The filament model covers:
 

@@ -1,0 +1,94 @@
+{
+  "scope": "same 3D Maxwell/CR cavity model, seed kernel, mesh and coupling; only the laser axis differs",
+  "limitations": [
+    "plasma can develop only on laser-seeded nodes (no transport); rod growth along E away from the seed line is not modeled in 3D",
+    "1 mm mesh: the 20 um seed is node-averaged; field enhancement at sub-mm tips is unresolved, so the reported enhancement is a mesh-limited lower bound",
+    "seed kernel is empirical, not a measured multiphoton yield"
+  ],
+  "cases": {
+    "E50_perp": {
+      "laser_axis": "x perpendicular to Ey",
+      "seed_electrons": 2948.212851680637,
+      "final_electrons": 4729.750985369759,
+      "peak_line_ne_m3": 1025203306496.0,
+      "t_line_ne_1e19_ns": null,
+      "t_line_ne_1e21_ns": null,
+      "final_focus_field_over_pre_laser": 0.9980936603927774,
+      "ionized_length_mm_at_1e19": 0.0,
+      "max_field_focus_plane_kv_cm": 49.99608612060547,
+      "field_enhancement_over_empty": 1.0,
+      "max_field_time_ns": 1.0814323759964053,
+      "max_field_location_mm": {
+        "x": 36.0,
+        "y_edge_centre": 0.5
+      },
+      "rf_net_work_j": 7.29619292366737e-13,
+      "gas_heat_j": 4.3486837734535917e-13,
+      "rf_energy_residual_rel": 0.005310314132856044,
+      "plasma_energy_residual_rel": 3.594438736259871e-15
+    },
+    "E50_par": {
+      "laser_axis": "y parallel to Ey",
+      "seed_electrons": 2952.478290134302,
+      "final_electrons": 4751.973655724305,
+      "peak_line_ne_m3": 1777359126528.0,
+      "t_line_ne_1e19_ns": null,
+      "t_line_ne_1e21_ns": null,
+      "final_focus_field_over_pre_laser": 0.9980936604002209,
+      "ionized_length_mm_at_1e19": 0.0,
+      "max_field_focus_plane_kv_cm": 49.99608612060547,
+      "field_enhancement_over_empty": 1.0,
+      "max_field_time_ns": 1.0814323759964053,
+      "max_field_location_mm": {
+        "x": 36.0,
+        "y_edge_centre": 0.5
+      },
+      "rf_net_work_j": 7.33291820809328e-13,
+      "gas_heat_j": 4.364696978654386e-13,
+      "rf_energy_residual_rel": 0.005310314132860065,
+      "plasma_energy_residual_rel": -2.437218416883277e-14
+    },
+    "E200_perp": {
+      "laser_axis": "x perpendicular to Ey",
+      "seed_electrons": 2948.212851680637,
+      "final_electrons": 397616912043979.4,
+      "peak_line_ne_m3": 8.236006795199742e+21,
+      "t_line_ne_1e19_ns": 2.8479606551109518,
+      "t_line_ne_1e21_ns": 3.338662954864992,
+      "final_focus_field_over_pre_laser": 0.11490186413102277,
+      "ionized_length_mm_at_1e19": 37.0,
+      "max_field_focus_plane_kv_cm": 356.5688781738281,
+      "field_enhancement_over_empty": 1.7829840183258057,
+      "max_field_time_ns": 3.633084334717417,
+      "max_field_location_mm": {
+        "x": 36.0,
+        "y_edge_centre": 14.5
+      },
+      "rf_net_work_j": 0.020970476315118444,
+      "gas_heat_j": 0.015172404385128128,
+      "rf_energy_residual_rel": 0.007490763205599325,
+      "plasma_energy_residual_rel": -1.861249006600623e-15
+    },
+    "E200_par": {
+      "laser_axis": "y parallel to Ey",
+      "seed_electrons": 2952.478290134302,
+      "final_electrons": 110684632456514.39,
+      "peak_line_ne_m3": 3.500026133318539e+23,
+      "t_line_ne_1e19_ns": 2.8479606551109518,
+      "t_line_ne_1e21_ns": 3.338662954864992,
+      "final_focus_field_over_pre_laser": 0.15078455630092286,
+      "ionized_length_mm_at_1e19": 33.0,
+      "max_field_focus_plane_kv_cm": 794.6846313476562,
+      "field_enhancement_over_empty": 3.9737343788146973,
+      "max_field_time_ns": 4.0256461745206495,
+      "max_field_location_mm": {
+        "x": 36.0,
+        "y_edge_centre": 32.5
+      },
+      "rf_net_work_j": 0.07880643365506841,
+      "gas_heat_j": 0.030753619875959606,
+      "rf_energy_residual_rel": 0.009085892728437689,
+      "plasma_energy_residual_rel": -5.282990422541405e-16
+    }
+  }
+}

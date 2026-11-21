@@ -6,6 +6,7 @@ Start at the [research landing page](index.html) or open the [interactive viewer
 The [new dynamics viewer](../dynamics/) separates RF/fluid, prescribed optics,
 local assumed-quench gas dynamics and real imposed-field PIC.
 The ZIP also contains a [standalone offline dynamics page](data/dynamics/dynamics.html).
+The [3D orientation viewer](../dynamics/orientation3d.html) compares a laser perpendicular to the RF field (the experiment) with a parallel laser; its runs are in data/dynamics/orientation/.
 
 ## Reproducible project contents
 
@@ -38,7 +39,7 @@ The workspace contains 3.23 GB of intermediate `.npz` field/frame archives, plus
 
 The breakdown-probability model and report distinguish measured observations from model assumptions and explicitly document the low-field ionization discrepancy. The figures should not be read as experimental validation.
 
-The current dynamics study has 88 passing RF-plasma regressions and qualified
+The current dynamics study has 90 passing RF-plasma regressions and qualified
 PIC mean-energy agreement. PIC drift/coarse-work checks fail, velocity peaks
 are mesh-dependent, and the 50-kV/cm gas signal is below the conservative
 floating-point resolution bound. Three AI reviews accepted only this restricted

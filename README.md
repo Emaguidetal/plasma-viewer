@@ -3,6 +3,7 @@ Interactive viewer: laser-triggered RF breakdown in 1 MPa helium inside WR-284 (
 
 - [Open the parameter-scan explorer](https://emaguidetal.github.io/plasma-viewer/scans.html)
 - [Explore RF, prescribed optics, real local PIC, gas expansion and emission dynamics](https://emaguidetal.github.io/plasma-viewer/dynamics/)
+- [3D view: laser perpendicular vs parallel to the RF field](https://emaguidetal.github.io/plasma-viewer/dynamics/orientation3d.html)
 - [Browse the research reports, source code, input data, and results](https://emaguidetal.github.io/plasma-viewer/research/)
 - [Download the research package](https://emaguidetal.github.io/plasma-viewer/research-download.zip)
 

@@ -241,8 +241,8 @@ table{border-collapse:collapse;font-size:13px;width:100%}td,th{border-bottom:1px
 <div class="grid">
 <section class="card"><h2 id="h0">RF only: E<sub>y</sub> (x–z mid-plane) and bulk n<sub>e</sub></h2><canvas id="c0" width="680" height="400"></canvas></section>
 <section class="card"><h2 id="h1">RF + 10 mJ / 3 ns laser: E<sub>y</sub> and plasma</h2><canvas id="c1" width="680" height="400"></canvas></section>
-<section class="card"><h2>3D: cut planes, laser beam (along −y) and computed filament · drag to orbit</h2><canvas id="three" width="680" height="470" style="touch-action:none"></canvas>
-<div class="small">x–z plane: E<sub>y</sub> of the laser run at y = mid-height. y–z plane: E<sub>y</sub> through the filament. The filament line is coloured by its computed axis n<sub>e</sub> at each height, and its width shows the computed half-electron radius. The red cone is the laser beam with its radius magnified ×40.</div></section>
+<section class="card"><h2>3D: cut planes, laser beam (along −y, parallel to E<sub>y</sub>) and computed filament · drag to orbit</h2><canvas id="three" width="680" height="470" style="touch-action:none"></canvas>
+<div class="small">This run uses the parallel geometry: the laser enters through the broad wall along E. The experiment uses a laser perpendicular to E (along x); see the <a href="https://emaguidetal.github.io/plasma-viewer/dynamics/orientation3d.html">3D orientation comparison</a>. x–z plane: E<sub>y</sub> of the laser run at y = mid-height. y–z plane: E<sub>y</sub> through the filament. The filament line is coloured by its computed axis n<sub>e</sub> at each height, and its width shows the computed half-electron radius. The red cone is the laser beam with its radius magnified ×40.</div></section>
 <section class="card"><h2>Standing-wave envelope |E<sub>y</sub>| along the centreline (RF amplitude fitted over the last period)</h2><canvas id="env" width="680" height="300"></canvas>
 <div class="small" id="envNote"></div>
 <h2 style="margin-top:10px">Inside the filament at the focus: computed radial profiles (laser run)</h2><canvas id="rad" width="680" height="250"></canvas></section>

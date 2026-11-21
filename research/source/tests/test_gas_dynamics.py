@@ -5,7 +5,7 @@ import numpy as np
 from rf_plasma import plasma3d as k3
 from rf_plasma import plasma3d_cr as kc
 from rf_plasma.breakdown_probability import Setup, seed_per_length
-from rf_plasma.cavity_dynamics import advance_cells, coarsen_plane, perpendicular_seed, weighted_edge_work
+from rf_plasma.cavity_dynamics import advance_cells, coarsen_plane, parallel_seed, perpendicular_seed, weighted_edge_work
 from rf_plasma.gas_dynamics import Euler1D, M_HE, chemical_energy, sod_star
 from rf_plasma.gas_model import load_gas_model
 from rf_plasma.radial_afterglow import chemistry_step, project_slice
@@ -78,6 +78,16 @@ class GasDynamicsTests(unittest.TestCase):
         self.assertLess(np.count_nonzero(density), 3 * active.shape[0])
         unsaturated = Setup(n_ref_m3=1e17)
         self.assertLess(count, perpendicular_seed(active, (30, 1, 2), 1e-3, unsaturated)[1])
+
+    def test_parallel_seed_lies_along_ey_and_conserves_count(self):
+        active = np.ones((5, 41, 5), dtype=bool)
+        beam = Setup(n_sat_m3=1e16, n_ref_m3=1e17)
+        density, count = parallel_seed(active, (2, 20, 2), 1e-3, beam)
+        expected = seed_per_length(beam, beam.energy_j, (np.arange(41) - 20.5) * 1e-3).sum() * 1e-3
+        self.assertAlmostEqual(count / expected, 1, places=12)
+        self.assertEqual(np.count_nonzero(density), 41)
+        self.assertTrue(np.all(density[2, :, 2] > 0))
+        np.testing.assert_allclose(density[2, 1:21, 2], density[2, 40:20:-1, 2], rtol=1e-12)
 
     def test_afterglow_source_transfers_heat_without_double_counting(self):
         gm = load_gas_model("He", 532e-9, allow_unverified=True, extended=True, cr=True)
