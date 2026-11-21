@@ -10,6 +10,6 @@
  "threads": 1,
  "processes_simultaneous": 1,
  "previous_reference": "existing 6399-macro/64-cell case: 1394 s / 358333 steps; pilot measures this driver",
- "pilot_seconds_per_step": 0.0006753613800000494,
- "projected_suite_s": 2211.833372798946
+ "pilot_seconds_per_step": 0.0014406522600000245,
+ "projected_suite_s": 4718.189167503248
 }

@@ -6,7 +6,7 @@
    "D:\\CST projects\\Plasma research\\simulations\\pic\\pic_dynamics.py",
    "case",
    "--out",
-   "D:\\CST projects\\Plasma research\\simulations\\pic\\results\\dynamics_validation\\20261121T095936Z_13652\\100kVcm",
+   "D:\\CST projects\\Plasma research\\simulations\\pic\\results\\dynamics_validation\\20261121T111757Z_6804\\100kVcm",
    "--label",
    "100kVcm",
    "--mode",
@@ -32,7 +32,9 @@
    "--frames",
    "65",
    "--timeout",
-   "2400.0"
+   "2400.0",
+   "--reduced-period",
+   "20"
   ]
  },
  {
@@ -42,7 +44,7 @@
    "D:\\CST projects\\Plasma research\\simulations\\pic\\pic_dynamics.py",
    "case",
    "--out",
-   "D:\\CST projects\\Plasma research\\simulations\\pic\\results\\dynamics_validation\\20261121T095936Z_13652\\100kVcm_double_particles",
+   "D:\\CST projects\\Plasma research\\simulations\\pic\\results\\dynamics_validation\\20261121T111757Z_6804\\100kVcm_double_particles",
    "--label",
    "100kVcm_double_particles",
    "--mode",
@@ -68,7 +70,9 @@
    "--frames",
    "65",
    "--timeout",
-   "2400.0"
+   "2400.0",
+   "--reduced-period",
+   "20"
   ]
  },
  {
@@ -78,7 +82,7 @@
    "D:\\CST projects\\Plasma research\\simulations\\pic\\pic_dynamics.py",
    "case",
    "--out",
-   "D:\\CST projects\\Plasma research\\simulations\\pic\\results\\dynamics_validation\\20261121T095936Z_13652\\100kVcm_half_dt",
+   "D:\\CST projects\\Plasma research\\simulations\\pic\\results\\dynamics_validation\\20261121T111757Z_6804\\100kVcm_half_dt",
    "--label",
    "100kVcm_half_dt",
    "--mode",
@@ -104,7 +108,9 @@
    "--frames",
    "65",
    "--timeout",
-   "2400.0"
+   "2400.0",
+   "--reduced-period",
+   "20"
   ]
  },
  {
@@ -114,7 +120,7 @@
    "D:\\CST projects\\Plasma research\\simulations\\pic\\pic_dynamics.py",
    "case",
    "--out",
-   "D:\\CST projects\\Plasma research\\simulations\\pic\\results\\dynamics_validation\\20261121T095936Z_13652\\100kVcm_seed2",
+   "D:\\CST projects\\Plasma research\\simulations\\pic\\results\\dynamics_validation\\20261121T111757Z_6804\\100kVcm_seed2",
    "--label",
    "100kVcm_seed2",
    "--mode",
@@ -140,7 +146,9 @@
    "--frames",
    "65",
    "--timeout",
-   "2400.0"
+   "2400.0",
+   "--reduced-period",
+   "20"
   ]
  },
  {
@@ -150,7 +158,7 @@
    "D:\\CST projects\\Plasma research\\simulations\\pic\\pic_dynamics.py",
    "case",
    "--out",
-   "D:\\CST projects\\Plasma research\\simulations\\pic\\results\\dynamics_validation\\20261121T095936Z_13652\\50kVcm",
+   "D:\\CST projects\\Plasma research\\simulations\\pic\\results\\dynamics_validation\\20261121T111757Z_6804\\50kVcm",
    "--label",
    "50kVcm",
    "--mode",
@@ -176,7 +184,9 @@
    "--frames",
    "65",
    "--timeout",
-   "2400.0"
+   "2400.0",
+   "--reduced-period",
+   "20"
   ]
  },
  {
@@ -186,7 +196,7 @@
    "D:\\CST projects\\Plasma research\\simulations\\pic\\pic_dynamics.py",
    "case",
    "--out",
-   "D:\\CST projects\\Plasma research\\simulations\\pic\\results\\dynamics_validation\\20261121T095936Z_13652\\acceleration",
+   "D:\\CST projects\\Plasma research\\simulations\\pic\\results\\dynamics_validation\\20261121T111757Z_6804\\acceleration",
    "--label",
    "acceleration",
    "--mode",
@@ -212,7 +222,9 @@
    "--frames",
    "65",
    "--timeout",
-   "2400.0"
+   "2400.0",
+   "--reduced-period",
+   "20"
   ]
  },
  {
@@ -222,7 +234,7 @@
    "D:\\CST projects\\Plasma research\\simulations\\pic\\pic_dynamics.py",
    "case",
    "--out",
-   "D:\\CST projects\\Plasma research\\simulations\\pic\\results\\dynamics_validation\\20261121T095936Z_13652\\relaxation",
+   "D:\\CST projects\\Plasma research\\simulations\\pic\\results\\dynamics_validation\\20261121T111757Z_6804\\relaxation",
    "--label",
    "relaxation",
    "--mode",
@@ -248,7 +260,9 @@
    "--frames",
    "65",
    "--timeout",
-   "2400.0"
+   "2400.0",
+   "--reduced-period",
+   "20"
   ]
  },
  {
@@ -258,7 +272,7 @@
    "D:\\CST projects\\Plasma research\\simulations\\pic\\pic_dynamics.py",
    "case",
    "--out",
-   "D:\\CST projects\\Plasma research\\simulations\\pic\\results\\dynamics_validation\\20261121T095936Z_13652\\timing_pilot",
+   "D:\\CST projects\\Plasma research\\simulations\\pic\\results\\dynamics_validation\\20261121T111757Z_6804\\timing_pilot",
    "--label",
    "timing_pilot",
    "--mode",
@@ -284,7 +298,9 @@
    "--frames",
    "65",
    "--timeout",
-   "2400.0"
+   "2400.0",
+   "--reduced-period",
+   "20"
   ]
  }
 ]

@@ -1,6 +1,6 @@
 {
  "status": "bounded_runs_complete",
- "run_directory": "D:\\CST projects\\Plasma research\\simulations\\pic\\results\\dynamics_validation\\20261121T095936Z_13652",
+ "run_directory": "D:\\CST projects\\Plasma research\\simulations\\pic\\results\\dynamics_validation\\20261121T111757Z_6804",
  "completed": [
   "acceleration",
   "relaxation",
@@ -12,5 +12,5 @@
   "100kVcm_seed2"
  ],
  "errors": [],
- "wall_s": 1508.8685781000004
+ "wall_s": 1554.6806146
 }

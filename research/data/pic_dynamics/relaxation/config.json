@@ -1,6 +1,6 @@
 {
  "action": "case",
- "out": "D:\\CST projects\\Plasma research\\simulations\\pic\\results\\dynamics_validation\\20261121T095936Z_13652\\relaxation",
+ "out": "D:\\CST projects\\Plasma research\\simulations\\pic\\results\\dynamics_validation\\20261121T111757Z_6804\\relaxation",
  "label": "relaxation",
  "mode": "relaxation",
  "field": 0.0,
@@ -14,6 +14,7 @@
  "gap": 0.001,
  "frames": 65,
  "steps": 2000,
+ "reduced_period": 20,
  "step_budget": 2100000,
  "timeout": 2400.0,
  "steps_actual": 2000,

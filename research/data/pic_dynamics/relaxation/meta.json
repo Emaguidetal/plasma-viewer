@@ -158,8 +158,8 @@
   0.0005539262790047542
  ],
  "maximum_energy_ev": 2.8829506906218865,
- "runtime_s": 2.1445857999997315,
- "seconds_per_step": 0.0010722932499998023,
+ "runtime_s": 3.2034128999985114,
+ "seconds_per_step": 0.0016017067999991924,
  "relaxation_drift_max_error_over_initial": 0.02597787040400301,
  "acceptance_absolute_over_initial": 0.1,
  "analytic_note": "constant sigma, nearly monoenergetic heavy-target isotropic drift decay; thermal/recoil corrections small",

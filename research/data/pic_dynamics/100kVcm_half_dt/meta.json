@@ -155,9 +155,9 @@
  "histogram_normalization_error_max": 2.220446049250313e-16,
  "observed_z_range_m": [
   0.00042396993209044644,
-  0.0005664635721701679
+  0.000566463572170168
  ],
  "maximum_energy_ev": 39.66052836952261,
- "runtime_s": 468.08670359999996,
- "seconds_per_step": 0.000690427993144199
+ "runtime_s": 404.2902049000004,
+ "seconds_per_step": 0.0005963281430042214
 }
