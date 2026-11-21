@@ -302,47 +302,43 @@
   "pic": [
     {
       "label": "100kVcm",
-      "mean_energy_nrmse": 0.03949366413898215,
+      "mean_energy_nrmse": 0.03804565775343239,
+      "drift_nrmse_phase_window": 0.06041152855527966,
+      "energy_budget_residual": -0.025405589185284353,
       "ionization_events": 2237,
-      "warnings": [
-        "instantaneous drift NRMSE fails 15% criterion; broad-distribution sampling noise/closure mismatch not separated",
-        "coarse-frame work balance fails 10%; exact MCC energy accounting not validated"
-      ]
+      "warnings": []
     },
     {
       "label": "100kVcm_double_particles",
-      "mean_energy_nrmse": 0.038181349335329275,
+      "mean_energy_nrmse": 0.036096023816994095,
+      "drift_nrmse_phase_window": 0.06589988151178956,
+      "energy_budget_residual": -0.014573525712356037,
       "ionization_events": 4571,
-      "warnings": [
-        "instantaneous drift NRMSE fails 15% criterion; broad-distribution sampling noise/closure mismatch not separated",
-        "coarse-frame work balance fails 10%; exact MCC energy accounting not validated"
-      ]
+      "warnings": []
     },
     {
       "label": "100kVcm_half_dt",
-      "mean_energy_nrmse": 0.0433598158226234,
+      "mean_energy_nrmse": 0.04148378062426699,
+      "drift_nrmse_phase_window": 0.03488838660764617,
+      "energy_budget_residual": 0.017033202854593994,
       "ionization_events": 2260,
-      "warnings": [
-        "instantaneous drift NRMSE fails 15% criterion; broad-distribution sampling noise/closure mismatch not separated",
-        "coarse-frame work balance fails 10%; exact MCC energy accounting not validated"
-      ]
+      "warnings": []
     },
     {
       "label": "100kVcm_seed2",
-      "mean_energy_nrmse": 0.04270380169027664,
+      "mean_energy_nrmse": 0.04036420313898514,
+      "drift_nrmse_phase_window": 0.06996636177836625,
+      "energy_budget_residual": -0.05366201540379176,
       "ionization_events": 2187,
-      "warnings": [
-        "instantaneous drift NRMSE fails 15% criterion; broad-distribution sampling noise/closure mismatch not separated",
-        "coarse-frame work balance fails 10%; exact MCC energy accounting not validated"
-      ]
+      "warnings": []
     },
     {
       "label": "50kVcm",
-      "mean_energy_nrmse": 0.050684244297075555,
+      "mean_energy_nrmse": 0.0505674462055667,
+      "drift_nrmse_phase_window": 0.08154216950047255,
+      "energy_budget_residual": 0.01390953216901509,
       "ionization_events": 40,
       "warnings": [
-        "instantaneous drift NRMSE fails 15% criterion; broad-distribution sampling noise/closure mismatch not separated",
-        "coarse-frame work balance fails 10%; exact MCC energy accounting not validated",
         "rare ionization; do not validate a low-field rate from ratio"
       ]
     }

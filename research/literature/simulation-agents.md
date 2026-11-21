@@ -17,15 +17,15 @@ This is a tool-selection and workflow guide, not a systematic literature review.
 
 | Agent profile | Starting open-source backend | Main question and outputs | Important limit |
 | --- | --- | --- | --- |
-| [Open-Source RF Simulation Engineer](../agents/open-source-rf-simulation.agent.md) | Meep, Python | How does a prescribed plasma scatter RF? Complex modal S-parameters, fields, power accounting. | Does not predict plasma creation or sustainment. |
-| [Plasma Kinetics Engineer](../agents/plasma-kinetics.agent.md) | Python, SciPy; optional BOLOS | How do species and electron energy evolve? Density, energy, collision-rate histories. | A 0D model has no resolved filament or sheath geometry. |
-| [Coupled RF-Plasma Engineer](../agents/coupled-rf-plasma.agent.md) | Custom Meep/kinetics coupling; optional FiPy or MOOSE/Zapdos | Does RF heating change conductivity and then the field? Feedback, deposition, density evolution. | Coupling is numerical development, not an assumed built-in feature. |
-| [Plasma PIC Engineer](../agents/plasma-pic.agent.md) | WarpX with supported MCC | Are nonlocal distributions or sheath kinetics important? Distribution functions and particle/energy fluxes. | Dense, collisional full-device PIC may be prohibitively expensive; chemistry support must be checked. |
-| [Plasma Hydrodynamics Engineer](../agents/plasma-hydrodynamics.agent.md) | Clawpack/PyClaw | Does gas heating/expansion matter? Neutral density, pressure, temperature, shocks. | Compressible Euler alone is not plasma chemistry or non-equilibrium thermodynamics. |
-| [Laser Propagation Engineer](../agents/laser-propagation.agent.md) | Luna.jl, Julia | Where does an applicable ultrafast pulse create electrons? Optical fields and ionization-source/density maps. | Optical-guide capabilities do not imply metallic RF-guide modeling or nanosecond avalanche physics. |
-| [Collisional-Radiative Plasma Engineer](../agents/collisional-radiative-plasma.agent.md) | Python, SciPy/Numba; verified state-resolved atomic data | How do charge states, superelastic exchange and photon trapping change RF response? Species, atomic/electron/photon energy and radiation escape. | Requires level-specific data and a justified radiation reduction; a small network is not complete atomic physics. |
+| [Open-Source RF Simulation Engineer](../.github/agents/open-source-rf-simulation.agent.md) | Meep, Python | How does a prescribed plasma scatter RF? Complex modal S-parameters, fields, power accounting. | Does not predict plasma creation or sustainment. |
+| [Plasma Kinetics Engineer](../.github/agents/plasma-kinetics.agent.md) | Python, SciPy; optional BOLOS | How do species and electron energy evolve? Density, energy, collision-rate histories. | A 0D model has no resolved filament or sheath geometry. |
+| [Coupled RF-Plasma Engineer](../.github/agents/coupled-rf-plasma.agent.md) | Custom Meep/kinetics coupling; optional FiPy or MOOSE/Zapdos | Does RF heating change conductivity and then the field? Feedback, deposition, density evolution. | Coupling is numerical development, not an assumed built-in feature. |
+| [Plasma PIC Engineer](../.github/agents/plasma-pic.agent.md) | WarpX with supported MCC | Are nonlocal distributions or sheath kinetics important? Distribution functions and particle/energy fluxes. | Dense, collisional full-device PIC may be prohibitively expensive; chemistry support must be checked. |
+| [Plasma Hydrodynamics Engineer](../.github/agents/plasma-hydrodynamics.agent.md) | Clawpack/PyClaw | Does gas heating/expansion matter? Neutral density, pressure, temperature, shocks. | Compressible Euler alone is not plasma chemistry or non-equilibrium thermodynamics. |
+| [Laser Propagation Engineer](../.github/agents/laser-propagation.agent.md) | Luna.jl, Julia | Where does an applicable ultrafast pulse create electrons? Optical fields and ionization-source/density maps. | Optical-guide capabilities do not imply metallic RF-guide modeling or nanosecond avalanche physics. |
+| [Collisional-Radiative Plasma Engineer](../.github/agents/collisional-radiative-plasma.agent.md) | Python, SciPy/Numba; verified state-resolved atomic data | How do charge states, superelastic exchange and photon trapping change RF response? Species, atomic/electron/photon energy and radiation escape. | Requires level-specific data and a justified radiation reduction; a small network is not complete atomic physics. |
 
-For departmental compute infrastructure, use the [HPC Farm Engineer](../agents/hpc-farm.agent.md). This profile complements the seven physics specialists; selecting it does not connect to the farm or start a job.
+For departmental compute infrastructure, use the [HPC Farm Engineer](../.github/agents/hpc-farm.agent.md). This profile complements the seven physics specialists; selecting it does not connect to the farm or start a job.
 
 ### Specialist scientific reviewers
 
@@ -35,16 +35,18 @@ files does not by itself prove discovery in the VS Code agent picker.
 
 | Reviewer | Main checks |
 | --- | --- |
-| [Plasma Physics Reviewer](../agents/plasma-physics-reviewer.agent.md) | Chemistry, PIC statistics, gas expansion, radiation, particle and energy conservation. |
-| [RF Physics Reviewer](../agents/rf-physics-reviewer.agent.md) | Maxwell-plasma coupling, geometry, peak/RMS fields, cavity calibration and RF diagnostics. |
-| [Optical Physics Reviewer](../agents/optical-physics-reviewer.agent.md) | Laser normalization and propagation, seed assumptions, emission and visual interpretation. |
+| [Plasma Physics Reviewer](../.github/agents/plasma-physics-reviewer.agent.md) | Chemistry, PIC statistics, gas expansion, radiation, particle and energy conservation. |
+| [RF Physics Reviewer](../.github/agents/rf-physics-reviewer.agent.md) | Maxwell-plasma coupling, geometry, peak/RMS fields, cavity calibration and RF diagnostics. |
+| [Optical Physics Reviewer](../.github/agents/optical-physics-reviewer.agent.md) | Laser normalization and propagation, seed assumptions, emission and visual interpretation. |
 
 Each reviewer returns an evidence-based scope decision and severity-ranked
 findings. A successful numerical run is not experimental validation.
 All three performed initial and final read-only AI reviews of the
 [restricted RF/optics/PIC/afterglow study](standing-wave-helium-plasma-reflector.md).
-Their final acceptance is limited to that exploratory scope, with failed
-PIC drift/work checks and unconverged velocity peaks explicitly retained.
+Their final acceptance is limited to that exploratory scope, with unconverged
+velocity peaks explicitly retained. The PIC drift/work checks that first
+failed were traced to snapshot sampling noise and a net-work normalization;
+the rerun with WarpX reduced diagnostics passes them at unchanged thresholds.
 
 ### Recommended order
 

@@ -18,6 +18,42 @@ from rf_plasma.plasma3d import P_IP
 from pic_dynamics import QE, ME, MHE, KB, EPS0, C, save
 
 
+WINDOWS_PER_CYCLE = 32
+
+
+def load_reduced(case_dir):
+    """High-cadence WarpX species totals (electrons); None for legacy runs without them."""
+    d = Path(case_dir)/"reduced"
+    if not (d/"ParticleMomentum.txt").exists():
+        return None
+    mom, ene, num = (np.loadtxt(d/f"{k}.txt") for k in
+                     ("ParticleMomentum", "ParticleEnergy", "ParticleNumber"))
+    k = min(len(mom), len(ene), len(num))
+    assert np.array_equal(mom[:k, 0], ene[:k, 0]) and np.array_equal(mom[:k, 0], num[:k, 0])
+    w = num[:k, 6]
+    return dict(t=mom[:k, 1], weight=w, pz=mom[:k, 7], kinetic_ev=ene[:k, 3]/QE,
+                vz=mom[:k, 7]/(ME*w), energy_ev=ene[:k, 3]/(QE*w))
+
+
+def window_average(t, y, freq, t_end):
+    """Mean of y in fixed RF-phase windows (1/32 period); returns centres, means, SE."""
+    width = 1/(freq*WINDOWS_PER_CYCLE)
+    edges = np.arange(0., t_end+.5*width, width)
+    index = np.digitize(t, edges)-1
+    centres, means, errors = [], [], []
+    for i in range(len(edges)-1):
+        s = y[index == i]
+        if len(s) >= 4:
+            centres.append(.5*(edges[i]+edges[i+1]))
+            means.append(s.mean())
+            errors.append(s.std(ddof=1)/np.sqrt(len(s)))
+    return np.array(centres), np.array(means), np.array(errors)
+
+
+def nrmse(x, reference):
+    return float(np.sqrt(np.mean((x-reference)**2))/max(np.sqrt(np.mean(reference**2)), 1.e-300))
+
+
 def validate_contract(doc):
     assert set(doc) == {"provenance", "limits", "cases"}
     for c in doc["cases"]:
@@ -77,7 +113,7 @@ def main():
             field = e0*np.sin(2*np.pi*freq*tt)
             return [-QE*field/ME-n*km*v,
                 -field*v-n*(kexc+kel*(e-1.5*KB*300/QE)+kiz*(ip+e)), n*kiz]
-        sol = solve_ivp(rhs, (0, t[-1]), [r[0, 2], r[0, 1], 0.], t_eval=t,
+        sol = solve_ivp(rhs, (0, t[-1]), [r[0, 2], r[0, 1], 0.], t_eval=t, dense_output=True,
             method="LSODA", rtol=1.e-8, atol=[1.e-3, 1.e-7, 1.e-10], max_step=2.e-13)
         if not sol.success:
             raise RuntimeError(sol.message)
@@ -88,19 +124,45 @@ def main():
             excitation_loss_ev_s=(n*rates(sol.y[1])[2]).tolist())
         m = t >= t[-1]-1/freq
         avg = lambda y: float(np.trapezoid(y[m], t[m])/(t[m][-1]-t[m][0]))
-        energy_error = float(np.sqrt(np.mean((r[m, 1]-sol.y[1, m])**2))/avg(r[:, 1]))
-        drift_error = float(np.sqrt(np.mean((r[m, 2]-sol.y[0, m])**2))/
-            max(np.sqrt(np.mean(r[m, 2]**2)), 1))
-        # Work minus EEDF-estimated reservoir sinks: a coarse-frame diagnostic, not
-        # per-event exact energy conservation. Tracks total energy, not only mean.
         field = e0*np.sin(2*np.pi*freq*t)
         loss = r[:, 17]+r[:, 18]+ip*r[:, 16]
-        integral = float(np.trapezoid(r[:, 3]*(-field*r[:, 2]-loss), t))
-        gain = r[-1, 3]*r[-1, 1]-r[0, 3]*r[0, 1]+r[-1, 11]
+        expected_loss = float(np.trapezoid(r[:, 3]*loss, t))
+        rd = load_reduced(path.parent)
+        snapshot_drift_error = nrmse(r[m, 2], sol.y[0, m])
+        if rd is None:
+            # Legacy run: only noisy snapshot frames exist; keep the old diagnostic.
+            energy_error = float(np.sqrt(np.mean((r[m, 1]-sol.y[1, m])**2))/avg(r[:, 1]))
+            drift_error = snapshot_drift_error
+            work = float(np.trapezoid(r[:, 3]*(-field*r[:, 2]), t))
+            gain = r[-1, 3]*r[-1, 1]-r[0, 3]*r[0, 1]+r[-1, 11]
+            window = None
+        else:
+            # Phase-window means of high-cadence totals: ~260 samples per window, each
+            # separated by >1 momentum-relaxation time, so sampling noise drops ~16x.
+            fl_t = sol.sol(np.clip(rd["t"], 0, t[-1]))
+            tw, vw, vse = window_average(rd["t"], rd["vz"], freq, t[-1])
+            _, ew, ese = window_average(rd["t"], rd["energy_ev"], freq, t[-1])
+            _, fvw, _ = window_average(rd["t"], fl_t[0], freq, t[-1])
+            _, few, _ = window_average(rd["t"], fl_t[1], freq, t[-1])
+            mw = tw >= t[-1]-1/freq
+            drift_error = nrmse(vw[mw], fvw[mw])
+            energy_error = nrmse(ew[mw], few[mw])
+            # Exact field work on electrons from step-resolved total momentum.
+            work = float(np.trapezoid(-e0*np.sin(2*np.pi*freq*rd["t"])*rd["pz"]/ME, rd["t"]))
+            gain = float(rd["kinetic_ev"][-1]-rd["kinetic_ev"][0]+r[-1, 11])
+            window = dict(time_s=tw.tolist(), mean_vz_m_s=vw.tolist(), mean_vz_se_m_s=vse.tolist(),
+                mean_energy_ev=ew.tolist(), mean_energy_se_ev=ese.tolist(),
+                fluid_mean_vz_m_s=fvw.tolist(), fluid_mean_energy_ev=few.tolist(),
+                reduced_samples=int(len(rd["t"])), windows_per_cycle=WINDOWS_PER_CYCLE,
+                method="WarpX ParticleMomentum/ParticleEnergy/ParticleNumber totals every reduced_period steps, averaged in fixed 1/32-period RF phase windows")
+        residual = (gain+expected_loss-work)/work
         v = c["validation"]
         v.update(fluid=fluid, fluid_energy_cycle_mean_ev=avg(sol.y[1]),
             pic_energy_cycle_mean_ev=avg(r[:, 1]), fluid_energy_nrmse_last_cycle=energy_error,
             fluid_drift_nrmse_last_cycle=drift_error,
+            snapshot_drift_nrmse_last_cycle=snapshot_drift_error,
+            snapshot_drift_note="single 2000-macro snapshots: per-frame SE ~ v_th/sqrt(N) is ~30% of drift amplitude; noise-dominated, not used for acceptance",
+            phase_window=window,
             fluid_acceptance_energy_nrmse=.10, fluid_acceptance_drift_nrmse=.15,
             fluid_energy_accept=energy_error < .10, fluid_drift_accept=drift_error < .15,
             pic_eedf_momentum_frequency_s=r[:, 15].tolist(),
@@ -109,8 +171,10 @@ def main():
             momentum_cycle_ratio=avg(r[:, 15])/avg(n*rates(sol.y[1])[0]),
             excitation_loss_cycle_ratio=avg(r[:, 17])/max(avg(n*rates(sol.y[1])[2]), 1.e-30),
             eedf_ionization_cycle_ratio=avg(r[:, 16])/max(avg(n*rates(sol.y[1])[1]), 1.e-30),
-            energy_work_residual_relative=float((gain-integral)/max(abs(integral), 1)),
-            energy_work_note="65-frame quadrature and EEDF expected collision sinks, NOT exact eventwise energy balance",
+            energy_work_field_ev_per_m2=work, energy_work_gain_ev_per_m2=gain,
+            energy_work_expected_collision_loss_ev_per_m2=expected_loss,
+            energy_work_residual_relative=float(residual),
+            energy_work_note="(Delta K + escaped + EEDF-expected collision sinks - field work)/field work; work and K exact from step-resolved WarpX totals, sinks from frame EEDFs x tabulated sigma (inelastic thresholds, ionization potential, elastic recoil)",
             fluid_rate_comparison_applicability="bulk BOLOS local-mean-energy table, Maxwellian fallback below solved EEDF range; same data is not independent experiment",
             grid_and_domain_convergence="not refined in this step budget; collective/sheath observables not validated")
         events = v["ionization_events"]
@@ -173,8 +237,8 @@ def main():
             fundamental_95_compatibility=wald < 5.991464547107979,
             uncertainty_note="approximate OLS residual noise, 2 coefficients; independent-frame assumption justified only by frame separation >> collision time; not a robust multi-seed CI"),
             validation_warnings=[message for condition, message in (
-                (not v["fluid_drift_accept"], "instantaneous drift NRMSE fails 15% criterion; broad-distribution sampling noise/closure mismatch not separated"),
-                (abs(v["energy_work_residual_relative"]) > .10, "coarse-frame work balance fails 10%; exact MCC energy accounting not validated"),
+                (not v["fluid_drift_accept"], "phase-window drift vs local-mean-energy fluid fails 15% criterion (closure mismatch, not sampling noise)"),
+                (abs(v["energy_work_residual_relative"]) > .10, "electron energy budget (field work vs Delta K + expected collision sinks) fails 10%"),
                 (events < 100, "rare ionization; do not validate a low-field rate from ratio"))
                 if condition])
         v["neutral_depletion_fraction_upper_using_ions"] = float((r[-1, 6]+r[-1, 13])/
@@ -194,10 +258,20 @@ def main():
                 continue
             other = by[name]
             metrics = dict(label=name)
+            bw, ow = base["validation"]["phase_window"], other["validation"]["phase_window"]
             for field, threshold in (("mean_energy_ev", .10), ("mean_vz_m_s", .15)):
-                b = np.array(base[field])
-                x = np.interp(t, other["time_s"], other[field])
-                value = float(np.sqrt(np.mean((x[m]-b[m])**2))/max(np.sqrt(np.mean(b[m]**2)), 1))
+                if bw and ow:
+                    tb = np.array(bw["time_s"])
+                    mb = tb >= t[-1]-1/base["f_hz"]
+                    b = np.array(bw[field])[mb]
+                    x = np.interp(tb[mb], ow["time_s"], ow[field])
+                    noise = np.sqrt(np.mean(np.array(bw[field.replace("_m_s", "_se_m_s").replace("_ev", "_se_ev")])[mb]**2))
+                    metrics[field+"_expected_noise_nrmse"] = float(np.sqrt(2)*noise/np.sqrt(np.mean(b**2)))
+                    metrics[field+"_basis"] = "1/32-period phase windows of WarpX reduced diagnostics, last cycle"
+                else:
+                    b = np.array(base[field])[m]
+                    x = np.interp(t, other["time_s"], other[field])[m]
+                value = nrmse(x, b)
                 metrics[field+"_nrmse"] = value
                 metrics[field+"_threshold"] = threshold
                 metrics[field+"_pass"] = value < threshold
@@ -261,7 +335,7 @@ def main():
             str(conf["frequency"]), "--dt", str(conf["dt"]), "--particles", str(conf["particles"]),
             "--seed", str(conf["seed"]), "--steps", str(conf["steps_actual"]), "--cells",
             str(conf["cells"]), "--gap", str(conf["gap"]), "--frames", str(conf["frames"]),
-            "--timeout", str(conf["timeout"])]))
+            "--timeout", str(conf["timeout"]), "--reduced-period", str(conf.get("reduced_period", 20))]))
     save(run/"commands.json", commands)
     doc = dict(provenance=provenance, limits=limits, cases=cases)
     validate_contract(doc)
@@ -271,7 +345,7 @@ def main():
         **{k: c["validation"][k] for k in ("ionization_events", "ionization_poisson_95_upper_s",
         "electron_weight_gain", "escaped_electron_macros", "histogram_normalization_error_max",
         "charge_accounting_relative_max", "pic_energy_cycle_mean_ev", "fluid_energy_cycle_mean_ev",
-        "fluid_energy_nrmse_last_cycle", "fluid_drift_nrmse_last_cycle",
+        "fluid_energy_nrmse_last_cycle", "fluid_drift_nrmse_last_cycle", "snapshot_drift_nrmse_last_cycle",
         "momentum_cycle_ratio", "energy_work_residual_relative", "runtime_s")}) for c in cases],
         convergence=comparisons, benchmarks={p.parent.name: json.loads(p.read_text())
             for p in run.glob("*/meta.json") if p.parent.name in ("acceleration", "relaxation")})
@@ -301,6 +375,13 @@ def main():
         fl = c["validation"]["fluid"]
         for column, key, ylabel in ((0, "mean_energy_ev", "mean energy (eV)"),
             (1, "mean_vz_m_s", "mean v_z (m/s)"), (2, "relative_electron_count", "electron weight / initial")):
+            pw = c["validation"].get("phase_window")
+            if key == "mean_vz_m_s" and pw:
+                ax[0, 1].plot(t, c[key], ".", color=color, ms=2, alpha=.35, label=label+" snapshots")
+                ax[0, 1].plot(np.array(pw["time_s"])*1.e9, pw[key], color=color, label=label+" PIC phase-window")
+                ax[0, 1].plot(np.array(pw["time_s"])*1.e9, pw["fluid_"+key], "--", color=color, label=label+" fluid")
+                ax[0, 1].set(xlabel="time (ns)", ylabel=ylabel)
+                continue
             ax[0, column].plot(t, c[key], color=color, label=label+" PIC")
             ax[0, column].plot(t, fl[key], "--", color=color, label=label+" fluid")
             ax[0, column].set(xlabel="time (ns)", ylabel=ylabel)
@@ -313,10 +394,14 @@ def main():
     ax[1, 0].set(xlabel="energy (eV)", ylabel="probability density (1/eV)", title="Actual final EEDF", xlim=(0, 35))
     ax[1, 1].set(xlabel="time (ns)", ylabel="z (mm)", title="Actual fixed-ID electron samples")
     if comparisons:
-        ax[1, 2].bar(np.arange(len(comparisons)), [x["mean_energy_ev_nrmse"] for x in comparisons])
-        ax[1, 2].set_xticks(np.arange(len(comparisons)), ["half dt", "double N", "seed 2"])
-        ax[1, 2].axhline(.10, color="r", ls="--")
-    ax[1, 2].set(ylabel="energy NRMSE", title="Last-cycle numerical sensitivity")
+        xs = np.arange(len(comparisons))
+        ax[1, 2].bar(xs-.2, [x["mean_energy_ev_nrmse"] for x in comparisons], .4, label="energy (limit 0.10)")
+        ax[1, 2].bar(xs+.2, [x["mean_vz_m_s_nrmse"] for x in comparisons], .4, label="drift (limit 0.15)")
+        ax[1, 2].set_xticks(xs, [x["label"].replace("100kVcm_", "") for x in comparisons])
+        ax[1, 2].axhline(.10, color="C0", ls="--")
+        ax[1, 2].axhline(.15, color="C1", ls="--")
+        ax[1, 2].legend(fontsize=8)
+    ax[1, 2].set(ylabel="last-cycle NRMSE vs base", title="Numerical sensitivity (phase windows)")
     for axis in ax[0]:
         axis.legend(fontsize=8)
     ax[1, 0].legend()

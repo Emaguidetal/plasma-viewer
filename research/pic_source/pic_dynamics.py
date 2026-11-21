@@ -97,6 +97,11 @@ def run_case(a):
         warpx_amrex_the_arena_init_size=16000000, verbose=0)
     sim.add_species(electrons, layout=None)
     sim.add_species(ions, layout=None)
+    # C++-side species totals at high cadence: window-averaged drift and step-resolved
+    # field work are computed from these, not from the 65 noisy snapshot frames.
+    for kind in ("ParticleMomentum", "ParticleEnergy", "ParticleNumber"):
+        sim.add_diagnostic(picmi.ReducedDiagnostic(diag_type=kind, name=kind,
+            period=a.reduced_period, path=str(out / "reduced") + os.sep))
     config = dict(vars(a), steps_actual=steps, neutral_density_m3=n, temperature_k=300.,
         initial_density_m3=1.e12, initial_macro_weight_per_m2=weight, xs_source=manifest["source"],
         cross_sections=xs_meta, software={k: importlib.metadata.version(k)
@@ -264,7 +269,8 @@ def suite(a):
             "--label", label, "--mode", mode, "--field", str(field), "--dt", str(dt),
             "--particles", str(count), "--seed", str(seed), "--pressure", str(a.pressure),
             "--frequency", str(a.frequency), "--periods", str(a.periods), "--frames", str(a.frames),
-            "--cells", str(a.cells), "--gap", str(a.gap), "--timeout", str(min(2400, a.timeout))]
+            "--cells", str(a.cells), "--gap", str(a.gap), "--timeout", str(min(2400, a.timeout)),
+            "--reduced-period", str(a.reduced_period)]
         if steps:
             cmd += ["--steps", str(steps)]
         print("EXECUTE", subprocess.list2cmdline(cmd), flush=True)
@@ -321,6 +327,7 @@ def main():
     p.add_argument("--gap", type=float, default=1.e-3)
     p.add_argument("--frames", type=int, default=65)
     p.add_argument("--steps", type=int)
+    p.add_argument("--reduced-period", type=int, default=20)
     p.add_argument("--step-budget", type=int, default=2100000)
     p.add_argument("--timeout", type=float, default=7200)
     a = p.parse_args()

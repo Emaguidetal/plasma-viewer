@@ -82,8 +82,19 @@ refinements. Ionization with <100 actual MCC events is *not validated*; an
 exact one-sided 95% Poisson upper bound divided by measured macro-time exposure
 is reported, under an effective constant-hazard interpretation. Snapshot
 IID energy SE and two-seed descriptive SE are qualified, not robust confidence
-intervals. Energy work accounting uses coarse-frame quadrature and expected
-EEDF collision sinks, not exact per-event conservation.
+intervals.
+
+Drift and energy-work criteria use WarpX `ParticleMomentum`, `ParticleEnergy`
+and `ParticleNumber` reduced diagnostics written every `--reduced-period`
+(default 20) steps into each case's `reduced/` folder. Drift and mean energy
+are averaged in fixed 1/32-RF-period phase windows (~265 samples each, spaced
+by more than one momentum-relaxation time), and compared over the last cycle.
+The electron energy budget is
+`(Delta K + escaped + expected collision sinks - field work) / field work`,
+where field work `-int E(t) sum(w p_z)/m_e dt` and `Delta K` are step-resolved
+WarpX totals and the sinks are frame EEDFs times the tabulated cross sections
+(excitation thresholds, ionization potential, elastic recoil). It is
+normalized by the gross field work, not by the near-zero net.
 
 This is a local dilute imposed-field kinetic closure test, not global discharge,
 sheath or whole-cavity S-parameter validation. Neutrals are a fixed thermal
@@ -103,12 +114,14 @@ z=0 ------------------ z=0.45..0.55 mm ------------------ z=1 mm
           uniform imposed E_z(t); fixed thermal neutral He background
 ```
 
-Drift is small compared with electron thermal speed: 2000-macro instantaneous
-drift frames can be noise-dominated. A separate OLS fundamental/third-harmonic
-phase-response diagnostic reports coefficient uncertainty but never replaces
-the real frame histories. Failed instantaneous-drift and coarse energy-work
-criteria are retained as warnings; energy agreement alone is not full dynamic
-validation.
+Drift is small compared with electron thermal speed: a single 2000-macro
+snapshot has a drift standard error of ~30% of the RF drift amplitude. The
+first suite (`20261121T095936Z_13652`) compared those snapshots directly and
+normalized the work residual by the net (work minus losses); both "failures"
+were diagnostic artefacts. Snapshot NRMSE is still reported
+(`snapshot_drift_nrmse_last_cycle`) for transparency but not used for
+acceptance. The OLS fundamental/third-harmonic phase fit is retained as a
+secondary diagnostic.
 
 References:
 - https://warpx.readthedocs.io/en/latest/usage/examples/capacitive_discharge/README.html

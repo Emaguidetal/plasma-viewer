@@ -108,6 +108,8 @@ def validation_figures(root, pic):
         meshes[0][2]["radiative_energy_j_per_m"]-ts["radiative_energy_j_per_m"])/ts["radiative_energy_j_per_m"]
     gas_metrics["caveat"] = "velocity peak is mesh-dependent; 1-mm projected source is not an optical-filament resolution study"
     pic_metrics = [dict(label=c["label"], mean_energy_nrmse=c["validation"]["fluid_energy_nrmse_last_cycle"],
+                        drift_nrmse_phase_window=c["validation"]["fluid_drift_nrmse_last_cycle"],
+                        energy_budget_residual=c["validation"]["energy_work_residual_relative"],
                         ionization_events=c["validation"]["ionization_events"],
                         warnings=c["validation"]["validation_warnings"]) for c in pic["cases"]]
     metrics = dict(scope="restricted numerical diagnostics, not complete or experimental validation",
@@ -288,7 +290,7 @@ let k=p.time_s.reduce((best,t,i)=>Math.abs(t-a.time_s)<Math.abs(p.time_s[best]-a
 let bins=p.energy_bins_ev,centres=bins.slice(1).map((x,i)=>.5*(x+bins[i])),pdf=p.eedf_probability[k].map((x,i)=>x/(bins[i+1]-bins[i]));
 lines('eedf',centres,[{name:'PIC electron energy probability density',y:pdf}],'energy [eV]; probability density [1/eV]');
 note('picnote',`PIC local clock ${(a.time_s*1e9).toFixed(3)} ns. ${a.z_m.length} surviving REAL macroparticles in a fixed-ID sample; weights are counts per m², not 3D totals. Mean energy ${p.mean_energy_ev[k].toFixed(3)} eV. Separate imposed-field swarm, not full-cavity PIC.`);
-note('picwarning',`Validation limits: ${(p.validation.validation_warnings||[]).join('; ')}. Mean-energy agreement does not validate drift, exact MCC work balance or the whole cavity.`)}
+note('picwarning',(p.validation.validation_warnings||[]).length?`Validation limits: ${p.validation.validation_warnings.join('; ')}.`:`Local swarm checks pass: phase-window drift NRMSE ${(100*p.validation.fluid_drift_nrmse_last_cycle).toFixed(1)}%, energy NRMSE ${(100*p.validation.fluid_energy_nrmse_last_cycle).toFixed(1)}%, electron energy budget residual ${(100*p.validation.energy_work_residual_relative).toFixed(1)}%. This is a 1D imposed-field swarm, not whole-cavity, sheath or experimental validation.`)}
 async function init(){let bytes=Uint8Array.from(atob(el('payload').textContent.trim()),x=>x.charCodeAt(0));D=await new Response(new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip'))).json();
 let scales={rf:1,ne:1e9,uv:10,ngas:1e9,uvgas:10,optics:1e9};
 D.cases.forEach(c=>{scales.rf=Math.max(scales.rf,max(c.rf.ey_xz.flat(2).map(Math.abs)));scales.ne=Math.max(scales.ne,max(c.rf.ne_xz.flat(2)));scales.uv=Math.max(scales.uv,max(c.rf.uv_xz.flat(2)));scales.ngas=Math.max(scales.ngas,max(c.gas.electron_density.flat()));scales.uvgas=Math.max(scales.uvgas,max(c.gas.uv_power_density.flat()));let b=c.summary;scales.optics=Math.max(scales.optics,2*b.laser_energy_j*Math.sqrt(4*Math.log(2)/Math.PI)/(b.laser_fwhm_s*Math.PI*b.laser_waist_m**2))});
