@@ -89,6 +89,9 @@ class Config:
     K0_ion_m2_Vs: float = 16.7e-4   # He2+ in He, ASSUMPTION
     ionization: bool = True
     swarm_file: str = str(SWARM_FILE)
+    # "axisymmetric": (r, z) about a channel along E. "planar": Cartesian (s, z) cross-section of an
+    # infinitely long line perpendicular to E (per unit length along the line), mirror symmetric at s = 0.
+    geometry: str = "axisymmetric"
     # grid
     r_max_m: float = 3e-3
     dr_min_m: float = 1e-6
@@ -143,6 +146,16 @@ def _cases() -> dict:
     # optional variants
     add("He0p2MPa_E22p3_n1e24_a20", 0.2e6, 2.23e6, n0_m3=1e24, a_m=20e-6)
     add("He0p2MPa_E22p3_bg1e12", 0.2e6, 2.23e6, n_bg_m3=1e12)
+    # Sealed 200 psig He (1.48 MPa), 200 kV/cm: formed channel along E (calibration of rod3d), and the
+    # resolved cross-section of the weak laser line perpendicular to E (0.75 mJ seed, k = 6 law of
+    # breakdown_probability: n_ref (0.75)^6 = 1.8e15 m^-3, 1/e radius ~ w0/sqrt(12) = 6 um).
+    p200 = 200 * 6894.757 + 101325.0
+    add("He1p48MPa_E200", p200, 2.0e7)
+    add("He1p48MPa_E200_line", p200, 2.0e7, n0_m3=1.8e15, a_m=6e-6, L_m=6e-6, geometry="planar",
+        t_end_s=5e-9)
+    add("He1p48MPa_E100", p200, 1.0e7)
+    add("He1p48MPa_E100_line", p200, 1.0e7, n0_m3=1.8e15, a_m=6e-6, L_m=6e-6, geometry="planar",
+        t_end_s=25e-9)
     return out
 
 
@@ -206,15 +219,17 @@ def radial_faces(cfg: Config) -> np.ndarray:
 
 
 class Grid:
-    def __init__(self, rf: np.ndarray, zf: np.ndarray):
+    def __init__(self, rf: np.ndarray, zf: np.ndarray, planar: bool = False):
         self.rf, self.zf = rf, zf
+        self.planar = planar
         self.nr, self.nz = len(rf) - 1, len(zf) - 1
         self.rc = 0.5 * (rf[1:] + rf[:-1])
         self.zc = 0.5 * (zf[1:] + zf[:-1])
         self.dzc = np.diff(zf)
-        ring = np.pi * (rf[1:] ** 2 - rf[:-1] ** 2)
+        ring = np.diff(rf) if planar else np.pi * (rf[1:] ** 2 - rf[:-1] ** 2)
         self.V = ring[:, None] * self.dzc[None, :]
-        self.Ar = 2 * np.pi * rf[:, None] * self.dzc[None, :]       # (nr+1, nz)
+        side = np.ones_like(rf) if planar else 2 * np.pi * rf
+        self.Ar = side[:, None] * self.dzc[None, :]       # (nr+1, nz)
         self.Az = np.repeat(ring[:, None], self.nz + 1, axis=1)     # (nr, nz+1)
         hr = np.empty(self.nr + 1)
         hr[0] = rf[1] - 0.0
@@ -234,7 +249,10 @@ class Grid:
     @classmethod
     def from_config(cls, cfg: Config):
         nz = int(round(2 * cfg.z_half_m / cfg.dz_m))
-        return cls(radial_faces(cfg), np.linspace(-cfg.z_half_m, cfg.z_half_m, nz + 1))
+        if cfg.geometry not in ("axisymmetric", "planar"):
+            raise ValueError(cfg.geometry)
+        return cls(radial_faces(cfg), np.linspace(-cfg.z_half_m, cfg.z_half_m, nz + 1),
+                   planar=cfg.geometry == "planar")
 
 
 def sr_dummy(g: Grid):
@@ -737,6 +755,11 @@ class Streamer2D:
             key = f"{thr:.0e}".replace("+", "")
             d[f"z_minus_{key}_m"], d[f"z_plus_{key}_m"] = zm, zp
             d[f"length_{key}_m"] = (zp - zm) if np.isfinite(zp) else 0.0
+            if thr == 1e20:
+                # space-charge potential on the axis at the tips (calibration of the rod3d tip law)
+                for side, zt in (("plus", zp), ("minus", zm)):
+                    d[f"phi_tip_{side}_V"] = (float(self.phi[0, int(np.argmin(np.abs(g.zc - zt)))])
+                                              if np.isfinite(zt) else float("nan"))
         d["N_e"] = float(np.sum(ne * g.V))
         d["charge_residual_C"] = self.charge_residual()
         d["Q_e_total_C"] = E_CH * d["N_e"]
@@ -812,6 +835,7 @@ def run_case(cfg: Config, outdir: Path | None = None, verbose=True) -> dict:
     snaps = [t for t in snaps if t > 0]
     next_diag = cfg.diag_dt_s
     stop_reason = "t_end"
+    formed = False
     dts = []
     if verbose:
         print(f"[{cfg.name}] grid {g.nr}x{g.nz} = {g.nr * g.nz} cells, N={model.N:.3e} m^-3, "
@@ -833,11 +857,12 @@ def run_case(cfg: Config, outdir: Path | None = None, verbose=True) -> dict:
                       f"wall={time.time()-wall0:.0f}s", flush=True)
             zp, zm = hist["z_plus_1e20_m"][-1], hist["z_minus_1e20_m"][-1]
             rr = hist["r_1e20_max_m"][-1]
+            formed = formed or np.isfinite(zp)
             if (np.isfinite(zp) and (zp > g.zf[-1] - cfg.stop_margin_m or zm < g.zf[0] + cfg.stop_margin_m)):
                 stop_reason = "channel_reached_z_boundary"
             elif rr > g.rf[-1] - cfg.stop_margin_m:
                 stop_reason = "channel_reached_r_boundary"
-            elif not np.isfinite(zp):
+            elif formed and not np.isfinite(zp):
                 stop_reason = "channel_decayed_below_1e20"
             elif time.time() - wall0 > cfg.wall_limit_s:
                 stop_reason = "wall_clock_limit"

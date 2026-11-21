@@ -1,0 +1,111 @@
+{
+ "name": "E300",
+ "config": {
+  "name": "E300",
+  "p_pa": 1480276.4,
+  "t_k": 300.0,
+  "f_hz": 2950000000.0,
+  "e0_v_m": 30000000.0,
+  "rf_phase": 0.0,
+  "x_focus_m": 0.0,
+  "energy_j": 0.00075,
+  "stochastic": true,
+  "rng_seed": 1,
+  "dx_c": 0.00025,
+  "x_half": 0.005,
+  "h": 0.0005,
+  "r_s": 6e-06,
+  "n_inc": 9e+20,
+  "e_m_td": 5.0,
+  "c_v": 0.8478,
+  "r_min": 1e-05,
+  "r_max": 0.0003,
+  "alpha_rec": 1e-14,
+  "n_sat": 1e+24,
+  "max_ion_step": 0.5,
+  "tau_amp_s": 3.57e-08,
+  "cavity_feedback": true,
+  "drive_off_s": 1.0000000000000001e-07,
+  "walls": true,
+  "n_img": [
+   1,
+   3,
+   1
+  ],
+  "t_end_s": 2.0000000000000002e-07,
+  "steps_per_period": 64,
+  "frame_dt_s": 1e-10,
+  "stop_after_bridge_s": 1e-09
+ },
+ "wall_s": 71.91518259048462,
+ "nodes": 391,
+ "n_seed_electrons": 386.8641166161427,
+ "t_first_birth_ns": 0.41313559322033966,
+ "n_rods": 6,
+ "n_long_rods": 6,
+ "long_rod_x_mm": [
+  6.938893903907228e-15,
+  -1.2499999999999942,
+  0.7500000000000075,
+  1.7500000000000084,
+  -2.499999999999995,
+  2.5000000000000093
+ ],
+ "t_bridge_ns": 1.4707597809687742,
+ "n_bridged": 3,
+ "e0_min_kv_cm": 77.42853311717778,
+ "energy_from_cavity_j": 0.16425028553155804,
+ "ohmic_j": 0.16054226532067792,
+ "energy_residual_rel": 0.018435410260167807,
+ "charge_residual_c": -1.8062295711355837e-22,
+ "rods": [
+  {
+   "x_mm": 6.938893903907228e-15,
+   "born_ns": 0.41313559322033966,
+   "length_mm": 33.00000000000003,
+   "bridged_ns": 1.4707597809687742,
+   "top_wall": true,
+   "bottom_wall": true
+  },
+  {
+   "x_mm": -1.2499999999999942,
+   "born_ns": 0.4237288135593228,
+   "length_mm": 34.00000000000003,
+   "bridged_ns": 1.6664534090020495,
+   "top_wall": true,
+   "bottom_wall": true
+  },
+  {
+   "x_mm": 0.7500000000000075,
+   "born_ns": 0.4290254237288143,
+   "length_mm": 28.000000000000025,
+   "bridged_ns": null,
+   "top_wall": false,
+   "bottom_wall": false
+  },
+  {
+   "x_mm": 1.7500000000000084,
+   "born_ns": 0.44491525423728895,
+   "length_mm": 34.00000000000003,
+   "bridged_ns": 2.154189310924341,
+   "top_wall": true,
+   "bottom_wall": true
+  },
+  {
+   "x_mm": -2.499999999999995,
+   "born_ns": 0.5508474576271198,
+   "length_mm": 24.00000000000002,
+   "bridged_ns": null,
+   "top_wall": false,
+   "bottom_wall": false
+  },
+  {
+   "x_mm": 2.5000000000000093,
+   "born_ns": 0.561440677966103,
+   "length_mm": 22.00000000000002,
+   "bridged_ns": null,
+   "top_wall": false,
+   "bottom_wall": false
+  }
+ ]
+}

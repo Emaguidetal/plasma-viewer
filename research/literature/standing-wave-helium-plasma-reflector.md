@@ -288,6 +288,167 @@ both cases.
 
 ![Matched 3D runs at 50 and 200 kV/cm. At 50 kV/cm the perpendicular and parallel cases overlap (no breakdown). At 200 kV/cm both reach the same onset; the parallel beam ionizes the full 34 mm gap while the perpendicular beam ionizes about 37 mm along x. Simulated, not measured.](../simulations/rf_plasma/results/dynamics/orientation_comparison.png)
 
+## Plasma switch in a WR-284 cavity: rod growth along E, seed source, continued drive
+
+This section answers three questions for a plain WR-284 cavity (no compressor):
+1. How does the rod grow along E in 3D?
+2. What seeds it in sealed helium?
+3. What happens to the plasma while the RF drive continues?
+
+**Setup**
+- WR-284 cavity: a = 72.1 mm, b = 34.0 mm (along E), d = 69.3 mm.
+- He at 1.48 MPa (200 psig), f = 2.95 GHz, loaded Q = 331 (amplitude time 35.7 ns).
+- Laser along x at y = b/2, perpendicular to E: 0.75 mJ, 1 ns, 20 µm waist.
+- The RF is switched off 100 ns after the laser, matching a laser at 4.9 µs in a 5 µs pulse.
+
+All results below are **simulated, not measured**.
+
+```mermaid
+flowchart LR
+  S["Seed budget<br/>seed_sources.py<br/>MPI of impurities,<br/>photodetachment"] --> T["3D rod tree<br/>rod3d.py<br/>thin-wire charges + images,<br/>cavity energy feedback"]
+  C["Resolved 2D streamers<br/>streamer2d (1.48 MPa)"] -- "tip-law calibration" --> T
+  T -- "bridged rod" --> D["Rod under continued drive<br/>rod_drive.py<br/>radial plasma + cavity circuit"]
+```
+
+*Schematic of the model chain, not a scale drawing.* The 2D runs fix the tip-velocity law used by
+the 3D tree model. The 3D model hands a bridged rod to the drive model.
+
+### 1. Rod growth along E in 3D (`rod3d.py`)
+
+**Method**
+- Each channel is a set of thin-wire charge elements. A Dirichlet image lattice enforces the two
+  broad walls.
+- Charge is updated implicitly from the channel conductivity. The cavity mode amplitude loses the
+  ohmic power and is refilled through Q_L.
+- A new rod is born on the laser line where the avalanche line density reaches 9e20 m⁻¹. A site
+  closer than 0.6 mm to an existing rod merges into it.
+- Tips advance at v = c_v · r · ν_i(E_tip):
+  - the tip radius r is capped at 0.3 mm;
+  - E_tip is the applied field plus the head excess (capped at E_m = 5 Td), and at least the mean
+    field in the tip–wall gap.
+- c_v = 0.85 and E_m come from a joint fit to the resolved 1.48 MPa `streamer2d` runs at 100 and
+  200 kV/cm. The fit scatter is about ×1.6, and the per-run bias is 0.89 (E100) and 1.13 (E200).
+- **This is an effective growth law, not a resolved streamer head.**
+- Checks: energy residual about 2%; charge conservation to 1e-22 C. Bridge time changes by ≤ 3%
+  with seed, RF phase and mesh (E200 seeds s2/s3, 90° phase, 0.25 mm mesh: 4.54–4.72 ns).
+
+| Case (nominal E0) | First rod | Rods | Longest rod | Bridge (34 mm) | Lowest E0 while driven |
+|---|---|---|---|---|---|
+| 300 kV/cm | 0.41 ns | 6 | 34 mm | 1.47 ns (3 rods) | 77 kV/cm |
+| 200 kV/cm | 1.26 ns | 6 | 33 mm | 4.69 ns (central rod) | 71 kV/cm |
+| 150 kV/cm | 3.0 ns | 6 | 30 mm | none (stalls) | 25 kV/cm |
+| 100 kV/cm | 12.1 ns | 6 | 22 mm | none | 39 kV/cm |
+| 75 kV/cm | 39 ns | 6 (short) | 4 mm | none | 75 kV/cm |
+| 50 kV/cm | none | 0 | — | none | 50 kV/cm |
+| 100 kV/cm, 1 mJ | 10.6 ns | 10 | 21 mm | none | 38 kV/cm |
+| 100 kV/cm, 0.5 mJ | 13.9 ns | 4 | 22 mm | none | 40 kV/cm |
+| 100 kV/cm, focus 10 mm off | 17.0 ns | 6 | 23 mm | none | 46 kV/cm |
+| 100 kV/cm, focus 20 mm off | 57.9 ns | 5 (short) | 2 mm | none | 100 kV/cm |
+
+**What the 3D model shows**
+- **Rods grow along E from the laser line toward both broad walls.** Four to ten parallel rods form
+  along the seeded ±2.5 mm of the laser line, at least 0.6 mm apart (the merge distance). The
+  central rod, at the field maximum, leads.
+- **Partial rods drain the cavity.** About six resistive partial rods absorb MW-level power. That
+  is far more than the ~1 MW forward power can replace in the 36 ns refill time.
+  - Below 200 kV/cm the cavity field collapses to 25–45 kV/cm before any rod bridges, and the rods
+    stall at 22–30 mm.
+  - At 200 kV/cm one central rod bridges at 4.7 ns. At 300 kV/cm three rods bridge at 1.5 ns.
+  - So the bridging threshold lies between 150 and 200 kV/cm (nominal model field).
+- **The laser matters mainly near threshold.** At 100 kV/cm:
+  - laser energy moves onset from 10.6 ns (1 mJ) to 13.9 ns (0.5 mJ);
+  - a 10 mm focus offset delays it to 17 ns;
+  - a 20 mm offset almost removes it.
+  - At 200–300 kV/cm the avalanche is fast enough that the seed size hardly matters.
+
+  This matches the reported behaviour: laser energy and focus change the plasma probability only
+  at 20–50 kV/cm, and the laser alone with RF off gives no visible plasma.
+- **Calibration caveat.** The model fields are nominal swarm fields. The breakdown-probability
+  model below needed a field calibration of e_cal = 3.91 to match the measured thresholds. The
+  absolute thresholds here (150–200 kV/cm for bridging) are therefore likely too high by a similar
+  factor compared with the observed 20–50 kV/cm. The trends, ordering and timescales are the
+  useful outputs.
+
+![3D rod-growth overview for WR-284 at 1.48 MPa He. Panels: (a) longest rod against time for 50–300 kV/cm; (b) cavity field, showing the collapse to 25–45 kV/cm below 200 kV/cm and the drive-off at 100 ns; (c) final rods along the laser line (red = bridged); (d) 200 kV/cm robustness to seed, RF phase and mesh; (e) 100 kV/cm laser energy and focus offset; (f) summary table. Higher fields give earlier inception and bridging. Simulated, not measured.](../simulations/rf_plasma/results/rod3d/rod3d_overview.png)
+
+Interactive 3D viewers with a time slider are in `simulations/rf_plasma/results/rod3d/<case>/rod3d_3d.html`.
+
+### 2. Seed source in sealed helium (`seed_sources.py`)
+
+The model estimates the electrons each source puts in the laser volume (0.75 mJ, best focus).
+
+| Source | Order | Electrons per shot |
+|---|---|---|
+| Multiphoton ionization (MPI) of He (24.6 eV) | 11-photon | 5e-21 |
+| MPI of N₂ / H₂O / O₂ (ppm level) | 6–7-photon | ≤ 1e-4 |
+| MPI of organic impurity (8.8 eV, 0.1 ppm assumed) | 4-photon | 262 |
+| Photodetachment of O₂⁻ left from the previous shot (1 s earlier) | 1-photon | 81 |
+| Photodetachment of background O₂⁻ (cosmic and natural radioactivity) | 1-photon | 0.08 |
+| Free background electrons in the beam | — | 5e-7 |
+
+**Conclusions**
+- Pure helium cannot be photo-ionized at this intensity.
+- The consistent seed is 4-photon ionization of a trace low-ionization-potential impurity: an
+  organic outgassing product at the 0.1 ppm level. It gives a few hundred electrons per shot, with
+  a steep energy slope (k ≈ 4).
+- Photodetachment of negative ions is ruled out as the main seed. It is a 1-photon process, so it
+  would grow as the focus moves away and the beam volume increases. That is the opposite of the
+  observed focus effect.
+- Background ionization leaves about 2e8 m⁻³ negative ions, since almost all free electrons attach
+  within about 0.1 ms. The same budget predicts RF-only breakdown in roughly 2–25% of pulses. This
+  is consistent with "RF alone rarely breaks down", but that frequency has not been measured.
+- The impurity species and level are assumed. A residual-gas analysis of the sealed cell would test
+  this directly.
+
+![Seed electron budget for sealed He at 1.48 MPa: electrons per shot by source, their dependence on laser energy and focus offset, and the RF-only breakdown probability. Impurity MPI dominates, scales as about E⁴ and falls with focus offset, while photodetachment rises with offset. Simulated, not measured.](../simulations/rf_plasma/results/seed_sources/seed_sources.png)
+
+### 3. Plasma under continued RF drive (`rod_drive.py`)
+
+**Method**
+- Starts from the bridged rod.
+- A radial plasma–gas model: electron energy, ionization and recombination, gas heating and radial
+  conduction.
+- It is coupled to a cavity circuit: the rod is a resistance R in series with a post reactance X
+  (about 480 Ω), fed by the forward wave through Q_L.
+- Energy closes to ≤ 0.6% (3.6% at 300 kV/cm).
+
+**Results**
+
+| Case | Forward power | Peak axis Tg | Peak ne | Final rod R | Lowest gap field |
+|---|---|---|---|---|---|
+| 100 kV/cm | 0.26 MW | 7.7 kK | 8.5e23 m⁻³ | 1.16 kΩ | 2.3 kV/cm |
+| 200 kV/cm | 1.05 MW | 12.0 kK | 1.6e24 m⁻³ | 446 Ω | 2.5 kV/cm |
+| 300 kV/cm | 2.37 MW | 14.8 kK | 1.7e24 m⁻³ | 258 Ω | 3.1 kV/cm |
+| 200 kV/cm, initial ne 1e23, r 50 µm | 1.05 MW | 11.7 kK | 4.1e24 m⁻³ | 452 Ω | 2.5 kV/cm |
+| 200 kV/cm, initial r 200 µm | 1.05 MW | 11.9 kK | 1.4e24 m⁻³ | 538 Ω | 2.8 kV/cm |
+
+**Two phases**
+- **Glow phase.** The gap field is about 25–30 kV/cm, Te is about 2.7 eV and the gas stays below
+  2–4 kK. It lasts 40–200 ns, shorter at higher field.
+- **Thermal glow-to-arc transition.** The gas heats to 8–15 kK. R drops below the post reactance,
+  the gap field falls to about 2.5–3 kV/cm, and the rod dissipates only 20–45 kW. Most of the
+  forward power is now reflected, so the cavity behaves as a shorted (switched) resonator.
+
+**Afterglow.** With the drive off at 100 ns, ne decays from about 1e24 to 1e20 m⁻³ in about
+300 ns.
+
+**Robustness.** The result is insensitive to the initial ne and radius. All variants converge to
+R ≈ 450–540 Ω and a gap field of about 2.5 kV/cm.
+
+![Bridged rod under continued RF drive. Panels: (a) gap field, with a glow plateau of about 25–30 kV/cm followed by collapse to about 3 kV/cm; (b) rod resistance falling below the post reactance X; (c) rod power and reflected power; (d) axis electron density, including the afterglow decay when the drive stops at 100 ns; (e) axis gas temperature (8–15 kK after the transition) and Te; (f) radial ne and gas-density profiles showing the hot, rarefied core. Simulated, not measured.](../simulations/rf_plasma/results/rod_drive/rod_drive.png)
+
+### Limitations
+- The tip law is effective and calibrated on two resolved runs, with about ×1.6 scatter. The 3D
+  rods do not resolve streamer heads or branching.
+- The field model is quasi-static: thin wires in an electrostatic image lattice, scaled by the
+  cavity mode amplitude.
+  - At the end of the drive the skin depth (133 µm) is about equal to the conductor radius
+    (110 µm), which is a marginal limitation.
+- The absolute field scale is not calibrated to the experiment (see the e_cal = 3.91 caveat).
+- The recombination coefficient at 1.48 MPa and the impurity identity and level are assumptions.
+- The first-rod birth time at 200 kV/cm (1.26 ns) is earlier than the 1.96 ns launch in the
+  resolved line run. Rod birth uses a line-density criterion, not a resolved launch.
+
 ## Breakdown probability vs laser energy and focus position (He 200 psig, laser ⟂ E)
 
 **Experimental observations to explain**

@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Plasma switch in a WR-284 cavity: 3D rod growth, seed source, continued drive</title>
+<style>
+body{font-family:Segoe UI,Arial,sans-serif;background:#111;color:#ddd;max-width:1200px;margin:auto;padding:14px;line-height:1.45}
+a{color:#7cc4ff}img{max-width:100%;background:#fff;border-radius:4px}table{border-collapse:collapse;font-size:14px}
+td,th{border:1px solid #555;padding:3px 8px}th{background:#222}.card{background:#1a1a1a;border:1px solid #333;border-radius:6px;padding:12px;margin:12px 0}
+.note{color:#ffd27a}
+</style></head><body>
+<h1>Plasma switch in a WR-284 cavity</h1>
+<p>He at 1.48 MPa (200 psig), 2.95 GHz, loaded Q 331. The laser runs along x, perpendicular to E (0.75 mJ, 1 ns, 20 µm waist),
+and the RF drive is switched off 100 ns after the laser.
+<span class="note">All results are simulated, not measured. Model fields are nominal swarm fields; the breakdown-probability
+model needed a ×3.91 field calibration to match the measured thresholds, so absolute thresholds here are likely too high
+by a similar factor.</span>
+<a href="../index.html">← dynamics viewer</a> · <a href="https://github.com/Emaguidetal/plasma-viewer/tree/main/research">data, source and report</a></p>
+
+<div class="card"><h2>1. Rod growth along E in 3D</h2>
+<p>Interactive viewers (drag to orbit, slider for time). Each shows a 24 mm window around the laser crossing:
+<a href="rod3d_E300.html">300 kV/cm</a> ·
+<a href="rod3d_E200.html">200 kV/cm</a> ·
+<a href="rod3d_E150.html">150 kV/cm</a> ·
+<a href="rod3d_E100.html">100 kV/cm</a> ·
+<a href="rod3d_E100_f20.html">100 kV/cm, focus 20 mm off</a></p>
+<table><tr><th>Nominal E0</th><th>First rod</th><th>Longest rod</th><th>Bridge (34 mm)</th><th>Lowest E0 while driven</th></tr>
+<tr><td>300 kV/cm</td><td>0.41 ns</td><td>34 mm</td><td>1.47 ns (3 rods)</td><td>77 kV/cm</td></tr>
+<tr><td>200 kV/cm</td><td>1.26 ns</td><td>33 mm</td><td>4.69 ns (central rod)</td><td>71 kV/cm</td></tr>
+<tr><td>150 kV/cm</td><td>3.0 ns</td><td>30 mm</td><td>none (stalls)</td><td>25 kV/cm</td></tr>
+<tr><td>100 kV/cm</td><td>12.1 ns</td><td>22 mm</td><td>none</td><td>39 kV/cm</td></tr>
+<tr><td>75 kV/cm</td><td>39 ns</td><td>4 mm</td><td>none</td><td>75 kV/cm</td></tr>
+<tr><td>50 kV/cm</td><td>none</td><td>—</td><td>none</td><td>50 kV/cm</td></tr></table>
+<p>Rods grow along E from the laser line to both broad walls. Several partial rods drain the cavity faster than the
+forward power can refill it (36 ns). Below about 200 kV/cm (nominal) the cavity field collapses before any rod bridges.
+Laser energy and focus change the onset only near threshold: at 100 kV/cm, onset is 10.6 / 12.1 / 13.9 ns for 1 / 0.75 / 0.5 mJ,
+17 ns with a 10 mm focus offset and almost none at 20 mm.</p>
+<img src="rod3d_overview.png" alt="3D rod-growth overview: rod length, cavity field, final rods, robustness and laser-energy/focus panels. Simulated, not measured."></div>
+
+<div class="card"><h2>2. Seed source in sealed helium</h2>
+<p>Helium cannot be photo-ionized at this intensity: 11-photon ionization gives about 5e-21 electrons per shot.
+The consistent seed is 4-photon ionization of a trace organic impurity (8.8 eV, 0.1 ppm assumed), giving about 260 electrons per shot.
+It scales as about E<sup>4</sup> and falls with focus offset, as observed. Photodetachment of O<sub>2</sub><sup>−</sup>
+(about 80 electrons from the previous shot) rises with focus offset, the opposite of the observed trend, so it is not the main seed.</p>
+<img src="seed_sources.png" alt="Seed budget by source, energy and focus dependence, and RF-only breakdown probability. Simulated, not measured."></div>
+
+<div class="card"><h2>3. Plasma under continued RF drive</h2>
+<p>After bridging:
+<ul>
+<li><b>Glow phase:</b> gap field about 25–30 kV/cm, Te about 2.7 eV, gas below 2–4 kK, lasting 40–200 ns.</li>
+<li><b>Thermal glow-to-arc transition:</b> the gas heats to 8–15 kK and the rod resistance falls below the post reactance
+(446 Ω at 200 kV/cm). The gap field drops to about 2.5 kV/cm, the rod takes only 20–45 kW, and most of the forward power is reflected.</li>
+<li><b>Afterglow:</b> with the drive off, ne decays from about 1e24 to 1e20 m<sup>−3</sup> in about 300 ns.</li>
+</ul></p>
+<img src="rod_drive.png" alt="Bridged rod under continued drive: gap field, resistance vs post reactance, power, axis density, gas temperature and radial profiles. Simulated, not measured."></div>
+</body></html>

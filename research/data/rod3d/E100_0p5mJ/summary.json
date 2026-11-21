@@ -1,0 +1,93 @@
+{
+ "name": "E100_0p5mJ",
+ "config": {
+  "name": "E100_0p5mJ",
+  "p_pa": 1480276.4,
+  "t_k": 300.0,
+  "f_hz": 2950000000.0,
+  "e0_v_m": 10000000.0,
+  "rf_phase": 0.0,
+  "x_focus_m": 0.0,
+  "energy_j": 0.0005,
+  "stochastic": true,
+  "rng_seed": 1,
+  "dx_c": 0.00025,
+  "x_half": 0.005,
+  "h": 0.0005,
+  "r_s": 6e-06,
+  "n_inc": 9e+20,
+  "e_m_td": 5.0,
+  "c_v": 0.8478,
+  "r_min": 1e-05,
+  "r_max": 0.0003,
+  "alpha_rec": 1e-14,
+  "n_sat": 1e+24,
+  "max_ion_step": 0.5,
+  "tau_amp_s": 3.57e-08,
+  "cavity_feedback": true,
+  "drive_off_s": 1.0000000000000001e-07,
+  "walls": true,
+  "n_img": [
+   1,
+   3,
+   1
+  ],
+  "t_end_s": 2.0000000000000002e-07,
+  "steps_per_period": 64,
+  "frame_dt_s": 1e-10,
+  "stop_after_bridge_s": 1e-09
+ },
+ "wall_s": 179.98388671875,
+ "nodes": 209,
+ "n_seed_electrons": 33.851097669989485,
+ "t_first_birth_ns": 13.866525423729195,
+ "n_rods": 4,
+ "n_long_rods": 4,
+ "long_rod_x_mm": [
+  0.5000000000000073,
+  -0.4999999999999935,
+  1.7500000000000084,
+  -1.7499999999999947
+ ],
+ "t_bridge_ns": null,
+ "n_bridged": 0,
+ "e0_min_kv_cm": 0.01091885473531674,
+ "energy_from_cavity_j": 0.032540978194236014,
+ "ohmic_j": 0.03195881607925248,
+ "energy_residual_rel": 0.017890123362181765,
+ "charge_residual_c": 4.779949517563495e-23,
+ "rods": [
+  {
+   "x_mm": 0.5000000000000073,
+   "born_ns": 13.866525423729195,
+   "length_mm": 22.00000000000002,
+   "bridged_ns": null,
+   "top_wall": false,
+   "bottom_wall": false
+  },
+  {
+   "x_mm": -0.4999999999999935,
+   "born_ns": 14.290254237288535,
+   "length_mm": 21.000000000000018,
+   "bridged_ns": null,
+   "top_wall": false,
+   "bottom_wall": false
+  },
+  {
+   "x_mm": 1.7500000000000084,
+   "born_ns": 14.687500000000417,
+   "length_mm": 21.000000000000018,
+   "bridged_ns": null,
+   "top_wall": false,
+   "bottom_wall": false
+  },
+  {
+   "x_mm": -1.7499999999999947,
+   "born_ns": 16.48834745762761,
+   "length_mm": 20.000000000000018,
+   "bridged_ns": null,
+   "top_wall": false,
+   "bottom_wall": false
+  }
+ ]
+}

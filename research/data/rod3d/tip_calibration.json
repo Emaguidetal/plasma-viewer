@@ -1,0 +1,18 @@
+{
+ "c_v": 0.8478,
+ "e_m_td": 5.0,
+ "rms_log": 0.513,
+ "n_points": 44,
+ "per_run_ratio": {
+  "He1p48MPa_E200_z8": 1.13,
+  "He1p48MPa_E100_z8": 0.89
+ },
+ "runs": [
+  "He1p48MPa_E200_z8",
+  "He1p48MPa_E100_z8"
+ ],
+ "method": "per-RF-period front displacement vs integral of r_tip nu(E_tip); runs equally weighted; E100 from 1 ns, E200 from 0.3 ns",
+ "n_inc": 9e+20,
+ "n_inc_note": "geometric mean of peak line density when the 1e20 contour first spans 0.25 mm (=h/2) along E in planar line runs: 1.84e21 (E200_line, 1.96 ns) and 4.33e20 (E100_line, 16.4 ns)",
+ "e_m_note": "head radius |dU|/E_m capped at r_max=0.3 mm and head-field excess capped at E_m. rms is flat for E_m=1-8 Td (0.48-0.53); 5 Td balances per-run bias. Result: front speed ~ c_v r_max nu(E_applied + 18 kV/cm), i.e. growth is controlled by avalanche at a saturated channel radius in the applied field, consistent with the resolved runs where phi_tip is only 0.3-3 kV. Effective law, not a resolved streamer-head model. Earlier uncapped fit on E100 alone over-predicted E200 by x6.8; uncapped head radius extrapolated to cm and v>c at 300 kV tip potential."
+}
