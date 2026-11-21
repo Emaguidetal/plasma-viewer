@@ -1,0 +1,33 @@
+{
+  "source": "results\\dynamics\\cavity\\E50_verified\\handoff.npz",
+  "handoff_time_s": 1.8004999767898263e-08,
+  "nr": 160,
+  "duration_s": 1e-06,
+  "maximum_source_step_s": 5e-09,
+  "geometry": "cylindrical, per unit laser-axis length",
+  "boundaries": "reflecting axis, outflow outer boundary at 5 mm",
+  "mass_residual_rel": 1.452882916176163e-16,
+  "energy_residual_rel": 8.995232526760817e-05,
+  "energy_residual_j_per_m": 2.842170943040401e-14,
+  "roundoff_bound_j_per_m": 2.973893428175028e-10,
+  "plasma_energy_signal_resolved": false,
+  "step_count": 240,
+  "initial_excess_energy_j_per_m": 3.1596414373780135e-10,
+  "sink_energy_j_per_m": 1.056317440713286e-10,
+  "radiative_energy_j_per_m": 1.0563173697259957e-10,
+  "unresolved_sink_energy_j_per_m": 7.098729031393873e-18,
+  "trapping_radius_m": 0.005,
+  "resonance_escape_factor": 0.0006382505255261344,
+  "chemistry_to_gas_j_per_m": 1.617779336306701e-11,
+  "maximum_gas_temperature_k": 300.00000000873683,
+  "maximum_velocity_m_s": 1.0878575916221978e-08,
+  "limitations": [
+    "axisymmetric local handoff; not a 3D cavity-flow continuation",
+    "RF is assumed quenched at handoff; actual 5-us drive is not continued",
+    "1-mm source resolution remains even when Euler mesh is refined",
+    "inviscid monatomic gas closure restricted to low ionization",
+    "no drift diffusion, heat conduction, line-resolved emission or wall reflections",
+    "visible continuum is an optically-thin Maxwellian estimate, not a camera signal",
+    "fixed-radius Holstein escape reduction; excimer radiative rate is unverified"
+  ]
+}

@@ -108,9 +108,12 @@ def _voronov_he1(te):
 
 @njit(cache=True)
 def kinetic_cell_cr(state, dt, n_gas, tg, p_ext, intensity, prm, tabs, ln_e0, h,
-                    ln_i0, hi, ppt_tab, out, path_len=0.0):
+                    ln_i0, hi, ppt_tab, out, path_len=0.0, max_substeps=200000):
     """Advance one cell; state (6,) = [nXp, nX2p, W, nHe*, nHe2*, nalpha]; out as kinetic_cell
     [rf, laser, excitation(net of superelastic), elastic, ionization(info), recomb_carry, gas, sink, chem].
+    n_gas is ground-state neutral density, not total nuclei. Optional out[9:11]
+    separates resonance/excimer radiative energy from the total sink.
+    Raise on substep exhaustion rather than returning a partially advanced state.
     With prm[P_CR_ON] = 0 and prm[P_DION] = 0 this reproduces plasma3d.kinetic_cell."""
     km_t = tabs[0]
     eps_max = math.exp(ln_e0 + h * (km_t.shape[0] - 1))
@@ -152,7 +155,9 @@ def kinetic_cell_cr(state, dt, n_gas, tg, p_ext, intensity, prm, tabs, ln_e0, h,
     nm = state[3]; nx = state[4]; na = state[5]
     n_tot = n_gas + nxp + 2.0 * nx2p + na + nm + 2.0 * nx
     iters = 0
-    while t < dt and iters < 200000:
+    while t < dt:
+        if iters >= max_substeps:
+            raise ArithmeticError("CR kinetics exhausted its substep budget before completing dt")
         iters += 1
         ne = nxp + nx2p + 2.0 * na
         ne_true = ne
@@ -329,6 +334,10 @@ def kinetic_cell_cr(state, dt, n_gas, tg, p_ext, intensity, prm, tabs, ln_e0, h,
         out[6] += gas * QE
         out[7] += (sink + dts * r_ppt * (nphot * prm[P_PHOTON_EV] - ip - excess)) * QE
         out[8] += (u_new - u_old) * QE
+        if out.shape[0] > 9:
+            out[9] += estar * f_rad * QE
+        if out.shape[0] > 10:
+            out[10] += ex * x_rad * QE
         t += dts
     state[0] = nxp; state[1] = nx2p; state[2] = w
     state[3] = nm; state[4] = nx; state[5] = na

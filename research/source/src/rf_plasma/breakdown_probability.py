@@ -8,14 +8,15 @@ tau = 2 Q_L / omega.
 Model per shot
 * Seed: n(r, z) = n_sat (1 - exp(-n_ref (I/I_ref)^k / n_sat)) (power law of effective order k, optional
   saturation density n_sat), I from a Gaussian beam w(z) = w0 sqrt(1 + ((z - s)/z_R)^2); integrated over
-  the beam cross-section to dN0/dz.  n_ref = on-axis seed density at the focus for the reference pulse.
+  the beam cross-section to dN0/dz. n_ref is the unsaturated reference amplitude;
+  with saturation the reference on-axis density is n_sat (1 - exp(-n_ref/n_sat)).
 * Field along the beam: E(z) = E_peak * profile(z), profile = cos(2 pi z / lambda_g) (beam along the guide,
   standing wave) or cos(pi z / a) (beam across the broad dimension); z = 0 is the field maximum.
 * Avalanche (pure He, no attachment unless nu_loss > 0): G(z, t) = int nu_iz(E(z) env(t)) dt from t_L,
   env = 1 until t_rf_end then exp(-(t - t_rf_end)/tau). Breakdown when sum_z dN0(z) exp(G) >= N_br.
 * Fluctuations: magnetron power (field ~ sqrt(P)), laser energy, Poisson number of seed electrons and the
   Yule (Furry) avalanche factor W ~ Gamma(K, 1)/K.
-e_cal multiplies the field seen by the electrons (calibration knob for the low-field discrepancy).
+e_cal is an illustrative field multiplier, not a measured apparatus calibration.
 """
 from __future__ import annotations
 
@@ -49,7 +50,7 @@ class Setup:
     wavelength_m: float = 532e-9
     w0_m: float = 20e-6
     k_order: float = 6.0
-    n_ref_m3: float = 1e16              # seed density on axis at the focus for the reference pulse
+    n_ref_m3: float = 1e16              # unsaturated reference amplitude before optional saturation
     e_ref_j: float = 1e-3
     n_sat_m3: float = 0.0               # 0: no saturation
     t_laser_s: float = 4.9e-6

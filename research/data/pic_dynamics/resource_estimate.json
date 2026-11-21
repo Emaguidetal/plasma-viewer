@@ -1,0 +1,15 @@
+{
+ "total_steps": 2046898,
+ "step_budget": 2100000,
+ "wall_budget_s": 7200,
+ "initial_macros": 2000,
+ "refined_macros": 4000,
+ "cells": 32,
+ "particle_ceiling": 20000,
+ "memory_estimate_mb": 200,
+ "threads": 1,
+ "processes_simultaneous": 1,
+ "previous_reference": "existing 6399-macro/64-cell case: 1394 s / 358333 steps; pilot measures this driver",
+ "pilot_seconds_per_step": 0.0006753613800000494,
+ "projected_suite_s": 2211.833372798946
+}

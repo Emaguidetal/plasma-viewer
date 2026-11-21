@@ -1,0 +1,379 @@
+{
+  "scope": "restricted numerical diagnostics, not complete or experimental validation",
+  "rf": {
+    "focus_field_nrmse_b4_vs_b2": 0.06821001323976779,
+    "electron_count_relative_difference": 0.0004946502469365426,
+    "net_work_relative_difference": 0.009017626322187994,
+    "gas_heat_relative_difference": 0.009528987149543772,
+    "empty_control_residual_j": 0.0005338476689825677,
+    "empty_control_residual_relative_em": 0.006765795613452158,
+    "empty_control_seed_count": 0.0,
+    "baseline_subtracted_residual_relative_work": 0.0020982956960626784,
+    "caveat": "RF staggered-energy/flux diagnostic is not an exact discrete identity; weak loading is unresolved",
+    "focus_field_nrmse_b2_vs_b1": 0.039269929925529586,
+    "primary_strong_case": "E200_b1 (one FDTD step per kinetic coupling)",
+    "primary_summary": {
+      "field_peak_kv_cm": 200.0,
+      "field_target_convention": "empty-cavity focus peak",
+      "pressure_pa": 1480276.4,
+      "temperature_k": 300.0,
+      "frequency_hz": 2950365813.5935254,
+      "dx_m": 0.001,
+      "time_step_s": 1.8873165375155412e-12,
+      "coupling_step_s": 1.8873165375155412e-12,
+      "loaded_prefill_step_count": 60407,
+      "rf_clock_offset_s": 1.140071300817013e-07,
+      "laser_rf_phase_rad": 1.655435395408844,
+      "rf_source_convention": "sin(2*pi*f*absolute_RF_clock)",
+      "laser_enabled": true,
+      "laser_axis": "x perpendicular to Ey",
+      "laser_energy_j": 0.00075,
+      "laser_fwhm_s": 1e-09,
+      "laser_waist_m": 2e-05,
+      "laser_time_s": 2e-09,
+      "seed_model": "empirical saturated I^6 active-site kernel; not measured",
+      "seed_time_profile": "empirical Gaussian-CDF injection with laser FWHM, not a multiphoton rate",
+      "seed_unsaturated_reference_amplitude_m3": 1e+17,
+      "seed_saturated_reference_density_m3": 9999546000702376.0,
+      "seed_expected_electrons": 2948.212851680637,
+      "seed_input_j": 1.185017306150946e-14,
+      "laser_delivered_j": 0.00075,
+      "optical_depth_during_pulse": 5.1264161881395356e-05,
+      "optical_depth_scope": "bulk-grid IB diagnostic; physical beam attenuation/refraction unverified",
+      "bulk_grid_nu_over_optical_omega_max": 0.00830876872557024,
+      "bulk_grid_wp2_over_optical_omega2_max": 2.3906431181990793e-07,
+      "plasma_energy_residual_rel": -1.861249006600623e-15,
+      "edge_to_node_work_residual_j": -3.469446951953614e-18,
+      "edge_to_kinetic_work_residual_j": 3.8163916471489756e-17,
+      "rf_energy_residual_j": 0.0005910504402850542,
+      "rf_energy_residual_rel": 0.007490763205599323,
+      "rf_residual_relative_plasma_work": 0.028184883900750576,
+      "rf_boundary_flux_j": 0.0009184272809279521,
+      "initial_em_energy_j": 0.07890390125311206,
+      "final_em_energy_j": 0.058260801778636476,
+      "rf_work_interpretation": "net J dot E work, not automatically irreversible absorption",
+      "rf_absorbed_j": 0.020970476315118444,
+      "gas_heat_j": 0.015172404385128128,
+      "escaped_sink_j": 0.0032499657146238927,
+      "modeled_radiative_energy_j": 1.491192275998527e-05,
+      "unresolved_sink_energy_j": 0.0032350537918639072,
+      "handoff_time_s": 1.8001225134823233e-08,
+      "provenance": [
+        {
+          "species": "He",
+          "entry": "electron_rates_bulk",
+          "verified": true,
+          "source": "D:\\CST projects\\Plasma research\\simulations\\rf_plasma\\cases\\swarm\\He_boltzmann.csv"
+        },
+        {
+          "species": "He",
+          "entry": "electron_rates_filament",
+          "verified": true,
+          "source": "D:\\CST projects\\Plasma research\\simulations\\rf_plasma\\cases\\swarm\\He_maxwell.csv"
+        },
+        {
+          "species": "He",
+          "entry": "mass_amu",
+          "verified": true,
+          "source": "NIST_AW",
+          "note": null
+        },
+        {
+          "species": "He",
+          "entry": "ip_eV",
+          "verified": true,
+          "source": "NIST_ASD_IE",
+          "note": null
+        },
+        {
+          "species": "He",
+          "entry": "dof",
+          "verified": true,
+          "source": "monatomic gas",
+          "note": null
+        },
+        {
+          "species": "He",
+          "entry": "kconv_m6_s",
+          "verified": true,
+          "source": "Saifutdinov2023 Table 2 R20",
+          "note": null
+        },
+        {
+          "species": "He",
+          "entry": "beta_atomic_m3_s",
+          "verified": true,
+          "source": "radiative recombination neglected",
+          "note": null
+        },
+        {
+          "species": "He",
+          "entry": "beta_atomic_neutral_m6_s",
+          "verified": true,
+          "source": "Saifutdinov2023 Table 2 R22 (e + He+ + He), (Te/Tg) evaluated with Tg = 300 K",
+          "note": null
+        },
+        {
+          "species": "He",
+          "entry": "beta_dimer_m3_s",
+          "verified": true,
+          "source": "Deloche et al. 1976 PRA 13, 1140 (doi:10.1103/PhysRevA.13.1140): two-body alpha(He2+) < 5e-16 m3/s at 293 K (upper limit, abstract); (Te/Tg)^-1 scaling kept from Saifutdinov2023 R24",
+          "note": "Upper limit used (Saifutdinov2023 R24 prints 5e-15 = 10x the measured bound; changed 2026-11-20). See literature/he-rate-data-verification.md."
+        },
+        {
+          "species": "He",
+          "entry": "beta_dimer_neutral_m6_s",
+          "verified": true,
+          "source": "Saifutdinov2023 Table 2 R23 (e + He2+ + He)",
+          "note": null
+        },
+        {
+          "species": "He",
+          "entry": "k3b_m6_s",
+          "verified": true,
+          "source": "R21/R25 electron-assisted values have ambiguous units in the source; omitted",
+          "note": "Omission underestimates recombination at Te < 0.1 eV."
+        },
+        {
+          "species": "He",
+          "entry": "mobility_K0_m2_Vs",
+          "verified": true,
+          "source": "no verified K0; ambipolar diffusion disabled (see Ar)",
+          "note": null
+        },
+        {
+          "species": "He",
+          "entry": "eta_fast",
+          "verified": true,
+          "source": "baseline, see Ar",
+          "note": null
+        },
+        {
+          "species": "He",
+          "entry": "eedf_closure",
+          "verified": true,
+          "source": "w = nu_ee/(nu_ee+nu_eps): nu_ee NRL Plasma Formulary (2.91e-12 ne lnL Te^-1.5, SI); nu_eps from the LXCat-derived Boltzmann table; criterion Raizer 1991, Lieberman & Lichtenberg 2005; ne/N as Coulomb control parameter: BOLSIG+ manual",
+          "note": "ee_scale = 1; interpolation form k = (1-w) kB + w kM is a modeling choice"
+        },
+        {
+          "species": "He",
+          "entry": "ppt",
+          "verified": true,
+          "source": "atomic He: Z=1, 1s electron (l=0)",
+          "note": null
+        },
+        {
+          "species": "He",
+          "entry": "optics",
+          "verified": false,
+          "source": "He (n-1) = 3.50e-5 at 532 nm, 0 C, 1 atm (Mansfield & Peck 1969 JOSA 59, 199 dispersion formula via refractiveindex.info; consistent with alpha = 1.38376 a.u.); n2 order of magnitude (Borzsonyi 2010 / Shelton & Rice 1994 not re-read) - only P/Pcr << 1 is used",
+          "note": null
+        },
+        {
+          "species": "He",
+          "entry": "cr_model",
+          "verified": false,
+          "source": "see per-entry sources; conversion/pooling/excimer: Schroter et al. 2018 PCCP 20, 24263 doi:10.1039/c8cp02473a (R380, R316-R319, R8, R55); He2*+He2*: Saifutdinov & Timerkaev 2023 Nanomaterials 13, 1966 doi:10.3390/nano13131966 (R19); levels NIST ASD; resonance broadening NIST Atomic Spectroscopy eq. 41 (https://physics.nist.gov/Pubs/AtSpec/node20.html); Holstein 1951 Phys Rev 83, 1159 Lorentz cylinder g = 1.115/sqrt(pi k0 R) (as commonly cited, not re-read)",
+          "note": null
+        }
+      ],
+      "limitations": [
+        "bulk-node-averaged optical seed: sub-mm plasma structure unresolved",
+        "gas is isochoric during this short 3D RF stage",
+        "radiation uses existing lumped CR escape rates; visible free-free is conditional",
+        "RF energy/flux diagnostic uses staggered fields and is not an exact discrete identity",
+        "source increment is inserted at block end before a full kinetic block; coupling is first order",
+        "no diffusion in this restricted 3D demonstration",
+        "RF remains on; separate handoff assumes RF quench, not the continuing experiment"
+      ],
+      "rf_net_work_j": 0.020970476315118444,
+      "rf_absorbed_j_note": "compatibility alias for rf_net_work_j, not irreversible absorption"
+    }
+  },
+  "gas": {
+    "meshes": [
+      {
+        "source": "results\\dynamics\\cavity\\E200_b1\\handoff.npz",
+        "handoff_time_s": 1.8001225134823233e-08,
+        "nr": 160,
+        "duration_s": 1e-06,
+        "maximum_source_step_s": 5e-09,
+        "geometry": "cylindrical, per unit laser-axis length",
+        "boundaries": "reflecting axis, outflow outer boundary at 5 mm",
+        "mass_residual_rel": 0.0,
+        "energy_residual_rel": 8.059786950706605e-14,
+        "energy_residual_j_per_m": 5.684341886080802e-14,
+        "roundoff_bound_j_per_m": 2.985920449308835e-10,
+        "plasma_energy_signal_resolved": true,
+        "step_count": 240,
+        "initial_excess_energy_j_per_m": 0.7052719781361532,
+        "sink_energy_j_per_m": 0.05850053568774752,
+        "radiative_energy_j_per_m": 0.010736145605932435,
+        "unresolved_sink_energy_j_per_m": 0.047764390081815086,
+        "trapping_radius_m": 0.005,
+        "resonance_escape_factor": 0.0006382505255261344,
+        "chemistry_to_gas_j_per_m": 0.009939277440948574,
+        "maximum_gas_temperature_k": 327.81824030045306,
+        "maximum_velocity_m_s": 33.86869200233664,
+        "limitations": [
+          "axisymmetric local handoff; not a 3D cavity-flow continuation",
+          "RF is assumed quenched at handoff; actual 5-us drive is not continued",
+          "1-mm source resolution remains even when Euler mesh is refined",
+          "inviscid monatomic gas closure restricted to low ionization",
+          "no drift diffusion, heat conduction, line-resolved emission or wall reflections",
+          "visible continuum is an optically-thin Maxwellian estimate, not a camera signal",
+          "fixed-radius Holstein escape reduction; excimer radiative rate is unverified"
+        ]
+      },
+      {
+        "source": "results\\dynamics\\cavity\\E200_b1\\handoff.npz",
+        "handoff_time_s": 1.8001225134823233e-08,
+        "nr": 320,
+        "duration_s": 1e-06,
+        "maximum_source_step_s": 5e-09,
+        "geometry": "cylindrical, per unit laser-axis length",
+        "boundaries": "reflecting axis, outflow outer boundary at 5 mm",
+        "mass_residual_rel": -1.452882916176163e-16,
+        "energy_residual_rel": 0.0,
+        "energy_residual_j_per_m": 0.0,
+        "roundoff_bound_j_per_m": 3.981227265745113e-10,
+        "plasma_energy_signal_resolved": true,
+        "step_count": 320,
+        "initial_excess_energy_j_per_m": 0.7052719781361532,
+        "sink_energy_j_per_m": 0.05848141926682847,
+        "radiative_energy_j_per_m": 0.010686346538235275,
+        "unresolved_sink_energy_j_per_m": 0.047795072728593194,
+        "trapping_radius_m": 0.005,
+        "resonance_escape_factor": 0.0006382505255261344,
+        "chemistry_to_gas_j_per_m": 0.009959751807312128,
+        "maximum_gas_temperature_k": 327.81828996846383,
+        "maximum_velocity_m_s": 39.00160422155359,
+        "limitations": [
+          "axisymmetric local handoff; not a 3D cavity-flow continuation",
+          "RF is assumed quenched at handoff; actual 5-us drive is not continued",
+          "1-mm source resolution remains even when Euler mesh is refined",
+          "inviscid monatomic gas closure restricted to low ionization",
+          "no drift diffusion, heat conduction, line-resolved emission or wall reflections",
+          "visible continuum is an optically-thin Maxwellian estimate, not a camera signal",
+          "fixed-radius Holstein escape reduction; excimer radiative rate is unverified"
+        ]
+      },
+      {
+        "source": "results\\dynamics\\cavity\\E200_b1\\handoff.npz",
+        "handoff_time_s": 1.8001225134823233e-08,
+        "nr": 640,
+        "duration_s": 1e-06,
+        "maximum_source_step_s": 5e-09,
+        "geometry": "cylindrical, per unit laser-axis length",
+        "boundaries": "reflecting axis, outflow outer boundary at 5 mm",
+        "mass_residual_rel": -1.452882916176163e-16,
+        "energy_residual_rel": 0.0,
+        "energy_residual_j_per_m": 0.0,
+        "roundoff_bound_j_per_m": 6.967147715053948e-10,
+        "plasma_energy_signal_resolved": true,
+        "step_count": 560,
+        "initial_excess_energy_j_per_m": 0.7052719781361532,
+        "sink_energy_j_per_m": 0.05846692814876868,
+        "radiative_energy_j_per_m": 0.01064918310458885,
+        "unresolved_sink_energy_j_per_m": 0.04781774504417983,
+        "trapping_radius_m": 0.005,
+        "resonance_escape_factor": 0.0006382505255261344,
+        "chemistry_to_gas_j_per_m": 0.00997516309108358,
+        "maximum_gas_temperature_k": 327.81828899522145,
+        "maximum_velocity_m_s": 44.6268896540225,
+        "limitations": [
+          "axisymmetric local handoff; not a 3D cavity-flow continuation",
+          "RF is assumed quenched at handoff; actual 5-us drive is not continued",
+          "1-mm source resolution remains even when Euler mesh is refined",
+          "inviscid monatomic gas closure restricted to low ionization",
+          "no drift diffusion, heat conduction, line-resolved emission or wall reflections",
+          "visible continuum is an optically-thin Maxwellian estimate, not a camera signal",
+          "fixed-radius Holstein escape reduction; excimer radiative rate is unverified"
+        ]
+      }
+    ],
+    "peak_velocity_relative_difference_320_to_640": 0.12605147874028153,
+    "peak_velocity_converged_5_percent": false,
+    "final_pressure_perturbation_l1_relative_320_to_640": 0.04133096745930603,
+    "half_source_step_peak_velocity_relative_difference": 0.014357544439149187,
+    "trapping_radius_5_to_10_mm_radiative_energy_relative_difference": 0.0016919049616341236,
+    "caveat": "velocity peak is mesh-dependent; 1-mm projected source is not an optical-filament resolution study"
+  },
+  "pic": [
+    {
+      "label": "100kVcm",
+      "mean_energy_nrmse": 0.03949366413898215,
+      "ionization_events": 2237,
+      "warnings": [
+        "instantaneous drift NRMSE fails 15% criterion; broad-distribution sampling noise/closure mismatch not separated",
+        "coarse-frame work balance fails 10%; exact MCC energy accounting not validated"
+      ]
+    },
+    {
+      "label": "100kVcm_double_particles",
+      "mean_energy_nrmse": 0.038181349335329275,
+      "ionization_events": 4571,
+      "warnings": [
+        "instantaneous drift NRMSE fails 15% criterion; broad-distribution sampling noise/closure mismatch not separated",
+        "coarse-frame work balance fails 10%; exact MCC energy accounting not validated"
+      ]
+    },
+    {
+      "label": "100kVcm_half_dt",
+      "mean_energy_nrmse": 0.0433598158226234,
+      "ionization_events": 2260,
+      "warnings": [
+        "instantaneous drift NRMSE fails 15% criterion; broad-distribution sampling noise/closure mismatch not separated",
+        "coarse-frame work balance fails 10%; exact MCC energy accounting not validated"
+      ]
+    },
+    {
+      "label": "100kVcm_seed2",
+      "mean_energy_nrmse": 0.04270380169027664,
+      "ionization_events": 2187,
+      "warnings": [
+        "instantaneous drift NRMSE fails 15% criterion; broad-distribution sampling noise/closure mismatch not separated",
+        "coarse-frame work balance fails 10%; exact MCC energy accounting not validated"
+      ]
+    },
+    {
+      "label": "50kVcm",
+      "mean_energy_nrmse": 0.050684244297075555,
+      "ionization_events": 40,
+      "warnings": [
+        "instantaneous drift NRMSE fails 15% criterion; broad-distribution sampling noise/closure mismatch not separated",
+        "coarse-frame work balance fails 10%; exact MCC energy accounting not validated",
+        "rare ionization; do not validate a low-field rate from ratio"
+      ]
+    }
+  ],
+  "shock": {
+    "benchmark": "dimensionless Sod shock tube; not the helium experiment",
+    "rows": [
+      {
+        "cells": 200,
+        "shock_position": 0.8525,
+        "exact_shock_position": 0.8504311464060357,
+        "shock_position_error": 0.0020688535939643593,
+        "pressure_star": 0.302820955280007,
+        "exact_pressure_star": 0.3031301780506468,
+        "mass_energy_absolute_residual": [
+          0.0,
+          2.220446049250313e-16
+        ]
+      },
+      {
+        "cells": 400,
+        "shock_position": 0.8512500000000001,
+        "exact_shock_position": 0.8504311464060357,
+        "shock_position_error": 0.000818853593964386,
+        "pressure_star": 0.3030371762565381,
+        "exact_pressure_star": 0.3031301780506468,
+        "mass_energy_absolute_residual": [
+          0.0,
+          0.0
+        ]
+      }
+    ]
+  }
+}

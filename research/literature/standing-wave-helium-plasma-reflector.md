@@ -1,5 +1,209 @@
 # Dynamic standing-wave cavity and an ionized-helium reflector
 
+## New RF, optics, gas-expansion, emission and real-PIC dynamics study
+
+**Status: implemented and executed, with explicitly limited validation.**
+The [interactive dynamics viewer](../data/dynamics/dynamics.html)
+shows three distinct calculations. It does not claim a full-device PIC
+simulation, a measured seed source, calibrated optical emission, or complete
+experimental validation. The public viewer is at
+[RF/optics/plasma dynamics](https://emaguidetal.github.io/plasma-viewer/dynamics/).
+
+### What is solved, and what is assumed
+
+| Stage | Solved | Prescribed or omitted |
+|---|---|---|
+| Short cavity RF window | 3D transient Yee Maxwell fields, Drude current, bulk helium CR species/electron energy and exact heavy-gas energy transfer | 1-mm grid; no diffusion in this restricted driver; gas is isochoric during the 18-ns RF window |
+| Focal optics and seed | Number-conserving bulk-grid insertion; displayed Gaussian intensity versus position/time | Vacuum Gaussian, not a propagated optical solution; empirical saturated sixth-order seed; sub-grid attenuation/refraction unverified |
+| Local RF-off afterglow | Cylindrical HLL finite-volume Euler gas expansion/compression, advected plasma species, electron pressure/compression work, CR chemistry and energy sinks | Axisymmetric conservative projection; assumed RF quench at handoff; no continued 5-us drive, drift diffusion, conduction, wall echoes or full 3D flow |
+| Radiation | Lumped resonance/excimer power and separately accumulated modeled radiative energy | Fixed-radius Holstein escape reduction, unverified excimer rate; not line-resolved radiation transport |
+| Visible continuum | Conditional 400-700 nm optically thin Maxwellian free-free estimate | Constant Gaunt factor 1.2; diagnostic only, not an extra sink or calibrated camera signal |
+| Local PIC | Actual WarpX 1D3V PIC/MCC particles, weighted EEDF and electron-count histories | Separate imposed sinusoidal field, fixed thermal neutral reservoir, dilute seed; not the cavity solution or dense-gas chemistry |
+
+The implemented interfaces are in
+[cavity_dynamics.py](../source/src/rf_plasma/cavity_dynamics.py),
+[gas_dynamics.py](../source/src/rf_plasma/gas_dynamics.py),
+[radial_afterglow.py](../source/src/rf_plasma/radial_afterglow.py)
+and [radiation_diagnostics.py](../source/src/rf_plasma/radiation_diagnostics.py).
+Reaction sources and verification flags are carried in the run metadata;
+the continuum formula uses Rybicki & Lightman (1979), Eq. 5.15b, converted to SI.
+
+```mermaid
+flowchart LR
+    L["Prescribed Gaussian and empirical seed along x"]
+    R["3D Maxwell and CR fluid; RF clock"]
+    H["Conservative radial projection; assumed RF quench"]
+    G["Local Euler and CR afterglow; separate clock"]
+    P["Independent imposed-field real PIC; separate clock"]
+    V["Weighted EEDF and qualified validation"]
+    L -->|"x perpendicular to Ey"| R
+    R --> H --> G
+    P --> V
+```
+
+This is a **model-interface schematic**, not a measured discharge sequence.
+The PIC run is not driven by exported time-dependent cavity fields.
+
+![Model-interface schematic with separate RF, afterglow and PIC clocks. The arrows are implemented data exchanges or an assumed quench, not a measured sequence.](../data/dynamics/workflow.png)
+
+**Inputs.** He at 200 psig = 1,480,276.4 Pa absolute and 300 K; RF at
+2.95037 GHz; empty-cavity focus peak targets 50 and 200 kV/cm.
+The example laser is 532 nm, 0.75 mJ, 1 ns intensity FWHM, with an **assumed**
+20-um waist. Its Gaussian peak power is 0.705 MW, peak intensity
+1.121e15 W/m2 and Rayleigh range 2.36 mm. It propagates along x, perpendicular
+to Ey; it is not the earlier longitudinal conducting-wire surrogate.
+
+The saturated seed contains 2,948.2 **expected** electrons. Its unsaturated
+reference amplitude is 1e17 m^-3 at 1 mJ, while the saturated reference
+on-axis density is 9.99955e15 m^-3; these are not interchangeable. The
+Gaussian-CDF injection time profile is empirical, not a derived multiphoton
+rate. This is a different seed assumption from the older unsaturated
+probability scans below.
+
+The saved prefill RF clock is retained: offset 114.007 ns, laser at 2 ns of
+the short continuation, source-phase convention sin(2*pi*f*t), laser-center
+source phase 1.65544 rad. This is not a simulation of the measured 4.9-us
+laser timing or its unknown RF phase. The viewer exports every-step focus
+probes (1.887 ps); maps average approximately 2 mm and sample approximately
+98 ps. Maps alone give only about 3.5 frames per carrier cycle. Cases share
+RF/density/UV color scales with numerical legends; optical z is a signed
+transverse coordinate, not a radial coordinate.
+
+![Executed RF/fluid and local gas histories, with distinct stage clocks and energy-sink interpretation. These are conditional simulations, not experimental measurements.](../data/dynamics/dynamics_overview.png)
+
+### Actual results and numerical checks
+
+| Quantity at the end of the short RF window | 50 kV/cm | 200 kV/cm, single-step coupling |
+|---|---:|---:|
+| Total fluid electrons | 4.62e3 | 3.98e14 |
+| Net field-to-plasma work, integral J dot E | 7.19e-13 J | 2.097e-2 J |
+| Electron/chemistry-to-heavy-gas heat | 4.32e-13 J | 1.517e-2 J |
+
+The laser seed energy is 1.185e-14 J and is separately booked. Net J dot E
+work is not automatically irreversible absorption. Material-weighted edge
+work reaches only occupied kinetic nodes; edge-to-kinetic discrepancies
+are below 7e-17 J. The plasma energy ledger closes to approximately 2e-15
+relative. Ground-state neutrals are distinguished from total helium nuclei,
+and species exceeding the available nuclei are rejected.
+
+**RF coupling refinement:** blocks of 4, 2 and 1 FDTD steps were run.
+The focus-field waveform NRMSE decreases from 6.82% (4 versus 2) to 3.93%
+(2 versus 1); the one-step case is the displayed strong-field case. This is
+coupling refinement, not a completed spatial/timestep convergence proof.
+The primary RF energy/flux diagnostic residual is 5.91e-4 J, about 0.75%
+of initial field energy and 2.82% of plasma work. It uses staggered fields
+and approximate flux quadrature, so it is not an exact discrete identity.
+The empty continuation has a 0.677% field-energy residual with **exactly
+zero seed, electron production and plasma work**. Consequently the very
+weak 50-kV/cm plasma loading is below this RF diagnostic's resolution.
+The existing matched-guide Drude reference still passes:
+|S11| 0.25104 versus 0.25074 analytical, |S21| 0.78636 versus 0.78590.
+
+**Local gas study:** the strong-case handoff is at 18.001 ns; the subsequent
+1-us afterglow assumes RF is quenched. Its maximum gas temperature is
+327.82 K. Maximum velocities are 33.87, 39.00 and 44.63 m/s at 160, 320 and
+640 radial cells. The last refinement changes the peak by **12.6%**, so
+the peak is **not mesh-converged**. The final pressure-perturbation weighted
+L1 difference is 4.13%. Halving the source-splitting limit changes the
+160-cell peak by 1.44%; changing the assumed trapping radius from 5 to
+10 mm changes modeled radiative energy by 0.17%, not a validation of either
+the rates or geometry.
+
+Mass errors are about 1e-16 relative; strong-case excess-energy ledger
+errors are below 1e-13 relative. The 50-kV/cm gas perturbation is below
+the conservative floating-point resolution bound against ambient gas
+energy; its tiny computed velocity is **not resolved physical motion**.
+At 160 cells the strong-case modeled radiation is 0.01074 J per metre of
+beam, while the **total sink is 0.05850 J/m**. The difference is unresolved
+recombination-energy disposal, not a predicted photon signal.
+
+**Shock validation, separately:** the dimensionless Sod benchmark
+(gamma = 1.4, not this helium experiment) converges in shock-position
+error from 0.002069 at 200 cells to 0.000819 at 400 cells. The pressure
+plateau is 0.303037 versus 0.303130 exact; mass/energy residuals are at
+roundoff. Computed helium gas speeds are subsonic; this alone does not
+determine a front's Mach number. No converged shock-speed or jump-condition
+validation is claimed for the helium example.
+
+![Actual RF coupling and gas-mesh refinement. The velocity panel explicitly shows an unconverged peak, despite excellent conservation.](../data/dynamics/validation.png)
+
+![Separate dimensionless Sod shock-tube algorithm benchmark, not a measured helium shock.](../data/dynamics/shock_validation.png)
+
+**Software verification:** 88 existing/focused tests passed, including
+sparse edge-work deposition, accepted kinetic work, neutral inventory,
+composition-consistent gas-energy handoff, electron compression work,
+explicit kinetic substep exhaustion, denormal continuum diagnostics,
+uniform cylindrical equilibrium and the existing RF regressions.
+The [machine-readable refinement results](../data/dynamics/validation.json)
+retain failures and scope limits, not just passed checks.
+
+### Real PIC diagnostics: qualified agreement, not full validation
+
+The [PIC execution guide](../pic_source/DYNAMICS_README.md) and
+[executed report](../data/pic_dynamics/REPORT.md)
+document the real local calculations. There are 65 frames per run; the
+viewer displays a fixed sample of up to 200 initial macroparticle IDs,
+retaining survivors without newborn replacement. The full weighted EEDF
+and count histories include newborn electrons. Particle weights are
+counts per m2 transverse area, not full 3D particle totals.
+
+| Imposed RF peak | PIC cycle mean energy | Fluid mean-energy NRMSE | Final multiplication | Ionization events |
+|---|---:|---:|---:|---:|
+| 50 kV/cm | 5.769 eV | 5.07% | 1.020 | 40 |
+| 100 kV/cm | 7.169 eV | 3.95% | 2.1185 | 2,237 |
+
+The runs cover two RF periods, not the 18-ns cavity evolution. Halving
+dt (2 to 1 fs), doubling initial macroparticles (2,000 to 4,000), and
+changing the random seed give mean-energy NRMSE sensitivities of 1.55%,
+1.60% and 1.82%. Acceleration/collision-relaxation checks pass;
+histogram normalization errors are about 2e-16, with zero particle
+escape/overflow and zero charge-accounting residual.
+
+**Failed or incomplete checks are retained:** instantaneous drift fails
+the 15% criterion, and coarse-frame work balance fails the 10% criterion.
+The latter uses 65-frame quadrature and expected EEDF collision sinks,
+not exact eventwise MCC energy accounting. Neither drift nor exact PIC
+energy closure is validated. At 50 kV/cm only 40 ionization events occur:
+the one-sided 95% effective-rate upper bound is 3.807e7 s^-1, not a
+validated low-field ionization rate. Grid/domain, sheath, impurity and
+dense-plasma validation remain absent. Agreement using shared cross-section
+data is not independent experimental validation.
+
+![Real local WarpX/MCC validation diagnostics. Mean-energy agreement is separated from failed drift/work checks; no synthetic PIC particles are used.](../data/dynamics/pic_diagnostics.png)
+
+### Specialist AI reviews and resolved defects
+
+Three requested read-only profiles use doctoral-level scientific review
+standards: [Plasma Physics Reviewer](../agents/plasma-physics-reviewer.agent.md),
+[RF Physics Reviewer](../agents/rf-physics-reviewer.agent.md) and
+[Optical Physics Reviewer](../agents/optical-physics-reviewer.agent.md).
+They are AI agents, not human professors or holders of academic credentials.
+
+Their initial reviews found substantive defects, not just presentation issues:
+
+| Review | Corrected implementation or claim | Remaining qualification |
+|---|---|---|
+| Plasma | Ground-neutral argument, nuclei guards, exact heavy-gas energy handoff, explicit kinetic exhaustion, radiative versus unresolved sink, denormal diagnostic arithmetic | Local assumed-quench flow; uncertain CR escape/rates; unconverged peak velocity; incomplete PIC drift/work validation |
+| RF | Population-weighted conservative edge work, unsupported-current guard, independent work ledgers, phase/dense probe exports, coupling refinement, shared scales | Approximate staggered RF budget; unresolved weak loading; no full spatial-convergence or measured-field claim |
+| Optics | Accurate Gaussian peak/units, saturated-reference labels, signed transverse coordinate, fixed-ID PIC labels, removal of physical attenuation/refraction validation claim | Prescribed optics and empirical seed; no resolved visible spectrum or camera prediction |
+
+All three final AI re-reviews returned **acceptable within stated scope**
+with no remaining blocking defect in this active pipeline. They inspected
+source, tests and saved metrics; they did not independently rerun the tests
+or browser playback. The parent execution supplied those checks.
+
+One medium legacy limitation remains outside the new path:
+`plasma3d_cr.bulk_update_cr` still adds heat using the new particle heat
+capacity rather than evolving composition-consistent gas internal energy.
+Do not reuse that older caller for conservative heavy-gas predictions
+before correcting it. The new `advance_cells` path does not use that update.
+The review does not retroactively validate earlier gas-temperature results.
+
+The earlier 3.91x illustrative fit is **not applied** to these RF/PIC runs
+and is not evidence of measured local field enhancement. None of these
+additions settles the unknown experimental seed, actual impurity mixture,
+or the low-field discrepancy.
+
 ## Breakdown probability vs laser energy and focus position (He 200 psig, laser ⟂ E)
 
 **Experimental observations to explain**
@@ -9,7 +213,7 @@
 - The laser with the RF off makes no visible plasma.
 - Conditions: 99.999 % He at 1.48 MPa absolute; 0.5–1 mJ, 1 ns, 532 nm pulse focused by an f = 150 mm lens; the laser fires at 4.9 µs of a 5 µs RF pulse.
 
-**Model** ([breakdown_probability.py](../simulations/rf_plasma/src/rf_plasma/breakdown_probability.py), tests in [test_breakdown_probability.py](../simulations/rf_plasma/tests/test_breakdown_probability.py))
+**Model** ([breakdown_probability.py](../source/src/rf_plasma/breakdown_probability.py), tests in [test_breakdown_probability.py](../source/tests/test_breakdown_probability.py))
 - **Laser seed.**
   - The seed density scales as I^k with k = 6. An optional saturation density is available but is not used in these runs.
   - The beam is Gaussian with w0 = 20 µm, so the Rayleigh range z_R = 2.4 mm.
@@ -25,25 +229,25 @@
   - Yule (Furry) statistics for the avalanche.
 - 400 shots per point. Data are in `results/breakdown_probability/breakdown_probability.json`.
 
-![Breakdown probability and delay vs field and focus](../simulations/rf_plasma/results/breakdown_probability/breakdown_probability.png)
+![Breakdown probability and delay vs field and focus](../data/breakdown_probability/breakdown_probability.png)
 
 **Result 1: with the computed pure-He rates, the model breaks down only above about 70 kV/cm, not at 20–50 kV/cm.**
 - At 1.48 MPa, 20–50 kV/cm peak is only E_rms/N ≈ 4–10 Td.
 - There, ν_iz is between 0.05 and 1e7 s⁻¹, so the avalanche cannot grow from about 1e3 electrons to 1e12 within about 100 ns plus ring-down.
 - The model's threshold is between 60 and 80 kV/cm; at 80 kV/cm the delay is 77–92 ns.
-- For the measured probabilities to appear at 20 kV/cm, the field seen by the electrons must be **3.9× larger** (e_cal = 3.91, fitted to P = 0.7 for 0.5 mJ at 20 kV/cm).
+- An **illustrative 3.91x field multiplier** was fitted to an assumed P = 0.7 for 0.5 mJ at 20 kV/cm. This is not a measured calibration and does not prove that electrons see a larger local field; it can compensate for errors in the seed, rates, timing or breakdown criterion.
 - The literature check is in [helium-low-field-ionization-data.md](helium-low-field-ionization-data.md):
-  - No measured α/N for helium exists below 8.4 Td.
+  - No accessible numerical measured helium alpha/N values below 8.4 Td were found in the examined sources. This does not establish that no measurements exist.
   - Between 8.4 and 15 Td the measured values are raised by about 1 ppm of impurity through Penning ionization.
   - Penning ionization through He₂* at 1.48 MPa takes about 0.1–1 µs at 1–10 ppm, too slow to drive a 100 ns avalanche.
-- So the discrepancy is real. Possible explanations, in order of how strongly the current data point to them:
+- The model-observation discrepancy remains unresolved. Possible explanations (not ranked or established by this fit):
   1. The calculated cavity field (from power and Q) underestimates the local field, for example through field enhancement near the plasma or the window, or an error in the Q used.
   2. The breakdown window is longer than 100 ns + 36 ns. This happens if Q_L is larger or if the laser timing relative to the RF is different.
   3. An unknown low-E/N ionization channel, such as stepwise ionization through He metastables made by the laser or by impurities.
 
-**Result 2: once the field is calibrated, the model reproduces all three observations qualitatively.**
+**Result 2: with the illustrative field rescaling, the model shows the reported trends qualitatively; this is not experimental validation.**
 - **Laser energy matters only near threshold.**
-  - At 20 kV/cm (calibrated), P = 0.70, 0.99 and 1.00 for 0.5, 0.75 and 1 mJ.
+  - At nominal 20 kV/cm (illustratively rescaled), P = 0.70, 0.99 and 1.00 for 0.5, 0.75 and 1 mJ.
   - At ≥ 25 kV/cm, P = 1 for every energy.
   - The energy also shortens the delay (101 → 86 ns at 20 kV/cm; about 3 ns at 50 kV/cm). Both match the reported behaviour.
 - **Focus position: P drops from 1 to 0 within about ±5–8 mm (about 2–3 z_R).**
@@ -59,7 +263,7 @@
   With 5 % power jitter the probabilities become 0.55, 0.86 and 0.94.
 - **Delays below about 1 ns at high calibrated fields are not physical.** They come from applying the 3.9× factor everywhere; the 3D model limits them through field collapse.
 
-**Sensitivity** (calibrated, 20 kV/cm; P for 0.5 / 0.75 / 1 mJ; last column is P with the focus 10 mm off-centre at 0.75 mJ)
+**Sensitivity** (illustratively rescaled, nominal 20 kV/cm; P for 0.5 / 0.75 / 1 mJ; last column is P with the focus 10 mm off-centre at 0.75 mJ)
 
 | Change | P(0.5 / 0.75 / 1 mJ) | P at focus +10 mm |
 |---|---|---|
@@ -84,16 +288,16 @@ Reproduce: `python -c "from rf_plasma.breakdown_probability import main; main(n_
 
 ## Parameter scans and comparison with the Technion helium experiments
 
-- **[Interactive scan explorer (scans.html)](../simulations/rf_plasma/results/coupled3d/figures_scan/scans.html)**
+- **[Interactive scan explorer (scans.html)](../data/coupled3d/figures_scan/scans.html)**
   is also online at <https://emaguidetal.github.io/plasma-viewer/scans.html>. It has:
   - a p × E map with a metric selector (click a cell to plot that run);
   - multi-run histories of |Γ|, n_e, r50, Te and N;
   - the comparison with experiment;
   - all the figures;
   - a table of every run.
-- Data: [scan_summary.json](../simulations/rf_plasma/results/coupled3d/figures_scan/scan_summary.json),
-  [table of all runs](<../simulations/rf_plasma/results/coupled3d/table_scan_pE+scan_laser+anchor+conv.csv>),
-  [exp_compare.md](../simulations/rf_plasma/results/coupled3d/figures_scan/exp_compare.md).
+- Data: [scan_summary.json](../data/coupled3d/figures_scan/scan_summary.json),
+  [table of all runs](<../data/coupled3d/table_scan_pE+scan_laser+anchor+conv.csv>),
+  [exp_compare.md](../data/coupled3d/figures_scan/exp_compare.md).
 - All numbers below are solver output: coupled 3D FDTD + bulk kinetics + sub-cell laser filament.
   The guide is a matched WR-284 at 2.95 GHz. The cavity anchors use the Beilin et al. 2015 / Yatom
   et al. 2016 conditions: He 0.2 MPa, 16.6 and 22.3 kV/cm.
@@ -119,7 +323,7 @@ Reproduce: `python -c "from rf_plasma.breakdown_probability import main; main(n_
 
 ### 2. Random seed electrons and jitter
 
-![Seed number and cavity anchors](../simulations/rf_plasma/results/coupled3d/figures_scan/seed_anchor.png)
+![Seed number and cavity anchors](../data/coupled3d/figures_scan/seed_anchor.png)
 
 - **Seed number (3D guide, 100 psig, 80 kV/cm).** N0 = 10⁶, 10⁸ and 10¹⁰ give delays of 9.0, 6.6
   and 4.8 ns. The slope is close to the 0D avalanche value −1/ν_iz, which is 0.54 ns per e-fold.
@@ -131,8 +335,8 @@ Reproduce: `python -c "from rf_plasma.breakdown_probability import main; main(n_
   - natural background ionization.
 
   Results with the weak seed that the 3D anchors need (N0 = 10⁵,
-  [anchor_weakseed.json](../simulations/rf_plasma/results/stochastic_seed/anchor_weakseed.json),
-  [jitter_sensitivity.png](../simulations/rf_plasma/results/stochastic_seed/jitter_sensitivity.png)):
+  [anchor_weakseed.json](../data/stochastic_seed/anchor_weakseed.json),
+  [jitter_sensitivity.png](../data/stochastic_seed/jitter_sensitivity.png)):
 
   | σ_P (magnetron power) | 16.6 kV/cm | 22.3 kV/cm |
   |---|---|---|
@@ -147,7 +351,7 @@ Reproduce: `python -c "from rf_plasma.breakdown_probability import main; main(n_
 
 ### 3. Channel growth
 
-![Channel growth](../simulations/rf_plasma/results/coupled3d/figures_scan/channel_growth.png)
+![Channel growth](../data/coupled3d/figures_scan/channel_growth.png)
 
 - **3D sub-cell filament.**
   - The half-electron radius r50 grows from the 20 µm laser core to 45–100 µm by the end of the
@@ -157,8 +361,8 @@ Reproduce: `python -c "from rf_plasma.breakdown_probability import main; main(n_
   - Channel heating in the 20 µm core reaches Tg ≈ 1–3 × 10⁵ K. This is a known overestimate of a
     thin, unexpanded core; read it as qualitative.
 - **2D axisymmetric streamer.** This model has photoionization-free ionization-front propagation
-  along E ([radius/length](../simulations/rf_plasma/results/streamer2d/figures/radius_length_vs_time.png),
-  [diameter vs measured](../simulations/rf_plasma/results/streamer2d/figures/diameter_vs_measured.png)).
+  along E ([radius/length](../data/streamer2d/figures/radius_length_vs_time.png),
+  [diameter vs measured](../data/streamer2d/figures/diameter_vs_measured.png)).
   - The diameter is 0.15–0.21 mm at 10 ns.
   - The front speed is 4.5–7 × 10⁵ m/s at 22.3 kV/cm and about 1 × 10⁵ m/s at 16.6 kV/cm.
   - The measured values are for air: diameter 0.2–0.6 mm and front speed about 5 × 10⁵ m/s. No
@@ -192,7 +396,7 @@ Reproduce: `python -c "from rf_plasma.breakdown_probability import main; main(n_
 
 ### 6. Laser focus, pulse length and energy (guide, 100 psig, 80 kV/cm)
 
-![Laser scans](../simulations/rf_plasma/results/coupled3d/figures_scan/scan_laser.png)
+![Laser scans](../data/coupled3d/figures_scan/scan_laser.png)
 
 | Varied | Values | Delay to \|Γ\| > 0.3 (ns) |
 |---|---|---|
@@ -211,7 +415,7 @@ Reproduce: `python -c "from rf_plasma.breakdown_probability import main; main(n_
 
 ### 7. Pressure and electric field (guide, 50–250 psig, 40–200 kV/cm, 1 mJ 1 ns w 20 µm)
 
-![p × E scan](../simulations/rf_plasma/results/coupled3d/figures_scan/scan_pE.png)
+![p × E scan](../data/coupled3d/figures_scan/scan_pE.png)
 
 - **Threshold.** There is no breakdown within 15–25 ns at E/N ≤ 21 Td:
   - 100 psig at 40 kV/cm;
@@ -247,7 +451,7 @@ Reproduce: `python -c "from rf_plasma.breakdown_probability import main; main(n_
   - The late reflection magnitude and the channel radius are **not mesh-converged**. Coupling the
     sub-cell channel to a finer Yee cell changes how strongly it shorts the field. Read the
     |Γ| ≈ 0.4 plateau values as 1 mm-mesh values with an uncertainty of about 25 %.
-  - [conv results](../simulations/rf_plasma/results/coupled3d/conv/).
+  - [conv results](../data/coupled3d/conv/).
 - **Open limits.**
   - The laser seed in He is prescribed. The experimental seed source (impurities, windows) is
     unknown.
@@ -268,22 +472,22 @@ Reproduce: `python -c "from rf_plasma.breakdown_probability import main; main(n_
 
 ## Coupled physics runs: laser-triggered breakdown (computed, not prescribed)
 
-- **[Physics viewer](../simulations/rf_plasma/results/coupled3d/laser_trigger_He_1MPa/viewer/laser_trigger.html)**
+- **[Physics viewer](../data/coupled3d/laser_trigger_He_1MPa/viewer/laser_trigger.html)**
   — selectable case, 2D Ey + ne maps (RF-only vs RF + laser), a rotatable 3D view of the
   laser cone and computed filament, the standing-wave envelope, radial filament profiles,
   histories and milestones. All data are solver output.
 - **Online version: <https://emaguidetal.github.io/plasma-viewer/>** (GitHub Pages, repository
   [Emaguidetal/plasma-viewer](https://github.com/Emaguidetal/plasma-viewer); public, no login needed).
-- **[Single-file version for sharing](../simulations/rf_plasma/results/coupled3d/laser_trigger_He_1MPa/viewer/laser_trigger_standalone.html)**
+- **[Single-file version for sharing](../data/coupled3d/laser_trigger_He_1MPa/viewer/laser_trigger_standalone.html)**
   (about 5 MB, data embedded, works offline). Send it as a document, for example over WhatsApp or email.
 - GIFs:
-  [cavity 8 MV/m](../simulations/rf_plasma/results/coupled3d/laser_trigger_He_1MPa/viewer/laser_trigger_cavity_E8.gif),
-  [guide 8 MV/m](../simulations/rf_plasma/results/coupled3d/laser_trigger_He_1MPa/viewer/laser_trigger_guide_E8.gif),
-  [guide 6 MV/m](../simulations/rf_plasma/results/coupled3d/laser_trigger_He_1MPa/viewer/laser_trigger_guide_E6.gif);
-  [histories](../simulations/rf_plasma/results/coupled3d/laser_trigger_He_1MPa/viewer/histories.png);
-  [milestones.json](../simulations/rf_plasma/results/coupled3d/laser_trigger_He_1MPa/viewer/milestones.json).
+  [cavity 8 MV/m](../data/coupled3d/laser_trigger_He_1MPa/viewer/laser_trigger_cavity_E8.gif),
+  [guide 8 MV/m](../data/coupled3d/laser_trigger_He_1MPa/viewer/laser_trigger_guide_E8.gif),
+  [guide 6 MV/m](../data/coupled3d/laser_trigger_He_1MPa/viewer/laser_trigger_guide_E6.gif);
+  [histories](../data/coupled3d/laser_trigger_He_1MPa/viewer/histories.png);
+  [milestones.json](../data/coupled3d/laser_trigger_He_1MPa/viewer/milestones.json).
 
-![Guide 8 MV/m: RF-only vs RF + 10 mJ laser](../simulations/rf_plasma/results/coupled3d/laser_trigger_He_1MPa/viewer/overview_guide_E8.png)
+![Guide 8 MV/m: RF-only vs RF + 10 mJ laser](../data/coupled3d/laser_trigger_He_1MPa/viewer/overview_guide_E8.png)
 
 **Setup.** `coupled3d.run_case` runs a 3D Yee FDTD solve of WR-284 at 3 GHz, 1 mm mesh, with
 PEC (copper) walls. The plasma current feeds back as a Drude term on every step. Bulk electron
@@ -364,13 +568,13 @@ reproduce.
 4. **PIC spot check.** WarpX 1D PIC/MCC swarms use the same LoKI helium cross sections
    (elastic, 42 excitations, ionization). They are compared with the fluid EEDF closure.
 
-![Base vs full physics](../simulations/rf_plasma/results/coupled3d/full_physics_He_1MPa/figures/fp_histories.png)
+![Base vs full physics](../data/coupled3d/full_physics_He_1MPa/figures/fp_histories.png)
 
-Full table: [fp_table.md](../simulations/rf_plasma/results/coupled3d/full_physics_He_1MPa/figures/fp_table.md).
+Full table: [fp_table.md](../data/coupled3d/full_physics_He_1MPa/figures/fp_table.md).
 Other figures:
-[CR and heating](../simulations/rf_plasma/results/coupled3d/full_physics_He_1MPa/figures/fp_cr_heating.png),
-[beam](../simulations/rf_plasma/results/coupled3d/full_physics_He_1MPa/figures/fp_beam.png),
-[maps](../simulations/rf_plasma/results/coupled3d/full_physics_He_1MPa/figures/fp_maps.png).
+[CR and heating](../data/coupled3d/full_physics_He_1MPa/figures/fp_cr_heating.png),
+[beam](../data/coupled3d/full_physics_He_1MPa/figures/fp_beam.png),
+[maps](../data/coupled3d/full_physics_He_1MPa/figures/fp_maps.png).
 
 In the table, "nocr" is the full model with the CR stage switched off.
 
@@ -415,8 +619,8 @@ Densities are in m⁻³.
    - At those temperatures the filament's isochoric/expansion model and its Maxwellian tables
      (see item 5) are stretched. Read the channel temperature as qualitative.
 5. *PIC validates the bulk closure.*
-   - [Comparison figure](../simulations/pic/results/pic_vs_fluid.png),
-     [comparison.json](../simulations/pic/results/comparison.json).
+   - [Comparison figure](../pic_source/results/pic_vs_fluid.png),
+     [comparison.json](../pic_source/results/comparison.json).
    - DC swarms at 16.5–33 Td: mean energy within 1%, drift within 3%, ionization frequency
      within 5–6% (statistical error 1–6%).
    - 3 GHz RF swarms at 6 and 8 MV/m (25–33 Td peak): cycle-mean energy within 2–3% and
@@ -473,9 +677,9 @@ reflector of given density does. It does not compute breakdown.
 
 ## Open the animation (prescribed-sheet demonstration)
 
-- **[Interactive 2D and rotatable 3D viewer](../simulations/rf_plasma/results/standing_wave_helium_1MPa/standing_wave.html)**: play/pause, time slider, no-sheet comparison, two orthogonal field slices inside the 3D cavity, density and power diagnostics. Open the HTML in a browser; all animation data are embedded and no internet connection is needed.
-- [Portable 2D animation (GIF)](../simulations/rf_plasma/results/standing_wave_helium_1MPa/standing_wave.gif).
-- [Inputs and metrics](../simulations/rf_plasma/results/standing_wave_helium_1MPa/summary.json), [RF histories](../simulations/rf_plasma/results/standing_wave_helium_1MPa/histories.npz), and [3D field samples](../simulations/rf_plasma/results/standing_wave_helium_1MPa/sheet_fields.npz).
+- **[Interactive 2D and rotatable 3D viewer](../data/standing_wave_helium_1MPa/standing_wave.html)**: play/pause, time slider, no-sheet comparison, two orthogonal field slices inside the 3D cavity, density and power diagnostics. Open the HTML in a browser; all animation data are embedded and no internet connection is needed.
+- [Portable 2D animation (GIF)](../data/standing_wave_helium_1MPa/standing_wave.gif).
+- [Inputs and metrics](../data/standing_wave_helium_1MPa/summary.json), [RF histories](../data/standing_wave_helium_1MPa/histories.npz), and [3D field samples](../data/standing_wave_helium_1MPa/sheet_fields.npz).
 
 **This is a laser-timed, prescribed-growth ionized-gas-sheet electromagnetic
 demonstration.** A short laser pulse (drawn in red in the viewer and GIF)
@@ -513,7 +717,7 @@ update. The no-laser and laser-fired fields agree **exactly before 1.5 ns**
 (maximum difference 0 over 67 frames). The current retains its memory as
 density rises.
 
-![Simulated standing-wave field without a sheet and suppressed field after the gas sheet turns on; downstream stored energy falls while an independent slab reference shows increasing reflection with density.](../simulations/rf_plasma/results/standing_wave_helium_1MPa/overview.png)
+![Simulated standing-wave field without a sheet and suppressed field after the gas sheet turns on; downstream stored energy falls while an independent slab reference shows increasing reflection with density.](../data/standing_wave_helium_1MPa/overview.png)
 
 *Figure 1. Actual 3D FDTD field slices and downstream energy, plus an
 independent analytic matched-guide slab calculation. The dotted plane in the
@@ -564,7 +768,7 @@ highly collisional sheet. Its field-amplitude attenuation length is about
 The primary 1 mm mesh only marginally resolves that length. The 3D cavity
 movie is therefore a qualitative explanation, not a fully mesh-converged
 design prediction. A separate [3D matched-guide slab check at 1 and
-0.5 mm](../simulations/rf_plasma/results/standing_wave_helium_1MPa/slab_validation.json)
+0.5 mm](../data/standing_wave_helium_1MPa/slab_validation.json)
 compares against the analytic reference; it does not replace a full cavity
 mesh study.
 
@@ -586,11 +790,11 @@ silently reinterpreted as this full-aperture sheet.
 
 ## Additional physics: separate restricted demonstration
 
-The new [Collisional-Radiative Plasma Engineer](../.github/agents/collisional-radiative-plasma.agent.md)
+The new [Collisional-Radiative Plasma Engineer](../agents/collisional-radiative-plasma.agent.md)
 handles atomic charge states, detailed-balance energy exchange, radiation
 trapping, provenance and validation.
 
-The [implemented module](../simulations/rf_plasma/src/rf_plasma/helium_cr.py)
+The [implemented module](../source/src/rf_plasma/helium_cr.py)
 resolves:
 
 - neutral ground-state He;
@@ -604,7 +808,7 @@ resonance-transport operator transfers excitation between cells through
 emission and absorption. The weak 1s2p singlet P to 1s2s singlet S radiative
 branch is retained rather than incorrectly returning it to ground.
 
-![Separate low-density atomic demonstration: populations, electron cooling, escaped radiation and position-dependent resonance escape probability.](../simulations/rf_plasma/results/standing_wave_helium_1MPa/atomic_physics.png)
+![Separate low-density atomic demonstration: populations, electron cooling, escaped radiation and position-dependent resonance escape probability.](../data/standing_wave_helium_1MPa/atomic_physics.png)
 
 *Figure 2. Restricted atomic-physics example at N = 1e20 m^-3, equivalent
 initial pressure 0.414 Pa at 300 K, over 20 microseconds. This is deliberately
@@ -645,7 +849,7 @@ redistribution. It is reduced spatial transport, not frequency/time-resolved
 3D radiation transport. It omits collisional broadening, excited-state
 ionization, triplets, molecular/excimer chemistry, recombination and elastic
 gas heating. All these restrictions are in the saved
-[atomic summary](../simulations/rf_plasma/results/standing_wave_helium_1MPa/atomic_demonstration/restricted_cr_summary.json).
+[atomic summary](../data/standing_wave_helium_1MPa/atomic_demonstration/restricted_cr_summary.json).
 Integration stops if Te reaches the 3 eV lower bound common to the retained
 ionization fits; this run remained above it.
 
@@ -681,7 +885,7 @@ example separate.
   The
   earlier 50 tests include the five laser-front, trigger, sequential-ionization, superelastic
   and nonlocal-radiation tests (recorded log for those 50:
-  [test_results.txt](../simulations/rf_plasma/results/standing_wave_helium_1MPa/test_results.txt)).
+  [test_results.txt](../data/standing_wave_helium_1MPa/test_results.txt)).
 - Nuclei conservation and atomic/electron/radiation energy conservation are
   tested. The executed restricted example's relative energy residual is
   **3.46e-13**.

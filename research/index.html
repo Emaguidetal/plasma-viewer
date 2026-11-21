@@ -16,6 +16,9 @@
   <h1>Laser-induced plasma research</h1>
   <p>Research reports, literature reviews, model source, input data, tests, and published scan results for laser-triggered RF breakdown in high-pressure helium and related RF-plasma studies.</p>
   <p><a href="../research-download.zip"><strong>Download the research package (ZIP)</strong></a></p>
+  <p><a href="../dynamics/"><strong>RF, optics, real PIC, gas expansion and emission dynamics</strong></a> · <a href="../dynamics/validation.png">Refinement figure</a> · <a href="../dynamics/validation.json">Passed/failed validation metrics</a></p>
+  <p><a href="data/dynamics/dynamics.html">Standalone dynamics HTML (also included in the ZIP)</a></p>
+  <p class="note">The dynamics viewer contains three distinct calculations, not full-device PIC or experimental validation. Optics and emission are conditional; local gas flow assumes RF quench. PIC drift/work checks and gas velocity-peak convergence remain incomplete. Three read-only AI scientific reviewers accepted only this restricted exploratory scope.</p>
 
   <h2>Reports and literature</h2>
   <ul>
@@ -45,6 +48,7 @@
   </ul>
 
   <h2>Code, inputs, and checks</h2>
+  <p><a href="pic_source/DYNAMICS_README.md">Real PIC execution guide</a> · <a href="data/pic_dynamics/summary.json">PIC validation summary</a> · <a href="agents/plasma-physics-reviewer.agent.md">Plasma AI reviewer</a> · <a href="agents/rf-physics-reviewer.agent.md">RF AI reviewer</a> · <a href="agents/optical-physics-reviewer.agent.md">Optical AI reviewer</a></p>
   <p><a href="source/README.md">Project README</a> · <a href="source/pyproject.toml">Python project metadata</a> · <a href="https://github.com/Emaguidetal/plasma-viewer/tree/main/research/source/src/rf_plasma">Model source files</a> · <a href="https://github.com/Emaguidetal/plasma-viewer/tree/main/research/source/cases">Gas and swarm input data</a> · <a href="https://github.com/Emaguidetal/plasma-viewer/tree/main/research/source/tests">Tests</a></p>
   <p>The published model source is provided with the derived swarm tables and tests. Original LXCat cross-section downloads are not redistributed because their headers state “All rights reserved.” The reported results are numerical modeling, not validated experimental predictions; see the reports for assumptions and limitations.</p>
 

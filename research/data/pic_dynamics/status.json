@@ -1,0 +1,16 @@
+{
+ "status": "bounded_runs_complete",
+ "run_directory": "D:\\CST projects\\Plasma research\\simulations\\pic\\results\\dynamics_validation\\20261121T095936Z_13652",
+ "completed": [
+  "acceleration",
+  "relaxation",
+  "timing_pilot",
+  "50kVcm",
+  "100kVcm",
+  "100kVcm_half_dt",
+  "100kVcm_double_particles",
+  "100kVcm_seed2"
+ ],
+ "errors": [],
+ "wall_s": 1508.8685781000004
+}

@@ -10,16 +10,65 @@ Maxwellization point is derived from cited rates rather than fitted), not a
 validated prediction. Copper is represented only by separate first-order
 analytical loss estimates.
 
-The [benchmark report](../../literature/rf-plasma-simulation-benchmarks.md)
+The [benchmark report](../literature/rf-plasma-simulation-benchmarks.md)
 covers the earlier benchmarks. The
-[coupled 3D report](../../literature/coupled-3d-rf-laser-plasma-simulation.md)
+[coupled 3D report](../literature/coupled-3d-rf-laser-plasma-simulation.md)
 covers the gas-specific matrix, validation, sensitivity and limitations.
+
+## RF, optics, gas expansion, emission and real local PIC
+
+The [dynamics viewer](../data/dynamics/dynamics.html) separates a bounded
+perpendicular-seed Maxwell/CR-fluid run, an assumed-RF-off local cylindrical
+Euler/CR afterglow, and actual 1D3V WarpX/MCC particles. The optical panel is a
+prescribed Gaussian, not a validated propagated laser field. See the
+[current report](../literature/standing-wave-helium-plasma-reflector.md)
+and [refinement metrics](../data/dynamics/validation.json).
+
+- [cavity_dynamics](src/rf_plasma/cavity_dynamics.py) maps signed edge work to
+  occupied material, carries exact heavy-gas internal energy, and exports the
+  RF phase clock, dense focus probe and conservative handoff.
+- [radial_afterglow](src/rf_plasma/radial_afterglow.py) conserves nuclei and total
+  energy, including boundary flux and CR sinks. It resolves local gas motion,
+  not the continuing 5-us driven cavity or a sub-cell optical filament.
+- [radiation_diagnostics](src/rf_plasma/radiation_diagnostics.py) separates
+  modeled CR radiative energy from unresolved recombination disposal.
+  Visible free-free is conditional; it is not a calibrated camera signal.
+- [PIC execution guide](../pic_source/DYNAMICS_README.md) documents actual particle
+  histories and passed/failed validation. Mean-energy agreement does not
+  validate drift, exact MCC energy balance, ionization at 50 kV/cm, or a
+  whole-cavity kinetic model.
+
+The Sod shock benchmark tests the Euler implementation; the helium example
+shows subsonic expansion, not an established experimental shock. Velocity
+peaks remain mesh-dependent. Low-field gas heating is below the conservative
+floating-point resolution bound against ambient gas energy and is explicitly
+flagged, rather than presented as resolved motion.
+
+From this directory, use existing environments, new output paths, and check
+each exit status:
+
+```powershell
+$env:PYTHONPATH = 'src'
+$env:NUMBA_NUM_THREADS = '2'
+& .\.venv\Scripts\python.exe -m unittest discover -s tests
+& .\.venv\Scripts\python.exe -m rf_plasma.cavity_dynamics --output results\rerun-cavity --field-kv-cm 200 --block 1 --threads 2
+& .\.venv\Scripts\python.exe -m rf_plasma.radial_afterglow --source results\rerun-cavity\handoff.npz --output results\rerun-afterglow --nr 160
+```
+
+The RF run needs the saved calibration and `prefill_cavity_dx1mm.npz` in
+`results\coupled3d`. These are included in the public package's
+`data\coupled3d`; restore them to that result directory before executing.
+Alternatively generate a new calibration/prefill with `coupled3d calibrate`
+and `coupled3d prefill --geometry cavity --dx 0.001 --threads 2`, keeping the
+new calibration separate from this published snapshot. The viewer builder
+uses the explicitly named executed cases in `results\dynamics`, not an
+arbitrary rerun directory.
 
 ## Dynamic standing-wave gas-sheet viewer
 
-Open the [interactive 2D/3D animation](results/standing_wave_helium_1MPa/standing_wave.html)
-in a browser, or view the [GIF](results/standing_wave_helium_1MPa/standing_wave.gif).
-The [report](../../literature/standing-wave-helium-plasma-reflector.md) explains
+Open the [interactive 2D/3D animation](../data/standing_wave_helium_1MPa/standing_wave.html)
+in a browser, or view the [GIF](../data/standing_wave_helium_1MPa/standing_wave.gif).
+The [report](../literature/standing-wave-helium-plasma-reflector.md) explains
 the executed 3D WR-284 cavity comparison at 1 MPa absolute helium and 0.1 MV/m.
 The transverse sheet is **ionized gas, not a metal insert**; its density history
 is prescribed, not calculated from a laser pulse. Sequential ionization,

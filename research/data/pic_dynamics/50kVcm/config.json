@@ -1,0 +1,431 @@
+{
+ "action": "case",
+ "out": "D:\\CST projects\\Plasma research\\simulations\\pic\\results\\dynamics_validation\\20261121T095936Z_13652\\50kVcm",
+ "label": "50kVcm",
+ "mode": "rf",
+ "field": 5000000.0,
+ "pressure": 1480276.4,
+ "frequency": 2950000000.0,
+ "periods": 2.0,
+ "dt": 2e-15,
+ "particles": 2000,
+ "seed": 271828,
+ "cells": 32,
+ "gap": 0.001,
+ "frames": 65,
+ "steps": null,
+ "step_budget": 2100000,
+ "timeout": 2400.0,
+ "steps_actual": 338983,
+ "neutral_density_m3": 3.573866106929905e+26,
+ "temperature_k": 300.0,
+ "initial_density_m3": 1000000000000.0,
+ "initial_macro_weight_per_m2": 50000.0,
+ "xs_source": "simulations\\rf_plasma\\cases\\cross_sections\\LoKI_He_LXCat.txt",
+ "cross_sections": [
+  {
+   "name": "elastic",
+   "threshold_ev": null,
+   "range_ev": [
+    0.0,
+    1000.0
+   ],
+   "sha256": "cb2fcdb117f915803d36cc5af1f61bfb7d04fb8f82ccdffd31c90ba9e032ead6"
+  },
+  {
+   "name": "excitation1",
+   "threshold_ev": 19.82,
+   "range_ev": [
+    0.0,
+    1000.0
+   ],
+   "sha256": "2a23bff08b01c71560f0243044c05e03aca4a637cfba6b66b9c2076b797f564c"
+  },
+  {
+   "name": "excitation2",
+   "threshold_ev": 20.62,
+   "range_ev": [
+    0.0,
+    1000.0
+   ],
+   "sha256": "8e17a9879ae4af4064fd78c4a8faf730d8377e91f9f7e579857fce715276f28d"
+  },
+  {
+   "name": "excitation3",
+   "threshold_ev": 20.96,
+   "range_ev": [
+    0.0,
+    1000.0
+   ],
+   "sha256": "95c343a8542909c81a5b8970a10720b33e220202d36d04bc09f22f49842dddff"
+  },
+  {
+   "name": "excitation4",
+   "threshold_ev": 21.218,
+   "range_ev": [
+    0.0,
+    1000.0
+   ],
+   "sha256": "79ddecbbb4ffffc8b8c9f44238e93370b81f488edf5629359e3c286f112f4428"
+  },
+  {
+   "name": "excitation5",
+   "threshold_ev": 22.719,
+   "range_ev": [
+    0.0,
+    1000.0
+   ],
+   "sha256": "bfcbb35240d56f33ca8ba1ee7d5376494aab42512ed5d22140eec2f6dc3c8a55"
+  },
+  {
+   "name": "excitation6",
+   "threshold_ev": 22.919,
+   "range_ev": [
+    0.0,
+    1000.0
+   ],
+   "sha256": "a0cdd986088f83580d5e15adf7cff87c78bb718bddb4945158e65535ae9df7f0"
+  },
+  {
+   "name": "excitation7",
+   "threshold_ev": 23.009,
+   "range_ev": [
+    0.0,
+    1000.0
+   ],
+   "sha256": "37f10ec783f37289c7f35a9045736d332cbb13ba240115ba75a92268010c7349"
+  },
+  {
+   "name": "excitation8",
+   "threshold_ev": 23.069,
+   "range_ev": [
+    0.0,
+    1000.0
+   ],
+   "sha256": "b2d12145249b021dab15896827d60695c59777a11a69615f534829f5e4f49154"
+  },
+  {
+   "name": "excitation9",
+   "threshold_ev": 23.069,
+   "range_ev": [
+    0.0,
+    1000.0
+   ],
+   "sha256": "8f16797c999cf1331e05d95a6f46ef728b2ed722ceb0bc72a0f3b311f9646bf0"
+  },
+  {
+   "name": "excitation10",
+   "threshold_ev": 23.09,
+   "range_ev": [
+    0.0,
+    1000.0
+   ],
+   "sha256": "a9383414fb14d79091c39d70df0e8b16a074415c3742bd7870234b835be7771f"
+  },
+  {
+   "name": "excitation11",
+   "threshold_ev": 23.589,
+   "range_ev": [
+    0.0,
+    1000.0
+   ],
+   "sha256": "1fa15224ff9a4c168f4a0cc6be3c5c137bdf41fea85d7135e40379775e13ef73"
+  },
+  {
+   "name": "excitation12",
+   "threshold_ev": 23.669,
+   "range_ev": [
+    0.0,
+    1000.0
+   ],
+   "sha256": "1dca39ced79ed4a63b11b175dff95adf7a97ea297bfc3fb5b97aff46b40c46af"
+  },
+  {
+   "name": "excitation13",
+   "threshold_ev": 23.709,
+   "range_ev": [
+    0.0,
+    1000.0
+   ],
+   "sha256": "bebb75fac5e9eafd94efbdb1fe7ce6edaefe60df724863eb5f76fc6132cf517b"
+  },
+  {
+   "name": "excitation14",
+   "threshold_ev": 23.739,
+   "range_ev": [
+    0.0,
+    1000.0
+   ],
+   "sha256": "856566a79c729a713d7c991f0c1891f92e14c8cf425f1ed4f20032e789c63cb3"
+  },
+  {
+   "name": "excitation15",
+   "threshold_ev": 23.739,
+   "range_ev": [
+    0.0,
+    1000.0
+   ],
+   "sha256": "7e4ee0d25f037cd756d97a0f7cc276c678385f098489a8269b048a27972395a6"
+  },
+  {
+   "name": "excitation16",
+   "threshold_ev": 23.739,
+   "range_ev": [
+    0.0,
+    1000.0
+   ],
+   "sha256": "35d696331095cda89f43e5a611f92651e43422c37a034ec6343bc2b1e830dd59"
+  },
+  {
+   "name": "excitation17",
+   "threshold_ev": 23.739,
+   "range_ev": [
+    0.0,
+    1000.0
+   ],
+   "sha256": "3b585461bdb42064e2550cb58aa81b34b5bd07d1e06fec1154ba7a8da815503b"
+  },
+  {
+   "name": "excitation18",
+   "threshold_ev": 23.74,
+   "range_ev": [
+    0.0,
+    1000.0
+   ],
+   "sha256": "bc0e5ba1be8201802200ea3b69c581c37b6beb3ac89c3d63e8d8f1d7293b4a70"
+  },
+  {
+   "name": "excitation19",
+   "threshold_ev": 23.972,
+   "range_ev": [
+    0.0,
+    1000.0
+   ],
+   "sha256": "3e4ad6be6b2606812a7e96b3f0a7a5a15897bffad618ee62418eeeea55cf35fc"
+  },
+  {
+   "name": "excitation20",
+   "threshold_ev": 24.011,
+   "range_ev": [
+    0.0,
+    1000.0
+   ],
+   "sha256": "ecb9e7b76bde4b1daa55643d12a1757252d492a26eccb867eacebf74d877bce7"
+  },
+  {
+   "name": "excitation21",
+   "threshold_ev": 24.028,
+   "range_ev": [
+    0.0,
+    1000.0
+   ],
+   "sha256": "9972683eb3ebd236b7a467921e824474ddd1633c9085d41e46f5d06b8f8be24e"
+  },
+  {
+   "name": "excitation22",
+   "threshold_ev": 24.043,
+   "range_ev": [
+    0.0,
+    1000.0
+   ],
+   "sha256": "f22f380fbe7681c3ebc3860f66632621026a73efc8e14cbcb1b4ed5a39258994"
+  },
+  {
+   "name": "excitation23",
+   "threshold_ev": 24.043,
+   "range_ev": [
+    0.0,
+    1000.0
+   ],
+   "sha256": "fe64a90e242967ec360e5a79fb5bc5e7114c05c7e45eecaf5cc2942a74e34945"
+  },
+  {
+   "name": "excitation24",
+   "threshold_ev": 24.043,
+   "range_ev": [
+    0.0,
+    1000.0
+   ],
+   "sha256": "f8a52f1360d616b17bff5e6631a416132138823fdd64ef9d09cfe7c53e008efd"
+  },
+  {
+   "name": "excitation25",
+   "threshold_ev": 24.043,
+   "range_ev": [
+    0.0,
+    1000.0
+   ],
+   "sha256": "f300b5b2ce84fc2b713b8c004465ba3a09fe02378dcafe456a94b1479ba51430"
+  },
+  {
+   "name": "excitation26",
+   "threshold_ev": 24.046,
+   "range_ev": [
+    0.0,
+    1000.0
+   ],
+   "sha256": "1fbe7ec682eab562ff8be602ab7eeb18dbdd94ef834ad6d4b49ec35875ec82b0"
+  },
+  {
+   "name": "excitation27",
+   "threshold_ev": 24.169,
+   "range_ev": [
+    0.0,
+    1000.0
+   ],
+   "sha256": "715d4a34997aaaaa02cbb51d6b597120e32e95028427e4559df2a7da55054245"
+  },
+  {
+   "name": "excitation28",
+   "threshold_ev": 24.191,
+   "range_ev": [
+    0.0,
+    1000.0
+   ],
+   "sha256": "5b3eb1a726ee79d842fee09009a60075ee57d1448774760bc16662658b72fcd2"
+  },
+  {
+   "name": "excitation29",
+   "threshold_ev": 24.201,
+   "range_ev": [
+    0.0,
+    1000.0
+   ],
+   "sha256": "5371fbe532a0dd886f039e77938d708dedaa2c869e033227b84f0ddbe7d6ffe9"
+  },
+  {
+   "name": "excitation30",
+   "threshold_ev": 24.209,
+   "range_ev": [
+    0.0,
+    1000.0
+   ],
+   "sha256": "9c8c926b5a4973ffe865914e622c5d8fc1edbd4d1a76fc51701cb7988e219e16"
+  },
+  {
+   "name": "excitation31",
+   "threshold_ev": 24.209,
+   "range_ev": [
+    0.0,
+    1000.0
+   ],
+   "sha256": "da05e849657b4d79e8b32c05f8f9a3fe3ddf4dbeddbf4d1ce2534889be029fb6"
+  },
+  {
+   "name": "excitation32",
+   "threshold_ev": 24.21,
+   "range_ev": [
+    0.0,
+    1000.0
+   ],
+   "sha256": "da034b7903402163575ca78c7478b8ce12532f47b87bc938b1a4dcc6153c167e"
+  },
+  {
+   "name": "excitation33",
+   "threshold_ev": 24.21,
+   "range_ev": [
+    0.0,
+    1000.0
+   ],
+   "sha256": "be4bc4512ed5ee7a028e57f125a3e6812ed94eb99b63bec7d7889b805e9724dd"
+  },
+  {
+   "name": "excitation34",
+   "threshold_ev": 24.211,
+   "range_ev": [
+    0.0,
+    1000.0
+   ],
+   "sha256": "ef52c98998186fd5dc49bf23202a7de38c85abe032fb04e17735ce2e1b346de3"
+  },
+  {
+   "name": "excitation35",
+   "threshold_ev": 24.285,
+   "range_ev": [
+    0.0,
+    1000.0
+   ],
+   "sha256": "7e07cadd4dce801bbdb09fc2e756e34bee1b0a02509054b8e058336253462d2a"
+  },
+  {
+   "name": "excitation36",
+   "threshold_ev": 24.298,
+   "range_ev": [
+    0.0,
+    1000.0
+   ],
+   "sha256": "4eae21275b868fcac08fac72d95e6ad12ae218ae98b0537dc19c379c33f0fe02"
+  },
+  {
+   "name": "excitation37",
+   "threshold_ev": 24.304,
+   "range_ev": [
+    0.0,
+    1000.0
+   ],
+   "sha256": "68378f680fa94200d983312a4f1fe33180294df67a565a82abc89029966a5bcc"
+  },
+  {
+   "name": "excitation38",
+   "threshold_ev": 24.31,
+   "range_ev": [
+    0.0,
+    1000.0
+   ],
+   "sha256": "299b124251555be59654bd2e767d51bd742f0e6af7fd70f2a898e40ea6331f53"
+  },
+  {
+   "name": "excitation39",
+   "threshold_ev": 24.31,
+   "range_ev": [
+    0.0,
+    1000.0
+   ],
+   "sha256": "90cef6b2682dbd0d1a4929ed8d76a4082f1a642fdc4fb46d074df8dbc898baf6"
+  },
+  {
+   "name": "excitation40",
+   "threshold_ev": 24.31,
+   "range_ev": [
+    0.0,
+    1000.0
+   ],
+   "sha256": "38f9bcdccbdaeea0a9bf15559fbb6bfd30a1bb3782a43ea5e7c533192da37ab6"
+  },
+  {
+   "name": "excitation41",
+   "threshold_ev": 24.31,
+   "range_ev": [
+    0.0,
+    1000.0
+   ],
+   "sha256": "fba4d23702664b354c1268c642638db524ecc1299598909d996a11b576ebc766"
+  },
+  {
+   "name": "excitation42",
+   "threshold_ev": 24.311,
+   "range_ev": [
+    0.0,
+    1000.0
+   ],
+   "sha256": "1dcda6e0a3a0a483d32cd597602af51f8c489eda0b15e0f6e60d364c24fc2de1"
+  },
+  {
+   "name": "ionization",
+   "threshold_ev": 24.5873,
+   "range_ev": [
+    0.0,
+    1000.0
+   ],
+   "sha256": "99670a5da4afb32c2e13e60fd6a8544b6cc1db66a49448aa78a302b471297c91"
+  }
+ ],
+ "software": {
+  "pywarpx": "26.11",
+  "amrex": "26.11",
+  "numpy": "2.5.5",
+  "scipy": "1.18.1",
+  "matplotlib": "3.11.2"
+ },
+ "python": "D:\\mm\\wx\\python.exe"
+}
