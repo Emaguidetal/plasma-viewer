@@ -404,7 +404,7 @@ The model estimates the electrons each source puts in the laser volume (0.75 mJ,
   observed focus effect.
 - Background ionization leaves about 2e8 m⁻³ negative ions, since almost all free electrons attach
   within about 0.1 ms. With the nominal field calibration the same budget predicts RF-only
-  breakdown in 11–23% of pulses at 20–50 kV/cm.
+  breakdown in 12–26% of pulses at 20–50 kV/cm.
 - **The measured RF-only (self-)breakdown is about 10% of shots** (sealed He, laser off). That fits
   within ×2.5. Matching it exactly needs a background ion-pair rate of 0.4–0.9× the assumed value
   (`source_scale_for_measured_ecal` in `results/seed_sources/seed_sources.json`). Field detachment
@@ -465,6 +465,14 @@ The model estimates the electrons each source puts in the laser volume (0.75 mJ,
 | E200 cw, r0 = 100 µm | 1.05 MW | on | 24 kV/cm | 71 ns | 57 ns | 219 ns | 12.1 kK | 400 Ω |
 | E200 cw, power ÷ 3.91² (bound) | 0.069 MW | on | 14 kV/cm | 643 ns | 610 ns | — | 5.2 kK | 3.0 kΩ |
 | E200 cw, dt/2 and 2× radial cells | 1.05 MW | on | 5.6 kV/cm | 241 ns | 180 ns | 317 ns | 19.7 kK | 265 Ω |
+| E200, r0 = 100 µm | 1.05 MW | off at 100 ns | 24 kV/cm | **71 ns (before drive-off)** | 57 ns | — | 11.7 kK | 240 kΩ (afterglow) |
+| E300, r0 = 100 µm | 2.37 MW | off at 100 ns | 9.5 kV/cm | **36 ns (before drive-off)** | 21 ns | 92 ns | 14.9 kK | 89 kΩ (afterglow) |
+| E200, r0 = 150 µm | 1.05 MW | off at 100 ns | 16 kV/cm | none (glow) | 93 ns | — | 2.1 kK | 243 kΩ (afterglow) |
+| E200, r0 = 200 µm | 1.05 MW | off at 100 ns | 11 kV/cm | none (glow) | — | — | 1.2 kK | 241 kΩ (afterglow) |
+
+With the drive off 100 ns after the laser, the rod is driven for 95 ns after bridging at E200
+and 98.5 ns at E300. The four "off at 100 ns" radius runs test whether contraction fits in that
+window.
 
 **Phases seen in every chained run**
 1. **Hand-off transient (0–3 ns).** The rod is handed over at the full pre-bridge field.
@@ -478,8 +486,9 @@ The model estimates the electrons each source puts in the laser volume (0.75 mJ,
    25 kV/cm.
    - Te ≈ 2–2.8 eV, axis ne ≈ 2–5e21 m⁻³, R ≈ 5–9 kΩ ≫ X.
    - The gas stays cool (0.6–1.1 kK).
-   - **With the drive stopped 100 ns after the laser (the experimental timing), the rod never
-     leaves this phase.** It decays in the afterglow to about 2e19 m⁻³ by 400 ns.
+   - **With the drive stopped 100 ns after the laser (the experimental timing) and the 0.3 mm
+     hand-off radius, the rod never leaves this phase.** It decays in the afterglow to about
+     2e19 m⁻³ by 400 ns. With a hand-off radius of 100 µm it does leave it (see below).
 3. **Thermal contraction (arc), only under continued drive.**
    - The gas heats, the core rarefies, and the conducting radius collapses from about 0.6 mm to
      0.06–0.12 mm.
@@ -495,10 +504,23 @@ The model estimates the electrons each source puts in the laser volume (0.75 mJ,
   The 0.3 mm hand-off radius is a rod3d cap, so the true time is uncertain by about 3×.
 - **Power calibration:** with forward power reduced by e_cal² to a measured-equivalent bound,
   contraction moves to 643 ns.
-- Either way, **the arc needs well over 100 ns of continued drive**. With the laser at 4.9 µs of a
-  5 µs pulse, the model predicts a diffuse glow column, not an arc, in the experiment.
-- **Validity limit:** the skin-depth limit is crossed 15–80 ns **before** contraction in every
-  case. The contraction itself and everything after it lie outside the uniform-field model.
+- **Glow or arc in the experiment depends on the initial channel radius.** The radius scan with
+  the experimental timing (drive off 100 ns after the laser) gives:
+  - 0.3, 0.2 and 0.15 mm: the rod stays a glow (peak axis Tg 0.7–2.1 kK) and decays after
+    drive-off;
+  - 0.1 mm: the rod contracts **inside** the drive window, 71 ns after bridging at E200 (Tg
+    11.7 kK) and 36 ns at E300 (Tg 14.9 kK).
+
+  The crossover therefore lies between 0.1 and 0.15 mm at nominal power. The resolved 1.48 MPa
+  streamer radii are 0.05–0.3 mm, so the model **cannot decide** between glow and arc for the
+  experiment. A glow is favoured only for wide channels or for the lower, measured-equivalent
+  power: at 1/e_cal² power, contraction moves to 643 ns even under continuous drive.
+- **Validity limit:** the skin-depth limit is crossed 14–78 ns **before** contraction in every
+  case. The contraction itself and everything after it lie outside the uniform-field model, so
+  the arc branch is a trend, not a prediction.
+- **Discriminating measurement:** the channel width and brightness in the last 100 ns of the RF
+  pulse. A diffuse column about 1 mm wide implies a glow. A thin (≲ 0.1 mm conducting core),
+  bright channel with continuum emission implies a contracted arc.
 
 ![Bridged rod under RF drive, chained from rod3d. Panels: (a) TE10 modal field at the post, with the hand-off collapse, the glow plateau at about 25 kV/cm, the drive-off at 100 ns and the late collapse under continued drive; (b) rod resistance and post reactance X; (c) rod and reflected power (nominal, uncalibrated); (d) axis ne, including the afterglow; (e) axis Tg with arc onset (dots) and the end of skin-depth validity (crosses); (f) radial ne and gas-density profiles of the E200 cw case. Simulated, not measured.](../simulations/rf_plasma/results/rod_drive/rod_drive.png)
 
@@ -514,8 +536,9 @@ An interactive viewer stitches the executed models on one time slider, from the 
 - **Upper right:** side view x–y along E around the seeded region.
 - **Lower right:** history of the modal field, the axial rod field, peak ne and axis Tg. A line
   marks the bridge hand-off.
-- Cases: E200 and E300 (RF off at 100 ns, and RF kept on); E100 (no bridge); E100 with focus 20 mm
-  off.
+- Cases: E200 and E300 (RF off at 100 ns, and RF kept on); E200 with a 100 µm initial radius and
+  the RF off at 100 ns (contraction inside the drive window); E100 (no bridge); E100 with focus
+  20 mm off.
 
 **Sequence (E200, RF kept on)**
 - −1.5 to 0 ns: the impurity multiphoton seed builds up on the laser line to about 1e15 m⁻³.
@@ -554,7 +577,10 @@ the first version. All three required fixes:
   counts.
 - Probability against shot interval (tests a previous-shot O₂⁻ reservoir).
 - Charge collection from the laser alone (absolute seed).
-- Time-resolved emission or a fast camera over the last 100 ns of the pulse (glow vs arc).
+- Time-resolved emission or a fast camera over the last 100 ns of the pulse, with the channel width
+  (glow vs arc; the model's crossover is a 0.10–0.15 mm initial radius).
+- Self-breakdown rate with a shot count (the about 10% operator estimate fixes the background
+  seed rate to within about ×2.5).
 
 ### Limitations
 - The tip law is effective and calibrated on two resolved runs, with about ×1.6 scatter. The 3D

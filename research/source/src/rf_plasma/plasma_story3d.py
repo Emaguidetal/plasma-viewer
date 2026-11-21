@@ -53,7 +53,8 @@ def _drive_phase(on, t, ds, r_ohm, x_ohm, q_l, tg):
     if t < 20e-9 and q_l < 20:
         ph = f"rod loads the cavity: modal field collapses (rod-loaded Q = {q_l:.0f})"
     elif tc is None or t < tc:
-        ph = f"RF on: diffuse glow column, gas still cool (Tg = {tg / 1e3:.1f} kK)"
+        ph = (f"RF on: diffuse glow column, gas still cool (Tg = {tg / 1e3:.1f} kK)" if tg < 2000 else
+              f"RF on: diffuse glow column, gas heating toward contraction (Tg = {tg / 1e3:.1f} kK)")
     else:
         ph = "RF on: thermally contracted arc channel"
         if r_ohm < x_ohm:
@@ -276,6 +277,8 @@ load(Object.keys(ALL)[0]);
 
 CASES = (("E200", "chain_E200_cw", "200 kV/cm nominal, RF kept on: bridge, glow, thermal contraction (arc)"),
          ("E200", "chain_E200", "200 kV/cm nominal, RF off 100 ns after the laser: bridge, glow, afterglow"),
+         ("E200", "chain_E200_r100", "200 kV/cm, RF off 100 ns after the laser, 100 um initial rod radius: "
+                                     "arc forms 71 ns after bridging, inside the drive window"),
          ("E300", "chain_E300_cw", "300 kV/cm nominal, RF kept on: fast bridge, glow, arc"),
          ("E300", "chain_E300", "300 kV/cm nominal, RF off 100 ns after the laser: glow, afterglow"),
          ("E100", None, "100 kV/cm nominal: rods stall, cavity drained (no bridge)"),
