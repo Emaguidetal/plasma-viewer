@@ -1,0 +1,80 @@
+:root {
+  color-scheme: dark;
+  font-family: "Segoe UI", Arial, sans-serif;
+  color: #e7eef7;
+  background: #0b1421;
+  line-height: 1.65;
+  --muted: #b7c7d9;
+  --accent: #91e2e6;
+  --border: #33465d;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; }
+a { color: var(--accent); text-underline-offset: .2em; }
+a:hover { color: #fff; }
+a:focus-visible { outline: 3px solid #ffd18b; outline-offset: 5px; }
+h1, h2, h3 { line-height: 1.2; color: #fff; }
+h1 { font-size: clamp(2.1rem, 5vw, 3.5rem); max-width: 900px; margin: .6rem 0 1rem; }
+h2 { font-size: clamp(1.6rem, 3vw, 2.1rem); }
+h3 { font-size: 1.4rem; margin: .7rem 0; }
+p { margin: .6rem 0 1rem; }
+img { display: block; width: 100%; height: auto; }
+figure { margin: 0; }
+figcaption { font-size: .85rem; color: var(--muted); line-height: 1.5; }
+.container { width: min(1200px, 100% - 3rem); margin: auto; }
+.skip-link { position: absolute; left: 1rem; top: -5rem; background: #0b1421; padding: .7rem; z-index: 5; }
+.skip-link:focus { top: 1rem; }
+.site-header { border-bottom: 1px solid var(--border); }
+.header-inner { display: flex; justify-content: space-between; gap: 1rem 2rem; align-items: center; flex-wrap: wrap; padding: 1.2rem 0; }
+.brand { font-weight: 700; color: #fff; text-decoration: none; letter-spacing: .02em; }
+.site-nav, .actions, .topic-nav { display: flex; flex-wrap: wrap; gap: .65rem 1.2rem; }
+.site-nav { font-size: .9rem; }
+.hero { padding: 3.5rem 0 1.8rem; }
+.eyebrow { font-size: .8rem; text-transform: uppercase; font-weight: 700; letter-spacing: .13em; color: var(--accent); }
+.lead { max-width: 850px; font-size: 1.15rem; color: var(--muted); }
+.actions { margin: 1.5rem 0; align-items: center; }
+.button { display: inline-block; padding: .65rem 1rem; border-radius: 6px; border: 1px solid var(--border); text-decoration: none; font-weight: 600; background: #15263b; }
+.button.primary { background: #91e2e6; color: #0b1421; border-color: #91e2e6; }
+.button:hover { background: #263c52; color: #fff; }
+.button.primary:hover { background: #c0f5f6; color: #0b1421; }
+.reference { display: flex; flex-wrap: wrap; gap: .5rem 1.8rem; margin: 1rem 0; color: var(--muted); font-size: .95rem; }
+.reference strong { color: #fff; }
+.notice { padding: 1rem 1.2rem; border-left: 3px solid #ffd18b; background: #242522; color: #f3e0c0; border-radius: 0 6px 6px 0; }
+.notice p { margin: 0; }
+.topic-section { padding: 1rem 0 3rem; }
+.section-intro { color: var(--muted); max-width: 850px; }
+.topic-nav { margin: 1.3rem 0 1.8rem; gap: .5rem; }
+.topic-nav a { padding: .25rem .7rem; border: 1px solid var(--border); border-radius: 5px; text-decoration: none; font-size: .85rem; }
+.topic-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.3rem; }
+.topic-card { border: 1px solid var(--border); border-radius: 10px; background: #142033; overflow: hidden; display: flex; flex-direction: column; scroll-margin-top: 1.5rem; }
+.topic-card figure { padding: .75rem .75rem 0; }
+.topic-card img { aspect-ratio: 16 / 9; object-fit: contain; background: #fff; border-radius: 5px; }
+.topic-card figcaption { padding: .5rem .1rem 0; }
+.card-body { padding: 1rem 1.2rem 1.3rem; display: flex; flex-direction: column; flex: 1; }
+.card-body p { color: var(--muted); }
+.tag { color: var(--accent); font-size: .8rem; font-weight: 600; letter-spacing: .04em; }
+.card-links { display: flex; gap: .5rem 1.2rem; flex-wrap: wrap; margin-top: auto; font-size: .95rem; }
+.card-links a:first-child { font-weight: 600; }
+.resources { margin-bottom: 3rem; padding: 1.5rem; background: #142033; border: 1px solid var(--border); border-radius: 10px; }
+.resources h2 { margin-top: 0; }
+.resources p { color: var(--muted); }
+.site-footer { padding: 1.6rem 0; border-top: 1px solid var(--border); font-size: .9rem; color: var(--muted); }
+.site-footer p { margin: .4rem 0; }
+.detail-header { padding: 2.5rem 0 1rem; }
+.detail-section { padding: 2rem 0; border-top: 1px solid var(--border); scroll-margin-top: 1rem; }
+.detail-section p, .detail-section li { max-width: 900px; }
+.detail-section li { margin-bottom: .5rem; }
+.detail-section figure { margin: 1.5rem 0; }
+.detail-section img { max-width: 1050px; background: #fff; border-radius: 6px; }
+.detail-section figcaption { max-width: 1000px; margin-top: .5rem; }
+.detail-section .actions { margin-bottom: .5rem; }
+
+@media (max-width: 700px) {
+  .container { width: calc(100% - 2rem); }
+  .topic-grid { grid-template-columns: 1fr; }
+  .hero { padding-top: 2rem; }
+  .lead { font-size: 1.05rem; }
+  .card-body { padding: 1rem; }
+  .site-nav { gap: .5rem 1rem; }
+}

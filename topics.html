@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Explanation of laser/RF geometry, local gas expansion and emission, independent PIC validation, and parameter scans in the plasma research project.">
+  <title>Model explanations | Laser-induced plasma research</title>
+  <link rel="stylesheet" href="site.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="./">Laser-induced plasma research</a>
+      <nav class="site-nav" aria-label="Main navigation">
+        <a href="./#topics">All topics</a>
+        <a href="switch/laser_plasma_3d.html">3D switch viewer</a>
+        <a href="research/">Reports &amp; data</a>
+        <a href="https://github.com/Emaguidetal/plasma-viewer">GitHub</a>
+      </nav>
+    </div>
+  </header>
+  <main id="main" class="container">
+    <div class="detail-header">
+      <div class="eyebrow">Models, interfaces, and evidence</div>
+      <h1>What each calculation explains</h1>
+      <p class="lead">These studies answer different questions. The RF-fluid, local afterglow, and
+        kinetic calculations are not one fully coupled whole-device simulation.</p>
+      <nav class="topic-nav" aria-label="Explanation sections">
+        <a href="switch/#rod-growth">3D rod growth</a>
+        <a href="switch/#seed-source">Seed sources</a>
+        <a href="switch/#continued-drive">Continued RF drive</a>
+        <a href="#laser-direction">Optics &amp; geometry</a>
+        <a href="#gas-expansion">Gas &amp; emission</a>
+        <a href="#pic-validation">PIC &amp; validation</a>
+        <a href="#parameter-scans">Parameter scans</a>
+      </nav>
+      <aside class="notice"><p><strong>All plotted results here are simulated.</strong>
+        Numerical verification, calibration, and experimental validation are different.
+        Read the limitations before using a result as an experimental prediction.</p></aside>
+    </div>
+
+    <section id="laser-direction" class="detail-section" aria-labelledby="direction-title">
+      <div class="eyebrow">Optics &amp; RF geometry</div>
+      <h2 id="direction-title">The laser line and the plasma rod are different objects</h2>
+      <p>In the current WR-284 switch geometry, the strong RF electric field points along y,
+        across the 34-mm gap between the broad walls. The laser travels along x, across the
+        broad dimension of the guide, perpendicular to E. The laser initially seeds a line;
+        the conducting rods must then grow from that line toward the broad walls along E.</p>
+      <p>The parallel comparison puts the laser along y instead. In that configuration the
+        seed is already aligned with the gap field. The matched short-window calculations use
+        the same assumed pulse, seed prescription, and material coupling, changing only the
+        laser axis. Their RF loading and final spatial distributions differ.</p>
+      <figure>
+        <img src="dynamics/orientation_comparison.png" alt="Comparison of simulated electron counts, RF focus fields, and density along perpendicular and parallel laser lines." loading="lazy">
+        <figcaption>Matched short-window RF-fluid runs at 50 and 200 kV/cm nominal field.
+          These calculations use a 1-mm mesh and no streamer transport. They do not resolve
+          the perpendicular seed's subsequent field-aligned rod growth; the separate
+          <a href="switch/#rod-growth">3D rod model</a> addresses that question.</figcaption>
+      </figure>
+      <p><strong>Optical scope:</strong> the displayed beam is a prescribed vacuum Gaussian,
+        not a validated propagation calculation. The 20-micrometer waist is assumed. Focus
+        movement can change where seed electrons overlap the RF mode, so a focus effect is
+        not automatically evidence for a different microscopic seed mechanism.</p>
+      <div class="actions">
+        <a class="button primary" href="dynamics/orientation3d.html">Explore both orientations in 3D</a>
+        <a href="dynamics/orientation_metrics.json">Comparison metrics</a>
+        <a href="research/documents/standing-wave-helium-plasma-reflector.pdf">Full report PDF</a>
+      </div>
+    </section>
+
+    <section id="gas-expansion" class="detail-section" aria-labelledby="gas-title">
+      <div class="eyebrow">Gas dynamics &amp; radiation</div>
+      <h2 id="gas-title">Expansion and light emission after RF energy deposition</h2>
+      <p>RF work first changes electron energy and plasma chemistry; some energy is transferred
+        to the heavy gas. The bounded dynamics study follows a short 3D Maxwell/chemistry
+        stage with a local cylindrical gas-afterglow calculation. That handoff assumes the RF
+        is quenched. It is different from the <a href="switch/#continued-drive">continued-drive
+        rod calculation</a>, and does not simulate the entire 5-microsecond driven cavity.</p>
+      <p>The gas model evolves compressible radial expansion and compression with plasma
+        chemistry. A Sod shock-tube test verifies aspects of the numerical Euler solver.
+        It does not show that the helium example forms a shock: the reported example is
+        subsonic, and velocity peaks remain mesh-dependent.</p>
+      <figure>
+        <img src="dynamics/dynamics_overview.png" alt="Overview of separate modeled RF-fluid and local afterglow histories, including gas and radiation diagnostics." loading="lazy">
+        <figcaption>Simulated dynamics overview. The gas stage uses a separate clock after
+          an assumed RF quench; it is not a measured continuation of the cavity experiment.</figcaption>
+      </figure>
+      <p><strong>Radiation scope:</strong> resonance/excimer emission uses a reduced escape
+        treatment, not line-resolved radiation transport. Visible continuum estimates are
+        conditional optically thin diagnostics, not a calibrated camera signal. Brightness
+        alone should not be interpreted as electron density, gas temperature, or proof of an arc.</p>
+      <div class="actions">
+        <a class="button primary" href="dynamics/">Explore gas and emission dynamics</a>
+        <a href="dynamics/shock_validation.png">Sod benchmark</a>
+        <a href="dynamics/gas_validation.json">Gas checks</a>
+        <a href="research/documents/standing-wave-helium-plasma-reflector.pdf">Full report PDF</a>
+      </div>
+    </section>
+
+    <section id="pic-validation" class="detail-section" aria-labelledby="pic-title">
+      <div class="eyebrow">Particle-in-cell &amp; numerical verification</div>
+      <h2 id="pic-title">A local kinetic check, not a full-cavity PIC solution</h2>
+      <p>The project includes executed WarpX 1D3V particle-in-cell calculations with
+        Monte Carlo collisions. They provide actual macroparticle histories, weighted
+        electron-energy distributions, and electron-count diagnostics. The driving sinusoidal
+        electric field is prescribed, and the neutral gas is a fixed thermal reservoir.</p>
+      <p>This PIC calculation is independent of the time-dependent cavity solution. Its
+        clock and field are not exported from the 3D switch model. It therefore tests a
+        restricted kinetic problem, not wall-to-wall channel growth or a whole-device discharge.</p>
+      <figure>
+        <img src="dynamics/pic_diagnostics.png" alt="Local PIC electron-energy and particle-count diagnostics and comparisons with reduced-model calculations." loading="lazy">
+        <figcaption>Independent local PIC/MCC diagnostics. Agreement in mean electron
+          energy does not validate every transport coefficient, collision energy balance,
+          or dense-helium reaction channel.</figcaption>
+      </figure>
+      <p><strong>Validation scope:</strong> drift/work checks and low-field ionization validation
+        remain incomplete. The separate mesh/time refinements also leave gas velocity peaks
+        and late arc properties unresolved. Consult the machine-readable results for both
+        passed and failed checks rather than treating the existence of PIC as full validation.</p>
+      <div class="actions">
+        <a class="button primary" href="dynamics/">Open the PIC panels</a>
+        <a href="dynamics/validation.png">Refinement figure</a>
+        <a href="dynamics/validation.json">Validation metrics</a>
+        <a href="https://github.com/Emaguidetal/plasma-viewer/blob/main/research/pic_source/DYNAMICS_README.md">PIC methods and execution guide</a>
+      </div>
+    </section>
+
+    <section id="parameter-scans" class="detail-section" aria-labelledby="scans-title">
+      <div class="eyebrow">Parameter sensitivity &amp; experimental comparisons</div>
+      <h2 id="scans-title">Separate trends from calibrated predictions</h2>
+      <p>The earlier coupled-model scans vary gas pressure, RF field, laser inputs, and seed
+        assumptions. The explorer lets you select runs and compare RF response, electron
+        histories, and other saved metrics. It is useful for sensitivity and ordering, but
+        the cases do not all share the current switch model's geometry or initial conditions.</p>
+      <figure>
+        <img src="research/data/coupled3d/figures_scan/scan_pE.png" alt="Pressure and nominal RF-field maps of calculated observables from the earlier coupled-model scan." loading="lazy">
+        <figcaption>Simulated pressure-field maps. Input conventions and observable
+          definitions must be checked before comparing cells with experiments or other solvers.</figcaption>
+      </figure>
+      <p>The published Technion helium microwave-switch anchors identified in the literature
+        review are at 0.20 MPa, not the 1.48-MPa project condition. Air-filament images and
+        X-band gas-breakdown data are also different experiments. Those references constrain
+        selected mechanisms and observables; they are not direct validation of every
+        high-pressure helium result.</p>
+      <p><strong>Field-scale caveat:</strong> a separate probability model used an illustrative
+        3.91 field multiplier fitted to a project-reported threshold. It is not an independent
+        field calibration and is not a universal conversion for all figures. Absolute RF
+        power, the conducting radius, and the microscopic seed source remain uncertain.</p>
+      <div class="actions">
+        <a class="button primary" href="scans.html">Explore parameter scans</a>
+        <a href="cavity.html">Earlier coupled 3D viewer</a>
+        <a href="research/data/coupled3d/table_scan_pE%2Bscan_laser%2Banchor%2Bconv.csv">Combined scan CSV</a>
+        <a href="https://github.com/Emaguidetal/plasma-viewer/blob/main/research/literature/experimental-data-krasik-leopold.md">Experimental-data review</a>
+      </div>
+    </section>
+  </main>
+  <footer class="site-footer">
+    <div class="container">
+      <p><a href="./#topics">Back to all topics</a> &middot; <a href="research/">Research library</a>
+        &middot; <a href="research-download.zip">Research download</a></p>
+    </div>
+  </footer>
+</body>
+</html>
