@@ -39,7 +39,7 @@ import numpy as np
 from numba import njit, prange
 
 from .breakdown_probability import Setup, seed_per_length
-from .streamer2d import SWARM_FILE, Swarm
+from .streamer2d import SWARM_FILE, Swarm, swarm_file_for
 
 EPS0 = 8.8541878128e-12
 QE = 1.602176634e-19
@@ -88,6 +88,8 @@ class RodConfig:
     steps_per_period: int = 64
     frame_dt_s: float = 50e-12
     stop_after_bridge_s: float = 1.0e-9
+    gas: str = "He"                 # swarm table (streamer2d.SWARM_FILES). e_m_td, c_v, n_sat and the
+                                    # power6 seed law were calibrated for He only.
 
     @property
     def n_gas(self):
@@ -160,8 +162,8 @@ def _block(rows_pos, rows_r, cols_pos, cols_axis, cols_hl, walls, nx, ny, nz, a,
 
 # ----------------------------------------------------------------------------- swarm helpers
 class TipPhysics:
-    def __init__(self, n_gas, e_m_td, c_v, r_min, r_max=np.inf):
-        self.sw = Swarm(SWARM_FILE, n_gas)
+    def __init__(self, n_gas, e_m_td, c_v, r_min, r_max=np.inf, swarm_file=SWARM_FILE):
+        self.sw = Swarm(swarm_file, n_gas)
         self.N = n_gas
         self.e_m = e_m_td * TD * n_gas
         self.c_v = c_v
@@ -197,7 +199,7 @@ class TipPhysics:
 class Rod3D:
     def __init__(self, cfg: RodConfig):
         self.cfg = cfg
-        self.tp = TipPhysics(cfg.n_gas, cfg.e_m_td, cfg.c_v, cfg.r_min, cfg.r_max)
+        self.tp = TipPhysics(cfg.n_gas, cfg.e_m_td, cfg.c_v, cfg.r_min, cfg.r_max, swarm_file_for(cfg.gas))
         self.omega = 2 * math.pi * cfg.f_hz
         self.y0, self.z0 = B_WG / 2, D_CAV / 2
         cap = 256

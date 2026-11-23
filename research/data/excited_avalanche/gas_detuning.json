@@ -1,0 +1,88 @@
+{
+ "eps_minus_1_1atm_293K": {
+  "He": 6.5e-05,
+  "Ar": 0.000517,
+  "N2": 0.000548
+ },
+ "f0_Hz": 2950000000.0,
+ "Q_L": 331.0,
+ "half_bandwidth_MHz": 4.45619335347432,
+ "rows": [
+  {
+   "psig": 50,
+   "He": {
+    "df_MHz": -0.41243305318793677,
+    "field_ratio_fixed_f": 0.9957443133538391
+   },
+   "Ar": {
+    "df_MHz": -3.280429053817898,
+    "field_ratio_fixed_f": 0.8053217319512418
+   },
+   "N2": {
+    "df_MHz": -3.4771278945690676,
+    "field_ratio_fixed_f": 0.788391006079141
+   }
+  },
+  {
+   "psig": 100,
+   "He": {
+    "df_MHz": -0.731180252209207,
+    "field_ratio_fixed_f": 0.9868044371442439
+   },
+   "Ar": {
+    "df_MHz": -5.815695236802463,
+    "field_ratio_fixed_f": 0.6082160734349523
+   },
+   "N2": {
+    "df_MHz": -6.164411972471469,
+    "field_ratio_fixed_f": 0.5858462993990884
+   }
+  },
+  {
+   "psig": 150,
+   "He": {
+    "df_MHz": -1.049927451230477,
+    "field_ratio_fixed_f": 0.9733483933491762
+   },
+   "Ar": {
+    "df_MHz": -8.350961419787026,
+    "field_ratio_fixed_f": 0.4707812881537507
+   },
+   "N2": {
+    "df_MHz": -8.851696050373869,
+    "field_ratio_fixed_f": 0.44966156558478015
+   }
+  },
+  {
+   "psig": 200,
+   "He": {
+    "df_MHz": -1.368674650251747,
+    "field_ratio_fixed_f": 0.9559273229839786
+   },
+   "Ar": {
+    "df_MHz": -10.886227602771589,
+    "field_ratio_fixed_f": 0.37883212997217
+   },
+   "N2": {
+    "df_MHz": -11.53898012827627,
+    "field_ratio_fixed_f": 0.3602551440823121
+   }
+  },
+  {
+   "psig": 300,
+   "He": {
+    "df_MHz": -2.0061690482942875,
+    "field_ratio_fixed_f": 0.9118539504075308
+   },
+   "Ar": {
+    "df_MHz": -15.95675996874072,
+    "field_ratio_fixed_f": 0.26897502642663795
+   },
+   "N2": {
+    "df_MHz": -16.913548284081074,
+    "field_ratio_fixed_f": 0.2547745201239608
+   }
+  }
+ ],
+ "source": "static dielectric constants of gases (CRC Handbook; ideal-gas density scaling, CALC); field ratio for fixed drive frequency at constant forward power, Lorentzian single mode"
+}

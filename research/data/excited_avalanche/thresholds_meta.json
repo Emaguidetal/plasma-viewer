@@ -1,0 +1,76 @@
+{
+ "python": "3.14.3",
+ "platform": "Windows-11-10.0.26300-SP0",
+ "variants": {
+  "direct": {
+   "excited": false
+  },
+  "direct_norec": {
+   "excited": false,
+   "kset": "norec"
+  },
+  "linear": {
+   "nonlinear": false
+  },
+  "nominal": {},
+  "nominal_low": {
+   "kset": "low"
+  },
+  "nominal_high": {
+   "kset": "high"
+  },
+  "hm1": {
+   "hm_branch": 1.0
+  },
+  "eta1e-3": {
+   "eta_gs": 0.001
+  },
+  "eta1e-2": {
+   "eta_gs": 0.01
+  },
+  "eta1e-1": {
+   "eta_gs": 0.1
+  },
+  "eta1e-1_hm1_high": {
+   "eta_gs": 0.1,
+   "hm_branch": 1.0,
+   "kset": "high"
+  },
+  "eta1": {
+   "eta_gs": 1.0
+  },
+  "eta3e-1": {
+   "eta_gs": 0.3
+  },
+  "direct_screen": {
+   "excited": false,
+   "criterion": "screen"
+  },
+  "nominal_screen": {
+   "criterion": "screen"
+  },
+  "high_screen": {
+   "kset": "high",
+   "criterion": "screen"
+  },
+  "spark1e-4": {
+   "spark_x0": 0.0001
+  }
+ },
+ "modes": {
+  "laser": {
+   "geometry": "cylinder",
+   "n0": 376.0,
+   "sigma0_m": 4.1e-06,
+   "length_m": 0.00203,
+   "t_flat_s": 1e-07
+  },
+  "rf": {
+   "geometry": "sphere",
+   "n0": 1.0,
+   "sigma0_m": 1e-06,
+   "t_flat_s": 5e-06
+  }
+ },
+ "command": "PYTHONPATH=src python -m rf_plasma.excited_study thresholds"
+}

@@ -38,8 +38,8 @@ HE_OVER_AIR = (4.0 / 28.96) * (1.94 / 1.82) * (34.0 / 41.0)
 
 
 class Rates:
-    def __init__(self, gas="He", closure="boltzmann"):
-        d = read_table(SWARM / f"{gas}_{closure}.csv")
+    def __init__(self, gas="He", closure="boltzmann", path=None):
+        d = read_table(Path(path) if path is not None else SWARM / f"{gas}_{closure}.csv")
         en = np.asarray(d["E_N_Td"])
         o = np.argsort(en)
         self.ln_en = np.log(en[o])

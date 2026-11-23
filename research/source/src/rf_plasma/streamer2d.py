@@ -70,7 +70,24 @@ TD = 1e-21  # V m^2
 
 ROOT = Path(__file__).resolve().parents[2]
 SWARM_FILE = ROOT / "cases" / "swarm" / "He_boltzmann.csv"
+# Gas-selectable swarm tables (rf_plasma.swarm_gases). He keeps the original table (unchanged results);
+# Ar / N2 use the same BOLOS grid and E/N grid (N2 includes rotational + hot-band vibrational losses).
+SWARM_FILES = {
+    "He": SWARM_FILE,
+    "Ar": ROOT / "cases" / "swarm" / "Ar_swarm.csv",
+    "N2": ROOT / "cases" / "swarm" / "N2_swarm.csv",
+}
+# Reduced mobility K0 (m^2/Vs) of the dominant high-pressure ion; ASSUMED literature-typical values, not
+# re-verified here: He2+ in He 16.7e-4 (existing), Ar2+ in Ar ~1.83e-4, N4+ in N2 ~2.33e-4.
+ION_K0 = {"He": 16.7e-4, "Ar": 1.83e-4, "N2": 2.33e-4}
 RESULTS = ROOT / "results" / "streamer2d"
+
+
+def swarm_file_for(gas: str) -> Path:
+    try:
+        return SWARM_FILES[gas]
+    except KeyError:
+        raise ValueError(f"unknown gas {gas!r}; available: {sorted(SWARM_FILES)}") from None
 
 
 # --------------------------------------------------------------------------- config
@@ -120,6 +137,16 @@ class Config:
     si_refresh_steps: int = 100
     si_violation: float = 1.5
     thresholds_m3: tuple = (1e19, 1e20, 1e21)
+    # gas: selects the swarm table (and the assumed ion K0) when swarm_file / K0_ion_m2_Vs are left at
+    # their He defaults. alpha_rec is NOT changed per gas (unverified for all gases).
+    gas: str = "He"
+
+    def __post_init__(self):
+        if self.gas != "He":
+            if self.swarm_file == str(SWARM_FILE):
+                self.swarm_file = str(swarm_file_for(self.gas))
+            if self.K0_ion_m2_Vs == ION_K0["He"]:
+                self.K0_ion_m2_Vs = ION_K0[self.gas]
 
     @property
     def N(self) -> float:

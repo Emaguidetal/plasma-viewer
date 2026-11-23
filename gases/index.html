@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Why would argon break down more easily than helium? Excited states, dense-plasma electron kinetics and VUV photon feedback in He, Ar and N2 at 50-300 psig.">
+  <title>Gas choice: He, Ar and N2 | RF switch research</title>
+  <link rel="stylesheet" href="../site.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="../">Laser-induced plasma research</a>
+      <nav class="site-nav" aria-label="Main navigation">
+        <a href="../#topics">Topics</a>
+        <a href="../switch/laser_plasma_3d.html">3D switch viewer</a>
+        <a href="../research/">Reports &amp; data</a>
+        <a href="https://github.com/Emaguidetal/plasma-viewer">GitHub</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main" class="container">
+    <section class="hero" aria-labelledby="page-title">
+      <div class="eyebrow">09 / Gas choice</div>
+      <h1 id="page-title">Why would argon break down more easily than helium?</h1>
+      <p class="lead">In the sealed WR-284 switch cavity (2.95 GHz, 50–300 psig), argon is observed to break down at a
+        lower field than helium, and nitrogen at a much higher one, with laser triggering and RF-only. Argon is also
+        slower and more variable. We tested every physical channel that could produce that ordering.</p>
+      <div class="actions">
+        <a class="button primary" href="argon-helium-breakdown-excited-dense-study.pdf">Read the report (PDF)</a>
+        <a class="button" href="../research/literature/argon-helium-breakdown-excited-dense-study.md">Markdown version</a>
+        <a href="../research/#gas-study">Data &amp; figures</a>
+      </div>
+      <aside class="notice" aria-label="Scientific scope">
+        <p><strong>Exploratory modelling, not validated predictions.</strong> Rate data carry verification labels
+          and uncertainty factors; several key coefficients are unverified. Every step was checked by an AI
+          plasma-physics reviewer, whose corrections are included.</p>
+      </aside>
+    </section>
+
+    <section class="topic-section" aria-labelledby="findings">
+      <h2 id="findings">Main findings</h2>
+      <div class="topic-grid">
+        <article class="topic-card">
+          <figure>
+            <img src="fig_mechanisms.png" alt="Breakdown thresholds and Ar/He ratios for every excited-state variant; laser-seeded ratios stay near 2, RF-only ratios fall below 1 only with strong photon feedback." loading="lazy">
+            <figcaption>Dilute avalanche with excited states: Ar/He stays at about 2.</figcaption>
+          </figure>
+          <div class="card-body">
+            <span class="tag">1 / Pure-gas avalanche</span>
+            <h3>No excited-state channel reverses the ordering</h3>
+            <p>Stepwise ionization, pooling, excimers, Hornbeck–Molnar ionization and recombination keep
+              <strong>Ar/He = 2.0–2.4</strong> (laser) and <strong>1.9–2.2</strong> (RF-only). N₂ needs 6–11× helium's field,
+              matching the observation. Argon spends its energy on excimers that radiate rather than ionize.</p>
+          </div>
+        </article>
+        <article class="topic-card">
+          <figure>
+            <img src="fig_dense_regime.png" alt="Ionization rate coefficient of He and Ar versus E/N at several ionization degrees; argon becomes faster at high ionization degree and low E/N." loading="lazy">
+            <figcaption>Boltzmann equation with electron–electron and electron–ion collisions.</figcaption>
+          </figure>
+          <div class="card-body">
+            <span class="tag">2 / Dense plasma</span>
+            <h3>In a dense plasma, argon ionizes faster</h3>
+            <p>Once the ionization degree reaches about 10⁻⁴, electron–electron collisions rebuild the energetic tail.
+              Below about 7–10 Td argon then ionizes faster than helium. In the dilute limit, helium is faster by
+              10 to 40 000×.</p>
+          </div>
+        </article>
+        <article class="topic-card">
+          <figure>
+            <img src="fig_spark.png" alt="Thresholds and Ar/He ratios for a dense argon laser spark compared with a dilute helium seed, with rate-uncertainty band." loading="lazy">
+            <figcaption>Dense Ar spark versus He multiphoton seed (field assumed inside the plasma).</figcaption>
+          </figure>
+          <div class="card-body">
+            <span class="tag">3 / Laser spark</span>
+            <h3>A dense argon spark helps, but not as built</h3>
+            <p>Seeding argon with a dense spark gives Ar/He of 0.69–0.99 (0.53–1.43 across rates). However, the laser line is
+              perpendicular to E, which screens the field inside the spark by about 50–500×. The spark also makes argon
+              <em>faster</em>, and it deposits about 6–8 eV per atom. Qualitative only.</p>
+          </div>
+        </article>
+        <article class="topic-card">
+          <figure>
+            <img src="fig_delays.png" alt="Breakdown probability, median delay and jitter versus peak field at 200 psig for He and Ar." loading="lazy">
+            <figcaption>2000-shot Monte Carlo at 30–300 kV/cm, 200 psig.</figcaption>
+          </figure>
+          <div class="card-body">
+            <span class="tag">4 / Photon feedback &amp; delays</span>
+            <h3>VUV wall feedback: not excluded, not demonstrated</h3>
+            <p>Excimer photons can release electrons from the copper walls. RF-only Ar/He drops below 1 only at
+              implausibly high efficiency (η ≥ 0.3–1). At η ≈ 0.1 it stays at 1.25–1.92. With strong feedback,
+              argon RF-only breakdown appears at 30–50 kV/cm with microsecond delays.</p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="resources" aria-labelledby="next">
+      <h2 id="next">Bottom line and decisive tests</h2>
+      <p>No self-consistent pure-gas mechanism reproduces Ar &lt; He at the experimental fields. Helium itself
+        already breaks down at about 3.9× lower field than any pure-helium model. The most likely common cause lies
+        outside the gas kinetics: how the field is determined for each gas (calibration, cavity tuning), local field
+        enhancement, or surfaces. Gas permittivity alone detunes the cavity by about 11 MHz in Ar and N₂ at 200 psig,
+        so the field per gas must be calibrated.</p>
+      <ol>
+        <li>Quantify the laser-only spark in Ar (size, brightness) and its absence in He.</li>
+        <li>Measure the threshold versus laser energy, and versus laser–RF delay.</li>
+        <li>Compare the laser axis along versus perpendicular to E.</li>
+        <li>Measure f₀ and Q_L for each gas and pressure, and document how the field is inferred.</li>
+        <li>Record RF-only delay distributions in Ar, and test a VUV-opaque, low-photoyield wall liner.</li>
+      </ol>
+      <div class="actions">
+        <a class="button" href="argon-helium-breakdown-excited-dense-study.pdf">Full report (PDF)</a>
+        <a class="button" href="../research/source/cases/excited_state_rates.md">Rate data and sources</a>
+        <a href="https://github.com/Emaguidetal/plasma-viewer/tree/main/research/source/src/rf_plasma">Model source</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>Laser-induced plasma in gases &middot; RF-plasma switching research</p>
+      <p><a href="../topics.html">Model explanations</a> &middot; <a href="../research/">Research library</a></p>
+    </div>
+  </footer>
+</body>
+</html>

@@ -33,13 +33,26 @@ def coulomb_log(ne, te_ev):
 
 
 class EESolver:
-    """Wraps a BOLOS solver; adds the e-e drift/diffusion terms on the cell boundaries."""
+    """Wraps a BOLOS solver; adds the e-e drift/diffusion terms on the cell boundaries.
+    ei=True also adds electron-ion momentum transfer (Coulomb, sigma_ei = pi (e^2/(4 pi eps0 eps))^2 lnL) as an
+    elastic target 'ION' of density x * lnL (cross section tabulated for lnL = 1), mass ratio m_e/M_ion."""
 
-    def __init__(self, gas, n_gas, e_max=120.0, cells=400, tg_k=300.0):
+    def __init__(self, gas, n_gas, e_max=120.0, cells=400, tg_k=300.0, ei=False):
         self.b = make_solver(gas, e_max=e_max, cells=cells, tg_k=tg_k)
         self.n_gas = n_gas
         self.x = 0.0
+        self.ei = ei
         b = self.b
+        if ei:
+            eps = np.geomspace(1e-4, e_max * 1.2, 400)
+            k_c = (co.e / (4 * math.pi * co.epsilon_0)) ** 2      # (e^2/(4 pi eps0))^2 / e^2 -> eV^2 m^2 below
+            sig = math.pi * k_c / eps ** 2                          # eps in eV: (e/(4 pi eps0 eps[V]))^2 pi
+            mass = {"He": 4.0026, "Ar": 39.948, "N2": 2 * 28.014}.get(gas, 40.0) * 1.66054e-27
+            b.load_collisions([dict(kind="ELASTIC", target="ION", mass_ratio=co.m_e / mass,
+                                    data=np.c_[np.r_[0.0, eps], np.r_[sig[0], sig]].tolist(),
+                                    comment="Coulomb e-ion momentum transfer per unit lnL")])
+            b.target["ION"].density = 0.0
+            b.init()
         self._W0 = None
         orig = b._scharf_gummel
 
@@ -82,6 +95,8 @@ class EESolver:
 
     def solve(self, en_td, x, f0, tol=1e-7):
         b = self.b
+        if self.ei:
+            b.target["ION"].density = 0.0
         b.EN = en_td * bsolver.TOWNSEND
         b.init()
         self.x = 0.0
@@ -91,7 +106,14 @@ class EESolver:
             return f
         self.x = x
         try:
-            f = b.converge(f, maxn=3000, rtol=tol, delta0=1e12)
+            if self.ei:
+                for _ in range(3):           # lnL from the current EEDF (weak dependence; 3 passes)
+                    te = 2.0 * float(b.mean_energy(f)) / 3.0
+                    b.target["ION"].density = x * coulomb_log(x * self.n_gas, te)
+                    b.init()
+                    f = b.converge(f, maxn=3000, rtol=tol, delta0=1e12)
+            else:
+                f = b.converge(f, maxn=3000, rtol=tol, delta0=1e12)
         finally:
             self._F = None
         return f

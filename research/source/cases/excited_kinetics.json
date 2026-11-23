@@ -1,0 +1,421 @@
+{
+ "_note": "Nominal excited-state kinetics for rf_plasma.excited_avalanche. SI units (m^3/s, m^6/s, s^-1). Forms: number; {A,b,c}: A Te^b exp(-c/Te), Te in eV (Maxwellian-fit, evaluated at Te = 2/3 <eps> of the Boltzmann EEDF, a stated limitation); {a300,n}: a300 (Te/300 K)^-n. 'src' cites cases/excited_state_rates.md (labels FT, FT-2 = open secondary compilation, ABS = abstract, DB, CALC = own estimate, UNV = unverified / sensitivity parameter). 'uncertainty' = multiplicative factor used for low/high sets. All three-body coefficients were measured at <= ~1 bar; N^2 scaling at 5-20 bar is unvalidated. Photon 'photo' flags mark radiative decays whose photons exceed the Cu work function (4.65 eV); 'Y' = assumed Cu photoyield (UNV bracket; Feuerbacher & Fitton-type magnitudes) at that photon energy.",
+ "Ar": {
+  "reservoirs": [
+   {
+    "name": "Ar_m",
+    "groups": [
+     "k_m"
+    ],
+    "group_frac": {
+     "k_hi": 0.5
+    },
+    "e_store_eV": 11.55,
+    "k2": 1.5e-20,
+    "k3": 1.3e-44,
+    "k3_to": [
+     [
+      "Ar2t",
+      1.0
+     ]
+    ],
+    "k_si": {
+     "A": 6.8e-15,
+     "b": 0.67,
+     "c": 4.2
+    },
+    "si_ion": "atomic",
+    "k_sup": {
+     "A": 4.3e-16,
+     "b": 0.74,
+     "c": 0.0
+    },
+    "e_transfer": [
+     [
+      "Ar_r",
+      3.7e-13
+     ]
+    ],
+    "uncertainty": {
+     "k_si": 3.0,
+     "k3": 2.0,
+     "k2": 7.0,
+     "k_sup": 3.0
+    },
+    "src": "k_si Kemaneci 2017 Tab.III (FT-2, Maxwellian); k3 1s5 Stankov 2022 / Millet 1982 (FT-2, ABS); k2 Stankov (FT-2; Kemaneci 2.1e-21); k_sup Kemaneci (FT-2); 4sm->4sr e-mixing Kemaneci/Ferreira (FT-2)"
+   },
+   {
+    "name": "Ar_r",
+    "groups": [
+     "k_r"
+    ],
+    "group_frac": {
+     "k_hi": 0.5
+    },
+    "e_store_eV": 11.7,
+    "A_s": 400000.0,
+    "photo": 1.0,
+    "Y": 0.05,
+    "k3": 1.5e-45,
+    "k3_to": [
+     [
+      "Ar2s",
+      1.0
+     ]
+    ],
+    "k_si": {
+     "A": 6.8e-15,
+     "b": 0.67,
+     "c": 4.0
+    },
+    "si_ion": "atomic",
+    "k_sup": {
+     "A": 4.3e-16,
+     "b": 0.74,
+     "c": 0.0
+    },
+    "e_transfer": [
+     [
+      "Ar_m",
+      9.1e-13
+     ]
+    ],
+    "uncertainty": {
+     "k_si": 3.0,
+     "k3": 2.0,
+     "A_s": 3.0,
+     "k_sup": 3.0
+    },
+    "src": "trapped 1s4/1s2 escape 6.43e3-2.74e4/sqrt(d) (Stankov/Golubovskii, FT-2) evaluated for d ~ 0.1-1 mm (CALC); k3 1s4 Stankov/Millet; k_si same fit with 4.0 eV threshold (CALC)"
+   },
+   {
+    "name": "Ar2s",
+    "groups": [],
+    "e_store_eV": 9.8,
+    "A_s": 238000000.0,
+    "photo": 1.0,
+    "Y": 0.03,
+    "k_si": {
+     "A": 6.8e-15,
+     "b": 0.67,
+     "c": 4.7
+    },
+    "si_ion": "molecular",
+    "uncertainty": {
+     "k_si": 10.0
+    },
+    "src": "A_s Stankov (FT-2; Keto 1974); Ar2* ionization: only thresholds found (Stankov/Jovanovic, FT-2) -> Ar(4s) fit shape with 4.7 eV threshold (UNV, factor 10)"
+   },
+   {
+    "name": "Ar2t",
+    "groups": [],
+    "e_store_eV": 9.8,
+    "A_s": 350000.0,
+    "photo": 1.0,
+    "Y": 0.03,
+    "k_si": {
+     "A": 6.8e-15,
+     "b": 0.67,
+     "c": 4.7
+    },
+    "si_ion": "molecular",
+    "uncertainty": {
+     "k_si": 10.0,
+     "A_s": 1.2
+    },
+    "src": "A_s 2.86 us (Millet ABS) / 3.14 us (Amsler ABS); k_si as Ar2s (UNV)"
+   }
+  ],
+  "pooling": [
+   {
+    "a": "Ar_m",
+    "b": "Ar_m",
+    "k": 1.2e-15,
+    "ion": "atomic",
+    "e_yield": 1.0,
+    "uncertainty": 2.0,
+    "src": "Stankov Tab.3 (FT-2; Blagoev 1979); Kemaneci 6.4e-16"
+   },
+   {
+    "a": "Ar_m",
+    "b": "Ar_r",
+    "k": 3e-15,
+    "ion": "atomic",
+    "e_yield": 1.0,
+    "uncertainty": 2.0,
+    "src": "Stankov mixed pairs 2.1-4.2e-15 (FT-2)"
+   },
+   {
+    "a": "Ar2t",
+    "b": "Ar2t",
+    "k": 5e-16,
+    "ion": "molecular",
+    "e_yield": 1.0,
+    "uncertainty": 10.0,
+    "src": "NOT FOUND - sensitivity parameter (UNV)"
+   }
+  ],
+  "ion": {
+   "k_conv": 2.25e-43,
+   "alpha_dr": {
+    "a300": 8.1e-13,
+    "n": 0.64
+   },
+   "dr_product": "Ar_m",
+   "K0_cm2_Vs": 1.83,
+   "src": "k_conv Jones 1980 (FT-2); DR total Stankov/Lukac (FT-2, CALC total; Jovanovic 1.7x lower); K0 Ar2+ in Ar (UNV, recalled); e+e+ion three-body recombination 8.75e-27 Te^-4.5 cm^6/s (Ar form quoted by Stankov 2022 with inconsistent printed units, applied to both ion pools and all gases: UNV, added on reviewer request)",
+   "alpha_3b": {
+    "A": 8.75e-39,
+    "b": -4.5,
+    "c": 0.0
+   }
+  }
+ },
+ "He": {
+  "reservoirs": [
+   {
+    "name": "He_t",
+    "groups": [
+     "k_t"
+    ],
+    "e_store_eV": 19.82,
+    "k3": 2.4e-46,
+    "k3_to": [
+     [
+      "He2",
+      1.0
+     ]
+    ],
+    "k_si": {
+     "A": 4.661e-16,
+     "b": 0.6,
+     "c": 4.78
+    },
+    "si_ion": "atomic",
+    "k_sup": 4.2e-15,
+    "uncertainty": {
+     "k_si": 3.0,
+     "k3": 1.2,
+     "k_sup": 1.2
+    },
+    "src": "k3 2.0-2.8e-46 Saifutdinov/Schroter (FT-2); k_sup Deloche 1976 (ABS); k_si widely used Maxwellian fit (UNV - threshold 4.77 eV per Schroter FT-2)"
+   },
+   {
+    "name": "He_s",
+    "groups": [
+     "k_s"
+    ],
+    "e_store_eV": 20.9,
+    "A_s": 400000.0,
+    "photo": 1.0,
+    "Y": 0.1,
+    "e_transfer": [
+     [
+      "He_t",
+      3e-13
+     ]
+    ],
+    "k_si": {
+     "A": 4.661e-16,
+     "b": 0.6,
+     "c": 3.97
+    },
+    "si_ion": "atomic",
+    "k_sup": 4.2e-15,
+    "uncertainty": {
+     "k_si": 3.0,
+     "A_s": 10.0,
+     "k_sup": 1.2,
+     "k3": 3.0
+    },
+    "src": "singlets: 2^1P trapped resonance (58.4 nm) escape and 2^1S->2^3S e-conversion magnitude UNV (sensitivity); threshold 3.97 eV (CALC); He(2^1S,2^1P)+2He -> He2(A 1Sigma_u+) 2e-46 m^6/s (UNV, by analogy with the triplet 2.0-2.8e-46; added on reviewer request)",
+    "k3": 2e-46,
+    "k3_to": [
+     [
+      "He2s",
+      1.0
+     ]
+    ]
+   },
+   {
+    "name": "He2",
+    "groups": [],
+    "e_store_eV": 17.9,
+    "k_sup": 3.8e-15,
+    "k_si": {
+     "A": 2.06e-13,
+     "b": 0.0,
+     "c": 4.28
+    },
+    "si_ion": "molecular",
+    "uncertainty": {
+     "k_si": 3.0,
+     "k_sup": 1.3
+    },
+    "src": "He2*(a) non-radiative (13-18 s, earlier review ABS); k_si Schroter 2018 (FT-2); e + He2* -> 2He + e Deloche (ABS)"
+   },
+   {
+    "name": "He2s",
+    "groups": [],
+    "e_store_eV": 17.0,
+    "A_s": 1000000000.0,
+    "photo": 1.0,
+    "Y": 0.1,
+    "k_si": {
+     "A": 2.06e-13,
+     "b": 0.0,
+     "c": 4.28
+    },
+    "si_ion": "molecular",
+    "uncertainty": {
+     "k_si": 3.0,
+     "A_s": 3.0
+    },
+    "src": "He2(A 1Sigma_u+) Hopfield-continuum emitter (11-20 eV), ns radiative lifetime (UNV); Cu yield ~0.1 near 80 nm (Cairns & Samson 1966 as quoted by Aulchenko 2003, FT-2); k_si as He2* (Schroter, FT-2)"
+   }
+  ],
+  "pooling": [
+   {
+    "a": "He_t",
+    "b": "He_t",
+    "k": 1.5e-15,
+    "ion": "molecular",
+    "e_yield": 1.0,
+    "uncertainty": 2.0,
+    "src": "Deloche (1.5+-0.3)e-9 cm3/s (ABS); Saifutdinov 2x higher"
+   },
+   {
+    "a": "He2",
+    "b": "He2",
+    "k": 1.5e-15,
+    "ion": "molecular",
+    "e_yield": 1.0,
+    "uncertainty": 1.5,
+    "src": "Deloche (ABS)"
+   },
+   {
+    "a": "He_t",
+    "b": "He2",
+    "k": 2.5e-15,
+    "ion": "molecular",
+    "e_yield": 1.0,
+    "uncertainty": 2.0,
+    "src": "Deloche (ABS)"
+   }
+  ],
+  "ion": {
+   "k_conv": 1.4e-43,
+   "alpha_dr": {
+    "a300": 5e-16,
+    "n": 0.5
+   },
+   "dr_product": "He_t",
+   "K0_cm2_Vs": 16.7,
+   "src": "k_conv Saifutdinov (FT-2); alpha: Deloche two-body bound < 5e-10 cm3/s (ABS) - three-body terms omitted; K0 He2+ (UNV, recalled); e+e+ion three-body recombination 8.75e-27 Te^-4.5 cm^6/s (Ar form quoted by Stankov 2022 with inconsistent printed units, applied to both ion pools and all gases: UNV, added on reviewer request)",
+   "alpha_3b": {
+    "A": 8.75e-39,
+    "b": -4.5,
+    "c": 0.0
+   }
+  }
+ },
+ "N2": {
+  "reservoirs": [
+   {
+    "name": "N2A",
+    "groups": [
+     "k_trip"
+    ],
+    "e_store_eV": 6.2,
+    "A_s": 0.5,
+    "k2": 2e-23,
+    "k_si": {
+     "A": 4e-14,
+     "b": 0.0,
+     "c": 9.4
+    },
+    "si_ion": "atomic",
+    "uncertainty": {
+     "k_si": 10.0,
+     "k2": 10.0
+    },
+    "src": "A_s Peters R2 (FT-2); k2 Peters tuned 2e-17 cm3/s, literature 3e-19..3e-16 (FT-2); k_si magnitude from LoKI-GM sigma table peak ~2.2e-20 m^2 (DB, CALC, threshold 9.4 eV)"
+   },
+   {
+    "name": "N2a",
+    "groups": [
+     "k_sing"
+    ],
+    "e_store_eV": 8.4,
+    "k2": 2e-19,
+    "k2_to": [
+     [
+      "N2A",
+      1.0
+     ]
+    ],
+    "k_si": {
+     "A": 4e-14,
+     "b": 0.0,
+     "c": 7.2
+    },
+    "si_ion": "atomic",
+    "uncertainty": {
+     "k_si": 10.0,
+     "k2": 10.0
+    },
+    "src": "a' quenching by N2 UNV (sensitivity); k_si CALC"
+   }
+  ],
+  "pooling": [
+   {
+    "a": "N2A",
+    "b": "N2a",
+    "k": 1e-17,
+    "ion": "molecular",
+    "e_yield": 1.0,
+    "uncertainty": 3.0,
+    "src": "LoKI-GM / Guerra 2019 scheme 2 x 5e-18 (DB)"
+   },
+   {
+    "a": "N2a",
+    "b": "N2a",
+    "k": 5e-17,
+    "ion": "molecular",
+    "e_yield": 1.0,
+    "uncertainty": 3.0,
+    "src": "LoKI-GM 2 x 2.5e-17 (DB)"
+   },
+   {
+    "a": "N2A",
+    "b": "N2A",
+    "k": 2.3e-16,
+    "ion": "molecular",
+    "e_yield": 0.0,
+    "products": [
+     [
+      "N2A",
+      1.0
+     ]
+    ],
+    "uncertainty": 3.0,
+    "src": "A+A -> B (7.7e-17) + C (1.5e-16) (DB); B,C cascade back to A (one A returned, CALC)"
+   }
+  ],
+  "ion": {
+   "k_conv": 5e-41,
+   "alpha_dr": {
+    "a300": 2e-12,
+    "n": 0.5
+   },
+   "dr_product": null,
+   "K0_cm2_Vs": 2.3,
+   "src": "N2+ + 2N2 -> N4+ and N4+ DR: Kossyi-type values (UNV, recalled); K0 N4+ (UNV); e+e+ion three-body recombination 8.75e-27 Te^-4.5 cm^6/s (Ar form quoted by Stankov 2022 with inconsistent printed units, applied to both ion pools and all gases: UNV, added on reviewer request)",
+   "alpha_3b": {
+    "A": 8.75e-39,
+    "b": -4.5,
+    "c": 0.0
+   }
+  }
+ }
+}
