@@ -6,7 +6,11 @@
 
 This extends the [introductory gas-plasma review](laser-induced-plasma-in-gases.md). The working geometry is a gas-filled metallic waveguide with optical access, not an optical waveguide or a waveguide formed by plasma filaments. Since this review was written, illustrative cavity, waveguide, prescribed-plasma, and reduced transient benchmarks have been run; see the [simulation report](rf-plasma-simulation-benchmarks.md). These are not a validated, gas-specific plasma-dynamics prediction or measured apparatus specification.
 
-**Search date:** 18 November 2026. **Method:** targeted Crossref and OSTI searches combining laser-induced plasma, microwave enhancement, waveguide, and laser-triggered gas discharge; publisher metadata and abstracts were checked. This is not a systematic review. The directly relevant papers below were assessed at abstract/metadata level, not through a complete full-text review. An Optica full-text access attempt encountered an access challenge. Obtain the full papers before adopting their experimental details, rate coefficients, or boundary conditions.
+**Search date:** 18 November 2026, with a later source-access update. **Method:** targeted searches
+of Crossref, OSTI and the [Technion P4 publications](https://plasma.technion.ac.il/publications/)
+page. This is not a systematic review. The Shlapakovski 2015 and 2016 papers [1, 2] and Shafir
+2018 papers [7, 8] were consulted in full; the other evidence levels are identified individually.
+An Optica full-text access attempt encountered an access challenge.
 
 Here RF includes microwave frequencies. A conventional hollow metallic guide must support propagation at the selected frequency; a small microwave guide cannot simply be driven at a much lower RF frequency and assumed to support the same mode [6].
 
@@ -51,11 +55,19 @@ flowchart LR
 
 ### Direct evidence: gas discharge in a metallic waveguide
 
-**Shlapakovski et al. (2016) [1]** studied laser triggering of a pressurized dry-air discharge in a waveguide side arm of a resonant microwave system. The abstract reports dependence on laser focusing and beam position. This is a direct geometry match to laser-created gas plasma in an RF-bearing metallic waveguide.
+**Shlapakovski et al. (2016) [1]** studied laser triggering of a dry-air discharge at 0.26 MPa
+and 2.7658 GHz in a resonant microwave compressor. A laser directed along E was focused at the
+waveguide center or back wall. Center focusing gave a peak-power extraction ratio around 47%;
+back-wall focusing with 213 nm gave output appearance delay below 1 ns and a ratio around 35%.
+These are different configurations; the power ratio is not an integrated-energy efficiency.
 
 **Limitation:** their resonant switching system is not the same as a straight, matched two-port test section. Its performance and operating conditions should not be transferred without reproducing the geometry and discharge physics.
 
-**Shlapakovski et al. (2015) [2]** modeled coupled plasma and electromagnetic evolution in a related waveguide/cavity system using a gas-conductivity model in MAGIC. In a laser-seeding approximation, the initial electrons were prescribed near an RF-field antinode. The reported evolution includes filament growth, field screening, and a reduction in avalanche growth as the electromagnetic field changes.
+**Shlapakovski et al. (2015) [2]** modeled coupled plasma and electromagnetic evolution in a
+related waveguide/cavity system using a MAGIC gas-conductivity model. Prescribed seed particles
+approximate laser ignition near an RF-field antinode. The simulations show filament growth, field
+screening and feedback on avalanche growth; their approximately 33% and 75% peak-power extraction
+ratios are model results for different seed configurations.
 
 **Modeling lesson:** the field and the plasma can modify each other; imposing electron density does not predict that feedback. Prescribing seed electrons also does not simulate laser propagation or laser breakdown from first principles.
 
@@ -71,6 +83,13 @@ flowchart LR
 
 **Alshershby et al. (2012) [5]** analyze microwave guiding by a column of laser-generated plasma filaments. The plasma forms the guiding structure, unlike plasma inserted into a metallic guide. This is relevant background but not a direct validation benchmark.
 
+**Shafir et al. (2018) [7, 8]** observed RF-driven self-channeling in helium and air with
+sub-nanosecond, 9.6 GHz pulses at pressures below the present switch regime. Their antenna and
+emission measurements are interpreted with plasma simulations; one spectroscopic density
+estimate depends on a collisional-radiative model with PIC electron distributions. These studies
+do not use a laser trigger and do not determine the high-pressure Ar/He field ordering. In [7],
+the abstract reverses the helium/air pressure labels relative to the body and figures.
+
 | Source | Gas-phase relevance | Metallic RF waveguide relevance | Use in this project |
 | --- | --- | --- | --- |
 | [1] | Laser-triggered dry-air discharge | Direct, in a resonant side-arm configuration | Experimental precedent |
@@ -78,6 +97,7 @@ flowchart LR
 | [3] | Direct laser-created air plasma | Exact geometry not established here | Diagnostics and non-equilibrium caution |
 | [4] | Air plasma compared with target ablation | Not established here | Further-reading lead only |
 | [5] | Laser-produced air filaments | Plasma is the guide, not its load | Related geometry; do not conflate |
+| [7, 8] | RF-ionized He and air | Free beam in a gas-filled tube, not this switch | Plasma feedback and diagnostic context only |
 
 ## 3. Physical model for the first simulation
 
@@ -183,9 +203,11 @@ Any physical experiment also needs institutional assessment of laser exposure, R
 
 ## References and evidence access
 
-1. **A. Shlapakovski, S. Gorev, and Ya. E. Krasik (2016).** [Improved operation of a microwave pulse compressor with a laser-triggered high-pressure gas plasma switch](https://doi.org/10.1063/1.4960981). *Physics of Plasmas*, 23. [OSTI abstract and metadata](https://www.osti.gov/biblio/22599933). Direct experimental precedent; full paper not assessed.
-2. **A. S. Shlapakovski et al. (2015).** [Self-consistent evolution of plasma discharge and electromagnetic fields in a microwave pulse compressor](https://doi.org/10.1063/1.4926819). *Physics of Plasmas*, 22, 073111. [OSTI abstract and metadata](https://www.osti.gov/biblio/22490985). Direct coupled-model precedent; full paper not assessed.
+1. **A. Shlapakovski, S. Gorev, and Ya. E. Krasik (2016).** [Improved operation of a microwave pulse compressor with a laser-triggered high-pressure gas plasma switch](https://doi.org/10.1063/1.4960981). *Physics of Plasmas*, 23, 080702. [P4 full text](https://plasma.technion.ac.il/files/2017/02/2016_5.pdf). Direct dry-air experimental precedent.
+2. **A. S. Shlapakovski et al. (2015).** [Self-consistent evolution of plasma discharge and electromagnetic fields in a microwave pulse compressor](https://doi.org/10.1063/1.4926819). *Physics of Plasmas*, 22, 073111. [P4 full text](https://plasma.technion.ac.il/files/2016/04/2015_7.pdf). Coupled-model precedent; seeded simulation, not measured plasma evolution.
 3. **Y. Ikeda and J. K. Soriano (2022).** [Microwave-enhanced laser-induced air plasma at atmospheric pressure](https://doi.org/10.1364/OE.470072). *Optics Express*, 30(19), starting page 33756. Crossref metadata and deposited abstract assessed; publisher full text not accessed.
 4. **Y. Ikeda and J. K. Soriano (2023).** [Analysis of the characteristics of microwave-enhanced laser-induced atmospheric air plasma and ablation plasma for Al target](https://doi.org/10.1016/j.talo.2022.100172). *Talanta Open*. Metadata-only lead; no detailed findings inferred.
 5. **M. Alshershby et al. (2012).** [Analysis of microwave leaky modes propagating through laser plasma filaments column waveguide](https://doi.org/10.1063/1.4771595). *Physics of Plasmas*, 19, 123504. [OSTI abstract and metadata](https://www.osti.gov/biblio/22072666). Different guiding geometry; full paper not assessed.
 6. **M. Steer.** [Rectangular Waveguide](https://eng.libretexts.org/Bookshelves/Electrical_Engineering/Electronics/Microwave_and_RF_Design_II_-_Transmission_Lines_%28Steer%29/06%3A_Waveguides/6.04%3A_Rectangular_Waveguide), in *Microwave and RF Design II: Transmission Lines*, Engineering LibreTexts. Open textbook section consulted for waveguide modes and cutoff; not a laser-plasma experiment.
+7. **G. Shafir et al. (2018).** [Ionization-Induced Self-Channeling of an Ultrahigh-Power Subnanosecond Microwave Beam in a Neutral Gas](https://doi.org/10.1103/PhysRevLett.120.135003). *Physical Review Letters*, 120, 135003. [P4 full text](https://plasma.technion.ac.il/files/2018/08/2018_4.pdf). The abstract and figure gas-pressure labels conflict.
+8. **G. Shafir et al. (2018).** [The interaction of intense, ultra-short microwave beams with the plasma generated by gas ionization](https://doi.org/10.1063/1.5023715). *Physics of Plasmas*, 25, 032308. [P4 full text](https://plasma.technion.ac.il/files/2018/08/2018_3.pdf). The line-based density estimate is model-dependent.

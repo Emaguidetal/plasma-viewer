@@ -139,7 +139,7 @@ def fig_channel(pe, la):
     ax[0].set_ylabel("channel half-electron radius r50 (µm)")
     ax[1].set_yscale("log")
     ax[1].set_ylim(1e18, 1e26)
-    ax[1].axhline(6e22, color="k", ls=":", label="He measured 6e22 m⁻³")
+    ax[1].axhline(6e22, color="k", ls=":", label="He Stark 6e22 m⁻³ (different averaging)")
     ax[1].set_ylabel("axis n_e at focus (m⁻³)")
     for a in ax:
         a.set_xlabel("time after laser peak (ns)")
@@ -198,7 +198,8 @@ def fig_seed(conv, anc, rates, nominal):
                 ax[1].plot(hi["seed_electrons"], d["t_Ecollapse_ns"], "o", ms=9,
                            label=f"3D {k} (w={hi['waist_um']:.0f} µm)")
     dd = (30.0, 15.0)  # Beilin 2015: delay(16.6) - delay(22.3 kV/cm), He 0.2 MPa
-    ax[1].axhspan(dd[0] - dd[1], dd[0] + dd[1], color="0.85", label="measured He 0.2 MPa: 30±15 ns")
+    ax[1].axhspan(dd[0] - dd[1], dd[0] + dd[1], color="0.85",
+                  label="published light-onset difference: 30±15 ns")
     n0 = np.logspace(3, 12, 50)
     nbr = 2.5e13  # geometric mean of N at field collapse in the nominal cavity anchors (1.1e13, 5.7e13)
     p = 0.2e6
@@ -206,7 +207,7 @@ def fig_seed(conv, anc, rates, nominal):
     ax[1].semilogx(n0, sur, "k:", label=f"0D avalanche, N_br={nbr:.1e}")
     ax[1].set_xlabel("seed electrons N0")
     ax[1].set_ylabel("delay(16.6) − delay(22.3 kV/cm)  (ns)")
-    ax[1].set_title("Cavity anchor: field-collapse delay difference")
+    ax[1].set_title("Field-collapse proxy vs measured light onset")
     ax[1].legend(fontsize=7)
     fig.tight_layout()
     fig.savefig(OUT / "seed_anchor.png", dpi=130)
@@ -265,23 +266,32 @@ def exp_rows(s, pe, anc):
     ab = [(k, v) for k, v in a.items() if v.get("dt_Ecollapse") is not None]
     dd = "; ".join(f"{k} (N0 {v['N0']:.0e}): {fmt(v['dt_Ecollapse'])}" for k, v in ab)
     return [
-        ("Delay difference, 16.6 vs 22.3 kV/cm (He 0.2 MPa)", "+30 ± 15 ns",
-         dd or "pending", "Sign right in all; only a weak seed (N0 ≲ 1e6: N1e5, wide) reproduces the magnitude"),
+        ("Delay difference, low vs high power (He 0.2 MPa)", "Laser-to-light onset: +30 ± 15 ns",
+         dd or "pending", "Field-collapse proxy is not light onset; ±15 ns is the sum of reported jitters; seed is assumed"),
         ("Delay jitter", "±6 ns (22.3), ±9 ns (16.6)", "σ_P ≈ 5–10 % magnetron power (0D Monte Carlo)",
          "deterministic 3D runs give no jitter; see stochastic_seed"),
         ("Channel n_e (He)", "6×10²² m⁻³ (Stark)", f"peak axis {pk:.1e}; end ({ne_end})" if pk else "—",
-         "model is axis value of a 20–40 µm core; Stark is chord/time averaged"),
+         "model is axis value of a 20–40 µm core; Stark has different spatial and temporal averaging"),
         ("Channel diameter", "0.2–0.6 mm (air)", "3D r50 45–100 µm; 2D streamer 0.15–0.21 mm at 10 ns",
-         "He data absent; 2D model approaches lower bound"),
-        ("Ionization-front speed", "5×10⁵ m/s (air)", "2D: 4.5–7×10⁵ m/s (22.3), ~1×10⁵ (16.6)", "consistent order"),
-        ("Breakdown threshold (guide, 15 ns)", "—", "E/N ≈ 20–30 Td (see p×E map)", "no He threshold data at 3 GHz, ns"),
-        ("Focused laser along E (Shlapakovski 2016)", "delay < 1 ns, η 0.47", "delay 1–4 ns at ≥ 75 Td, 20 µm focus",
-         "qualitative agreement: strong local seed → short delay"),
+         "air measurement and He simulation are not matched"),
+        ("Ionization-front speed", "5×10⁵ m/s (air)", "2D: 4.5–7×10⁵ m/s (22.3), ~1×10⁵ (16.6)",
+         "air measurement and He simulation are not matched"),
+        ("Breakdown threshold (guide, 15 ns)", "—", "E/N ≈ 20–30 Td (see p×E map)",
+         "published operating fields are not measured breakdown thresholds"),
+        ("Focused laser along E (Shlapakovski 2016)",
+         "Air, center: peak-power ratio 0.47; back wall: output delay < 1 ns, ratio ≈ 0.35",
+         "He proxy: 1–4 ns at ≥ 75 Td, 20 µm focus",
+         "different gases and focus positions; peak-power ratio is not integrated energy efficiency"),
     ]
 
 
 def write_md(rows):
-    h = "| Quantity | Measured | Model | Comment |\n|---|---|---|---|\n"
+    h = ("The He anchors match pressure and nominal field values only. The project cavity is at 2.95 GHz; "
+         "the published compressor is about 2.767 GHz, with different geometry, seed and detector. "
+         "Published field values are calculated from power; peak versus RMS is unclear. "
+         "The measured +30 ± 15 ns is a laser-to-light-onset difference between output-power groups; "
+         "±15 ns is the sum of the reported jitters. Field-collapse and light-onset delays are different observables.\n\n"
+         "| Quantity | Measured | Model | Comment |\n|---|---|---|---|\n")
     (OUT / "exp_compare.md").write_text(h + "".join(f"| {a} | {b} | {c} | {d} |\n" for a, b, c, d in rows),
                                         encoding="utf-8")
 
@@ -294,7 +304,10 @@ h1{font-size:20px;margin:4px 0}h2{font-size:15px;margin:4px 0 8px}.card{backgrou
 img{width:100%;border-radius:6px;background:#fff}table{border-collapse:collapse;font-size:12px;width:100%}td,th{border-bottom:1px solid #294158;padding:3px 5px;text-align:left}
 .small{font-size:12px;color:#a9bccd}select,button{padding:4px 6px}a{color:#7cc4ff}.tw{overflow-x:auto}</style></head><body>
 <h1>Laser-triggered RF breakdown in helium — parameter scans (coupled 3D FDTD + kinetics + sub-cell filament)</h1>
-<div class="small">All numbers are solver output. Guide: matched WR-284, 2.95 GHz, He, 1 mm mesh, laser 532 nm, localized k-order seed. Cavity anchors: Beilin 2015 conditions (He 0.2 MPa, 16.6 / 22.3 kV/cm).
+<div class="small">Guide: matched WR-284, 2.95 GHz, He, 1 mm mesh, laser 532 nm, localized k-order seed.
+The cavity anchors use the published 0.2 MPa and nominal 16.6 / 22.3 kV/cm values, but differ in geometry, frequency,
+seed and measured observable. The published fields are calculated from power; peak versus RMS is unclear.
+The field-collapse proxy is not the measured laser-to-light-onset delay and is not independent validation.
 <a href="index.html">← main 3D viewer</a></div>
 <div class="grid">
 <section class="card"><h2>p × E map</h2><label>Metric <select id="met">

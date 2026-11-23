@@ -344,7 +344,7 @@ def main(argv=None):
     ap.add_argument("--dt-max-ns", type=float, default=0.05)
     ap.add_argument("--power-scale", type=float, default=1.0,
                     help="scale forward power and stored cavity energy (fields by its square root), e.g. 1/3.91^2 "
-                         "for the measured-equivalent bound; line density is kept")
+                         "for an illustrative reduced-power sensitivity; line density is kept")
     ap.add_argument("--from-rod3d", default=None,
                     help="start from the bridged rod of this rod3d case; --drive-off-ns is then after the laser")
     a = ap.parse_args(argv)

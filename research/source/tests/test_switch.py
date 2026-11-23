@@ -3,7 +3,7 @@ import unittest
 
 import numpy as np
 
-from rf_plasma import rod3d, rod_drive, seed_sources
+from rf_plasma import plasma_story3d, rod3d, rod_drive, seed_sources
 
 
 class Rod3DTests(unittest.TestCase):
@@ -37,6 +37,38 @@ class SeedSourceTests(unittest.TestCase):
         k = seed_sources.energy_slope(b, fns["MPI H2O"])
         self.assertGreater(k, 4.0)
         self.assertLessEqual(k, 6.5)
+
+
+class StoryViewerTests(unittest.TestCase):
+    def test_unbridged_case_reports_evolution_without_claiming_a_bridge(self):
+        import json, tempfile
+        from pathlib import Path
+        from unittest.mock import patch
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            case = root / "rod3d" / "example"
+            case.mkdir(parents=True)
+            summary = {
+                "config": {"e0_v_m": 1e7, "dx_c": 1e-3, "r_s": 1e-5, "x_focus_m": 0.0},
+                "t_first_birth_ns": 1.5, "t_bridge_ns": None, "n_rods": 1,
+            }
+            (case / "summary.json").write_text(json.dumps(summary), encoding="utf-8")
+            np.savez(
+                case / "rod3d.npz",
+                pos=np.array([[0, 0.017, 0], [0, 0.018, 0]]),
+                rad=np.array([1e-5, 1e-5]), kind=np.array([0, 1]), rod=np.array([-1, 0]),
+                lam=np.full((3, 2), 1e8), t_s=np.array([0.0, 1e-9, 2e-9]),
+                seed_electrons=np.array([100.0]), m_frame=np.array([2, 2, 2]),
+                hist_e0_v_m=np.full(3, 1e7),
+            )
+            with patch.object(plasma_story3d, "ROOT", root):
+                result = plasma_story3d.case_data("example")
+            phase = next(frame["phase"] for frame in result["frames"] if frame["t"] == 2.0)
+        self.assertIn("no wall-to-wall bridge", phase)
+        self.assertIn("display-only", result["frames"][0]["phase"])
+        self.assertIn("t=0", result["frames"][0]["phase"])
+        self.assertIn("Pre-zero seed buildup is display-only", plasma_story3d.HTML)
 
 
 class RodDriveTests(unittest.TestCase):

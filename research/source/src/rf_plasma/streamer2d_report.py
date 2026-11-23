@@ -41,10 +41,10 @@ MEASURED = {
     "He_delta_delay_s": {
         "value": 30e-9, "uncertainty": 15e-9,
         "gas": "He 0.2 MPa",
-        "definition": "delay(16.6 kV/cm) - delay(22.3 kV/cm), laser entry -> RF output switching",
-        "source": "Beilin 2015; Yatom 2016 sec. 4.2 / Fig. 14",
-        "note": "The measured delay covers laser entry to output-pulse switching (tens of ns).  The model starts from "
-                "an already-formed laser channel and runs <=10 ns, so only a proxy is computed (see delay_proxies).",
+        "definition": "low-minus-high output-power groups: laser entry to optical-emission onset",
+        "source": "Beilin 2015, experimental results; Yatom 2016 sec. 4.2 / Fig. 14",
+        "note": "The reported +/-15 ns is the sum of the two jitters, not a confidence interval. The model starts "
+                "from an already-formed channel and runs <=10 ns; its diameter/conductance proxies do not model light onset.",
     },
 }
 

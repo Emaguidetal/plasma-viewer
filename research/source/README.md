@@ -10,19 +10,31 @@ Maxwellization point is derived from cited rates rather than fitted), not a
 validated prediction. Copper is represented only by separate first-order
 analytical loss estimates.
 
-The [benchmark report](../../literature/rf-plasma-simulation-benchmarks.md)
+The [benchmark report](../literature/rf-plasma-simulation-benchmarks.md)
 covers the earlier benchmarks. The
-[coupled 3D report](../../literature/coupled-3d-rf-laser-plasma-simulation.md)
+[coupled 3D report](../literature/coupled-3d-rf-laser-plasma-simulation.md)
 covers the gas-specific matrix, validation, sensitivity and limitations.
+
+## Experimental comparison limits
+
+The [Technion source review](../literature/experimental-data-krasik-leopold.md)
+documents an S-band helium compressor at 0.20 MPa and about 2.767 GHz, as well
+as Shafir's X-band helium/air experiments. They do not independently establish
+the high-pressure argon-versus-helium field ordering. Our 2.95 GHz cavity's
+field-collapse time is not the measured light-onset delay, and peak-axis
+density is not the same observable as spatially averaged Stark spectroscopy.
+The reported fields were calculated from power with an unclear peak/RMS
+convention. The 3.91 multiplier is an illustrative fit to an assumed
+probability, not an independent field calibration.
 
 ## RF, optics, gas expansion, emission and real local PIC
 
-The [dynamics viewer](results/dynamics/dynamics.html) separates a bounded
+The [dynamics viewer](../data/dynamics/dynamics.html) separates a bounded
 perpendicular-seed Maxwell/CR-fluid run, an assumed-RF-off local cylindrical
 Euler/CR afterglow, and actual 1D3V WarpX/MCC particles. The optical panel is a
 prescribed Gaussian, not a validated propagated laser field. See the
-[current report](../../literature/standing-wave-helium-plasma-reflector.md)
-and [refinement metrics](results/dynamics/validation.json).
+[current report](../literature/standing-wave-helium-plasma-reflector.md)
+and [refinement metrics](../data/dynamics/validation.json).
 
 - [cavity_dynamics](src/rf_plasma/cavity_dynamics.py) maps signed edge work to
   occupied material, carries exact heavy-gas internal energy, and exports the
@@ -33,7 +45,7 @@ and [refinement metrics](results/dynamics/validation.json).
 - [radiation_diagnostics](src/rf_plasma/radiation_diagnostics.py) separates
   modeled CR radiative energy from unresolved recombination disposal.
   Visible free-free is conditional; it is not a calibrated camera signal.
-- [PIC execution guide](../pic/DYNAMICS_README.md) documents actual particle
+- [PIC execution guide](../pic_source/DYNAMICS_README.md) documents actual particle
   histories and passed/failed validation. Mean-energy agreement does not
   validate drift, exact MCC energy balance, ionization at 50 kV/cm, or a
   whole-cavity kinetic model.
@@ -46,6 +58,14 @@ flagged, rather than presented as resolved motion.
 
 From this directory, use existing environments, new output paths, and check
 each exit status:
+
+The public source package does not include third-party LXCat cross-section
+files. Helium CR calculations and the switch drive-conservation test require
+`cases/cross_sections/LoKI_He_LXCat.txt`: the IST-Lisbon helium dataset in
+LXCat format, retrieved for these results on 23 September 2022, including the
+resolved He n=2 excitation channels. Obtain the data under its stated terms;
+a later snapshot is not necessarily the same validation input. Other gases
+may require additional cross-section files.
 
 ```powershell
 $env:PYTHONPATH = 'src'
@@ -93,7 +113,7 @@ $env:PYTHONPATH = "src"
 # bridged rod handed off from the rod3d run (drive off 100 ns after the laser, or kept on)
 & .\.venv\Scripts\python.exe -m rf_plasma.rod_drive --name chain_E200 --from-rod3d E200 --drive-off-ns 100 --t-end-ns 400
 & .\.venv\Scripts\python.exe -m rf_plasma.rod_drive --name chain_E200_cw --from-rod3d E200 --t-end-ns 1000
-# sensitivity: measured-equivalent power bound (1/3.91^2), radius, resolution
+# sensitivity: illustrative reduced power (1/3.91^2), radius, resolution
 & .\.venv\Scripts\python.exe -m rf_plasma.rod_drive --name chain_E200_cw_lowP --from-rod3d E200 --t-end-ns 1000 --power-scale 0.0654
 & .\.venv\Scripts\python.exe -m rf_plasma.rod_drive --name chain_E200_cw_dt2 --from-rod3d E200 --t-end-ns 1000 --dt-max-ns 0.025 --nr 300
 & .\.venv\Scripts\python.exe -m rf_plasma.switch_figures
@@ -124,9 +144,9 @@ $env:PYTHONPATH = "src"
 
 ## Dynamic standing-wave gas-sheet viewer
 
-Open the [interactive 2D/3D animation](results/standing_wave_helium_1MPa/standing_wave.html)
-in a browser, or view the [GIF](results/standing_wave_helium_1MPa/standing_wave.gif).
-The [report](../../literature/standing-wave-helium-plasma-reflector.md) explains
+The original workspace includes an interactive 2D/3D animation and GIF under
+`results/standing_wave_helium_1MPa`; these are not included in this public package.
+The [report](../literature/standing-wave-helium-plasma-reflector.md) explains
 the executed 3D WR-284 cavity comparison at 1 MPa absolute helium and 0.1 MV/m.
 The transverse sheet is **ionized gas, not a metal insert**; its density history
 is prescribed, not calculated from a laser pulse. Sequential ionization,
@@ -142,11 +162,11 @@ data are documented in the report.
   openEMS PEC geometries, Gaussian optics, a prescribed-density resonator/current
   demonstration, and an abstract single-ion kinetics benchmark.
 - [tests](tests): physics and numerical regression tests.
-- [results](results): saved inputs, metrics, field data, and figures. Use the
+- [data](../data): selected saved inputs, metrics, field data, and figures. Use the
   explicitly linked results in the report; directories named `prototype` or
   older superseded runs are historical, not validated final designs.
-- [.tools/openEMS](.tools/openEMS) and `.venv`: project-local Windows solver and
-  Python environment. No system-wide install or WSL is required here.
+- The original workspace uses project-local `.tools/openEMS` and `.venv`; these
+  environments are not included in the public package.
 
 The reference pressure is **100 psig**, or 790800.7 Pa absolute assuming
 101325 Pa ambient. The 3 GHz frequency, 10 MV/m peak empty-device focus field,
@@ -161,7 +181,7 @@ NumPy 2.5.5, SciPy 1.18.1, Matplotlib 3.11.2, and h5py 3.16.0.
 The [official Windows package](https://github.com/thliebig/openEMS-Project/releases/tag/v0.37.0)
 was verified against its published SHA-256:
 `E4F14FD6E9BE7D0C1FD9C244768C21C1C2B62B8AA81F08253EBF6E06040CDA5A`.
-The included Windows wheels target 64-bit CPython 3.13 or 3.14; the broader
+The original workspace's Windows wheels target 64-bit CPython 3.13 or 3.14; the broader
 Python requirement in [pyproject.toml](pyproject.toml) applies to the pure
 Python code, not necessarily to the solver wheels.
 
@@ -172,10 +192,11 @@ Do not install or set it globally. The openEMS maintainers describe the
 [Windows package](https://docs.openems.de/en/latest/install/package.html) as
 a quick start and note possible performance limitations.
 
-## Run on this Windows workspace
+## Run on the original Windows workspace
 
-In PowerShell, start from this directory. Existing output directories are never
-overwritten; each run below uses a new unique directory.
+In PowerShell, start from the original workspace. On another machine, adapt the
+path and supply the required environments and input files. Existing output
+directories are never overwritten; each run below uses a new unique directory.
 
 ```powershell
 Set-Location -LiteralPath 'D:\CST projects\Plasma research\simulations\rf_plasma'

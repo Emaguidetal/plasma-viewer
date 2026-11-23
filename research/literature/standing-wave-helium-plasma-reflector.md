@@ -371,11 +371,11 @@ the 3D tree model. The 3D model hands a bridged rod to the drive model.
 
   This matches the reported behaviour: laser energy and focus change the plasma probability only
   at 20–50 kV/cm, and the laser alone with RF off gives no visible plasma.
-- **Calibration caveat.** The model fields are nominal swarm fields. The breakdown-probability
-  model below needed a field calibration of e_cal = 3.91 to match the measured thresholds. The
-  absolute thresholds here (150–200 kV/cm for bridging) are therefore likely too high by a similar
-  factor compared with the observed 20–50 kV/cm. The trends, ordering and timescales are the
-  useful outputs.
+- **Calibration caveat.** The model fields are nominal. The breakdown-probability calculation
+  below fitted an illustrative multiplier e_cal = 3.91 to an assumed probability at one reported
+  field; it is not a measured calibration or a universal conversion for the rod model. The
+  150–200 kV/cm bridging values and associated times are model sensitivities, not validated
+  experimental thresholds or switching times.
 
 ![3D rod-growth overview for WR-284 at 1.48 MPa He. Panels: (a) longest rod against time for 50–300 kV/cm; (b) cavity field, showing the collapse to 25–45 kV/cm below 200 kV/cm and the drive-off at 100 ns; (c) final rods along the laser line (red = bridged); (d) 200 kV/cm robustness to seed, RF phase and mesh; (e) 100 kV/cm laser energy and focus offset; (f) summary table. Higher fields give earlier inception and bridging. Simulated, not measured.](../simulations/rf_plasma/results/rod3d/rod3d_overview.png)
 
@@ -395,41 +395,33 @@ The model estimates the electrons each source puts in the laser volume (0.75 mJ,
 | Free background electrons in the beam | — | 5e-7 |
 
 **Conclusions**
-- Pure helium cannot be photo-ionized at this intensity.
-- The consistent seed is 4-photon ionization of a trace low-ionization-potential impurity: an
-  organic outgassing product at the 0.1 ppm level. It gives a few hundred electrons per shot, with
-  a steep energy slope (k ≈ 4).
-- Photodetachment of negative ions is ruled out as the main seed. It is a 1-photon process, so it
-  would grow as the focus moves away and the beam volume increases. That is the opposite of the
-  observed focus effect.
-- Background ionization leaves about 2e8 m⁻³ negative ions, since almost all free electrons attach
-  within about 0.1 ms. With the nominal field calibration the same budget predicts RF-only
-  breakdown in 12–26% of pulses at 20–50 kV/cm.
-- **The measured RF-only (self-)breakdown is about 10% of shots** (sealed He, laser off). That fits
-  within ×2.5. Matching it exactly needs a background ion-pair rate of 0.4–0.9× the assumed value
-  (`source_scale_for_measured_ecal` in `results/seed_sources/seed_sources.json`). Field detachment
-  of all stored O₂⁻ would give almost 100% self-breakdown, so it is ruled out. The 10% figure
-  therefore supports a sparse, stochastic RF-only seed and a deterministic laser seed. This is a
-  consistency check, not a fit: the 10% is an operator estimate without a shot count, and a
-  detached fraction of only about 1e-4 of the stored ions would already give near-certain RF-only
-  breakdown.
-- The impurity species and level are assumed. A residual-gas analysis of the sealed cell would test
-  this directly.
+- Direct helium photoionization is negligible under this calculation's assumed laser parameters.
+- An assumed organic impurity at 0.1 ppm gives about 262 electrons per shot in the illustrative
+  calculation. Its identity, concentration and multiphoton cross-section are not measured; this
+  is a candidate seed, not a determination of the source.
+- Photodetachment and background ionization are also uncertain candidates. Their modeled
+  focus dependence partly reflects the finite analysis window, so it does not rule them out.
+- The model's background-ion estimate and the illustrative field multiplier give 12–26% RF-only
+  breakdown for the assumed conditions. The reported approximately 10% is an operator estimate
+  without a shot count. Neither the agreement nor a scenario in which all stored O₂⁻ detaches
+  independently calibrates the field, identifies the seed source, or establishes a detachment fraction.
+- Residual-gas analysis, calibrated focus measurements, and shot-resolved RF-only statistics would
+  constrain these assumptions.
 - **Optics review caveats.**
   - The organic 4-photon cross-section is a placeholder. A 2+2 resonance in aromatic species is
     possible, so the seed is uncertain by at least 10^±2.
   - The seed scales as E⁴/(w0⁴ M²), and neither w0 nor M² is measured.
-  - The 81 previous-shot O₂⁻ photodetachment electrons rise with focus offset (81 → 369 at
-    20 mm). If that reservoir were large, moving the focus would not remove breakdown. So the
-    previous-shot reservoir must be small.
-  - In rod3d, the observed focus effect comes mainly from where the seed sits in the mode field.
+  - The assumed previous-shot O₂⁻ estimate rises from 81 to 369 electrons at a 20 mm focus
+    offset; this is not a measured reservoir.
+  - In rod3d, the modeled focus effect comes mainly from where the seed sits in the mode field.
   - The `seed_sources` focus scaling partly reflects the finite analysis window.
   - Inverse-bremsstrahlung avalanche during the pulse could multiply the seed by about 1–10.
     Self-focusing and defocusing are negligible.
-  - The laser alone gives about 1e15 m⁻³ at the focus, with no avalanche. This is consistent with
-    no visible plasma with the RF off.
+  - One model prescribes about 1e15 m⁻³ at the focus. The user's separate estimate is about
+    1e6 electrons/cm³ = 1e12 m⁻³; neither the spatial volume nor the basis for that estimate is
+    specified. No visible laser-only plasma does not imply zero seed electrons.
 
-![Seed electron budget for sealed He at 1.48 MPa: electrons per shot by source, their dependence on laser energy and focus offset, and the RF-only breakdown probability. Impurity MPI dominates, scales as about E⁴ and falls with focus offset, while photodetachment rises with offset. Simulated, not measured.](../simulations/rf_plasma/results/seed_sources/seed_sources.png)
+![Illustrative seed budget for sealed He at 1.48 MPa under assumed impurity and background rates. Focus trends partly depend on the analysis window. Simulated, not measured.](../simulations/rf_plasma/results/seed_sources/seed_sources.png)
 
 ### 3. Plasma under continued RF drive (`rod_drive.py`, chained from `rod3d`)
 
@@ -463,7 +455,7 @@ The model estimates the electrons each source puts in the laser volume (0.75 mJ,
 | E200 cw | 1.05 MW | on | 5.3 kV/cm | 251 ns | 182 ns | 519 ns | 12.0 kK | 375 Ω |
 | E300 cw | 2.37 MW | on | 3.3 kV/cm | 201 ns | 123 ns | 258 ns | 15.1 kK | 210 Ω |
 | E200 cw, r0 = 100 µm | 1.05 MW | on | 24 kV/cm | 71 ns | 57 ns | 219 ns | 12.1 kK | 400 Ω |
-| E200 cw, power ÷ 3.91² (bound) | 0.069 MW | on | 14 kV/cm | 643 ns | 610 ns | — | 5.2 kK | 3.0 kΩ |
+| E200 cw, power ÷ 3.91² (sensitivity) | 0.069 MW | on | 14 kV/cm | 643 ns | 610 ns | — | 5.2 kK | 3.0 kΩ |
 | E200 cw, dt/2 and 2× radial cells | 1.05 MW | on | 5.6 kV/cm | 241 ns | 180 ns | 317 ns | 19.7 kK | 265 Ω |
 | E200, r0 = 100 µm | 1.05 MW | off at 100 ns | 24 kV/cm | **71 ns (before drive-off)** | 57 ns | — | 11.7 kK | 240 kΩ (afterglow) |
 | E300, r0 = 100 µm | 2.37 MW | off at 100 ns | 9.5 kV/cm | **36 ns (before drive-off)** | 21 ns | 92 ns | 14.9 kK | 89 kΩ (afterglow) |
@@ -489,7 +481,7 @@ window.
    - **With the drive stopped 100 ns after the laser (the experimental timing) and the 0.3 mm
      hand-off radius, the rod never leaves this phase.** It decays in the afterglow to about
      2e19 m⁻³ by 400 ns. With a hand-off radius of 100 µm it does leave it (see below).
-3. **Thermal contraction (arc), only under continued drive.**
+3. **Arc-like thermal contraction in some driven cases.**
    - The gas heats, the core rarefies, and the conducting radius collapses from about 0.6 mm to
      0.06–0.12 mm.
    - Axis Tg rises to 12–20 kK and the modal field falls to about 2–5 kV/cm.
@@ -502,8 +494,8 @@ window.
   converge**. They are qualitative.
 - **Initial radius:** contraction is sensitive to it; 0.3 → 0.1 mm moves it from 251 to 71 ns.
   The 0.3 mm hand-off radius is a rod3d cap, so the true time is uncertain by about 3×.
-- **Power calibration:** with forward power reduced by e_cal² to a measured-equivalent bound,
-  contraction moves to 643 ns.
+- **Power sensitivity:** reducing the nominal forward power by 3.91² moves modeled contraction to
+  643 ns. This is an illustrative sensitivity, not a measured-equivalent power bound.
 - **Glow or arc in the experiment depends on the initial channel radius.** The radius scan with
   the experimental timing (drive off 100 ns after the laser) gives:
   - 0.3, 0.2 and 0.15 mm: the rod stays a glow (peak axis Tg 0.7–2.1 kK) and decays after
@@ -513,8 +505,8 @@ window.
 
   The crossover therefore lies between 0.1 and 0.15 mm at nominal power. The resolved 1.48 MPa
   streamer radii are 0.05–0.3 mm, so the model **cannot decide** between glow and arc for the
-  experiment. A glow is favoured only for wide channels or for the lower, measured-equivalent
-  power: at 1/e_cal² power, contraction moves to 643 ns even under continuous drive.
+  experiment. In the model a diffuse column is favoured for wider channels or in the illustrative
+  lower-power sensitivity: at 1/3.91² nominal power, contraction moves to 643 ns under continuous drive.
 - **Validity limit:** the skin-depth limit is crossed 14–78 ns **before** contraction in every
   case. The contraction itself and everything after it lie outside the uniform-field model, so
   the arc branch is a trend, not a prediction.
@@ -594,7 +586,8 @@ the first version. All three required fixes:
 - The bare-box TE101 resonance is 3.00 GHz, against the 2.95 GHz drive. The model implicitly
   assumes iris tuning. Wall loss is neglected (Q0 = ∞).
 - The absolute field scale is not calibrated to the experiment (see the e_cal = 3.91 caveat).
-  Forward power and stored energy are nominal, about 15× the measured-equivalent values.
+  Forward power and stored energy are nominal; the separate reduced-power sensitivity is about
+  15 times lower, but is not an independently measured equivalent.
 - The recombination coefficient at 1.48 MPa and the impurity identity and level are assumptions.
 - The first-rod birth time at 200 kV/cm (1.26 ns) is earlier than the 1.96 ns launch in the
   resolved line run. Rod birth uses a line-density criterion, not a resolved launch.
@@ -649,14 +642,14 @@ the first version. All three required fixes:
   - The total seed hardly depends on where the focus is. What matters is that a defocused beam puts the electrons where the cavity field is a few percent lower.
   - Near threshold ν_iz(E) is very steep, so this small drop in field is enough.
   - This matches the observed "0 to 100 %" effect at about 10 mm.
-  - Far above threshold (30–50 kV/cm calibrated), the focus has no effect, as observed for large fields.
+  - In the illustrative rescaling at nominal 30–50 kV/cm, the focus has no effect, as reported for large fields.
 - **Laser with RF off:** the seed is about 1e3 electrons, which is invisible. This is consistent with the observation.
-- **Disagreement in the width of the 70→100 % band.** The model's band is narrow (about 15–25 kV/cm after calibration), while the experiment spans 20–50 kV/cm. Possible reasons:
+- **Disagreement in the width of the 70→100 % band.** The model's band is narrow (about 15–25 kV/cm with the illustrative rescaling), while the reported range spans 20–50 kV/cm. Possible reasons:
   - larger shot-to-shot spread than assumed (power or timing);
   - a less steep low-field ionization rate than the pure-He Boltzmann table.
 
   With 5 % power jitter the probabilities become 0.55, 0.86 and 0.94.
-- **Delays below about 1 ns at high calibrated fields are not physical.** They come from applying the 3.9× factor everywhere; the 3D model limits them through field collapse.
+- **Delays below about 1 ns at high nominal fields under the rescaling are not reliable.** They result from applying the illustrative factor everywhere; the 3D model also includes field collapse.
 
 **Sensitivity** (illustratively rescaled, nominal 20 kV/cm; P for 0.5 / 0.75 / 1 mJ; last column is P with the focus 10 mm off-centre at 0.75 mJ)
 
@@ -694,8 +687,12 @@ Reproduce: `python -c "from rf_plasma.breakdown_probability import main; main(n_
   [table of all runs](<../simulations/rf_plasma/results/coupled3d/table_scan_pE+scan_laser+anchor+conv.csv>),
   [exp_compare.md](../simulations/rf_plasma/results/coupled3d/figures_scan/exp_compare.md).
 - All numbers below are solver output: coupled 3D FDTD + bulk kinetics + sub-cell laser filament.
-  The guide is a matched WR-284 at 2.95 GHz. The cavity anchors use the Beilin et al. 2015 / Yatom
-  et al. 2016 conditions: He 0.2 MPa, 16.6 and 22.3 kV/cm.
+  The guide is a matched WR-284 at 2.95 GHz. The cavity anchors use the He 0.2 MPa pressure and
+  nominal 16.6 and 22.3 kV/cm values reported by Beilin et al. 2015 / Yatom et al. 2016, but not
+  their complete compressor geometry, seed or diagnostics. Their frequency is about 2.767 GHz;
+  their fields are calculated from power and their peak-versus-RMS convention is unclear.
+  **The modeled field-collapse time is not the measured laser-to-light-onset delay.** See the
+  [experimental-data review](experimental-data-krasik-leopold.md) for the full-text sources.
 - All 44 analysed runs report filament energy closure ≤ 1.9 × 10⁻¹² and bulk closure 0.
 
 ### 1. Fixes to what limited the earlier results
@@ -729,7 +726,7 @@ Reproduce: `python -c "from rf_plasma.breakdown_probability import main; main(n_
   - laser-energy, magnetron-power and trigger fluctuations;
   - natural background ionization.
 
-  Results with the weak seed that the 3D anchors need (N0 = 10⁵,
+  Results with the tested assumed weak seed (N0 = 10⁵,
   [anchor_weakseed.json](../simulations/rf_plasma/results/stochastic_seed/anchor_weakseed.json),
   [jitter_sensitivity.png](../simulations/rf_plasma/results/stochastic_seed/jitter_sensitivity.png)):
 
@@ -739,9 +736,10 @@ Reproduce: `python -c "from rf_plasma.breakdown_probability import main; main(n_
   | 10 % | ±15 ns | ±4.6 ns |
   | Measured | ±9 ns | ±6 ns |
 
-  - The model reproduces the larger jitter at the lower field and its order of magnitude.
-  - At 22.3 kV/cm it underestimates the jitter, which suggests another source, such as
-    laser-pointing or seed-position fluctuations.
+  - Under the assumed fluctuations, the model gives larger jitter at the lower field and a
+    comparable order of magnitude; this is not an independent validation of the seed model.
+  - At 22.3 kV/cm it underestimates the reported jitter. Laser-pointing or seed-position
+    fluctuations are possible contributors, not established causes.
   - Laser-energy noise (3 %) matters little because the seed enters only through ln N0.
 
 ### 3. Channel growth
@@ -768,24 +766,25 @@ Reproduce: `python -c "from rf_plasma.breakdown_probability import main; main(n_
 
 | Quantity | Measured | Model | Comment |
 |---|---|---|---|
-| Delay difference, 16.6 vs 22.3 kV/cm (He 0.2 MPa) | +30 ± 15 ns [Beilin 2015] | nominal seed (N0 3 × 10¹⁰): 0.7 ns; N0 10⁸: 8.2 ns; **N0 10⁵: 31.3 ns; wide weak beam (N0 8 × 10⁵): 36.7 ns** | Only a weak seed, N0 ≲ 10⁶, reproduces the measurement |
+| Delay difference, low vs high output-power groups (He 0.2 MPa) | Laser-to-light onset: +30 ± 15 ns [Beilin 2015]; ±15 is the sum of jitters | Field-collapse proxy at nominal 16.6 and 22.3 kV/cm: nominal seed (N0 3 × 10¹⁰): 0.7 ns; N0 10⁸: 8.2 ns; **N0 10⁵: 31.3 ns; wide weak beam (N0 8 × 10⁵): 36.7 ns** | Different observables and geometry; numerical similarity is not a measured seed or validation |
 | Delay jitter | ±6 ns (22.3), ±9 ns (16.6) | ±2–5 ns (22.3), ±7–15 ns (16.6) for σ_P 5–10 % | Order and trend right; the 22.3 kV/cm jitter is low |
-| Channel n_e (He) | 6 × 10²² m⁻³ (Stark) [Yatom 2016] | wide beam: peak axis 4.4 × 10²² (22.3 kV/cm); 20 µm core: up to 3 × 10²⁴ | The wide (unfocused) case matches; a 20 µm core is denser than the chord-averaged Stark value |
-| Channel diameter | 0.2–0.6 mm (air) | 3D r50 45–100 µm; wide beam 210–270 µm; 2D streamer 0.15–0.21 mm | Consistent order; no helium data |
-| Ionization-front speed | 5 × 10⁵ m/s (air) | 2D: 4.5–7 × 10⁵ (22.3), about 1 × 10⁵ (16.6) m/s | Consistent order |
-| Focused laser along E [Shlapakovski 2016] | delay < 1 ns | 1–4 ns at ≥ 75 Td, 20 µm focus, strong seed | Qualitative: a strong local seed gives a short delay |
+| Channel n_e (He) | 6 × 10²² m⁻³ (Stark) [Yatom 2016] | wide beam: peak axis 4.4 × 10²² (22.3 kV/cm); 20 µm core: up to 3 × 10²⁴ | Axis peak and spatially/time-averaged spectroscopy are different observables; no matched diagnostic |
+| Channel diameter | 0.2–0.6 mm (air) | 3D r50 45–100 µm; wide beam 210–270 µm; 2D streamer 0.15–0.21 mm | Different gases and observables; not a helium validation |
+| Ionization-front speed | 5 × 10⁵ m/s (air) | 2D: 4.5–7 × 10⁵ (22.3), about 1 × 10⁵ (16.6) m/s | Different gases and apparatus; order-of-magnitude context only |
+| Focused laser along E [Shlapakovski 2016] | Air, center focus: peak-power extraction ratio ≈ 0.47; back-wall focus: output delay < 1 ns and ratio ≈ 0.35 | 1–4 ns at ≥ 75 Td, 20 µm focus (He) | Different gases, apparatus and focus positions; not a matched comparison |
 
-**The key result is that the seed sets the field dependence.**
+**In these runs, the assumed seed strongly affects the field-collapse proxy.**
 
 - With the nominal focused seed (3 × 10¹⁰ electrons), the field collapses 6–7 ns after the laser at
   both fields. Their difference is below 1 ns, far below the measured 30 ns.
-- The experiment used an unfocused 50 mJ beam, which deposits few electrons in helium. Runs with a
-  weak seed reproduce the measured delay difference:
+- The experiment used an unfocused beam; its deposited electron count was not measured. Runs with
+  chosen weak seeds give field-collapse differences numerically close to the reported light-onset
+  difference, but the two metrics and geometries differ:
   - a 400 µm, 50 mJ beam with a linear seed of 10¹⁴ m⁻³ (N0 ≈ 8 × 10⁵): 24 ns at 22.3 kV/cm and
     61 ns at 16.6 kV/cm, a difference of **37 ns**;
   - a 20 µm focus with N0 = 10⁵: 21 and 52 ns, a difference of **31 ns**.
-- The wide beam also gives a peak n_e of 4.4 × 10²² m⁻³ at 22.3 kV/cm, close to the Stark value of
-  6 × 10²² m⁻³.
+- The assumed wide beam gives a peak axis n_e of 4.4 × 10²² m⁻³ at 22.3 kV/cm, numerically close
+  to the Stark value of 6 × 10²² m⁻³, but the diagnostic averaging is not matched.
 - The 0D surrogate gives the right trend but is about 20 ns too high for weak seeds. In 3D the field
   already collapses when about 10¹² electrons have formed, not 2.5 × 10¹³, because the plasma
   detunes the cavity.
@@ -806,8 +805,9 @@ Reproduce: `python -c "from rf_plasma.breakdown_probability import main; main(n_
   produces more electrons and breakdown comes earlier.
 - A wider waist gives a thicker, cooler channel. Tg falls from 1.7 × 10⁵ K to 3 × 10⁴ K.
 - The reflection reached at the end, |Γ| ≈ 0.39–0.44, depends little on the laser.
-- In pure He, 532 nm multiphoton ionization is negligible, so the real seed comes from impurities
-  or the windows. k and N0 are therefore model parameters, not measured values.
+- In this calculation, direct 532 nm multiphoton ionization of pure He is negligible. Impurities,
+  surfaces and other mechanisms are possible seed sources, but the actual source is unknown.
+  k and N0 are model parameters, not measured values.
 
 ### 7. Pressure and electric field (guide, 50–250 psig, 40–200 kV/cm, 1 mJ 1 ns w 20 µm)
 

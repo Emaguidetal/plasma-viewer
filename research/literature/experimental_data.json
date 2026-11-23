@@ -14,7 +14,12 @@
       "E_note": "Introduction: field limited to 15-20 kV/cm; MAGIC preset fields 16.6 (low) and 22.3 (high) kV/cm calculated from measured power; peak vs RMS not stated",
       "output_FWHM_ns": 8,
       "output_peak_kW": [90, 330],
-      "delay_difference_low_vs_high_ns": {"value": 30, "uncertainty": 15},
+      "delay_difference_low_vs_high_ns": {
+        "value": 30,
+        "uncertainty": 15,
+        "definition": "laser entrance to optical-emission onset, low versus high output-power groups",
+        "uncertainty_note": "15 ns is the sum of the 6 ns and 9 ns jitters, not a stated confidence interval"
+      },
       "jitter_ns": {"high_power": 6, "high_power_shots": 31, "low_power": 9, "low_power_shots": 39, "note": "+/- values; microwave jitter matched optical emission jitter"},
       "ne_peak_cm3": 6e16,
       "ne_method": "Stark broadening He I 388.865 nm, 0.25 ns resolution; instrumental 0.064 nm, van der Waals 0.0158 nm, width error ~0.005 nm",
@@ -44,8 +49,11 @@
       "ne_peak_cm3": 6e16,
       "ne_ratio_300kW_vs_90kW": 3,
       "ne_HeI_447nm_cm3": 1e16,
-      "extraction_efficiency_exp": 0.33,
-      "simulation_only": {"efficiency_nominal_seed": 0.33, "efficiency_filament_seed_1e-5_C_cm3": 0.75}
+      "simulation_only": {
+        "peak_power_extraction_nominal_seed": 0.33,
+        "peak_power_extraction_filament_seed_1e-5_C_cm3": 0.75,
+        "note": "The ratios are modeled; the nominal case's waveform is compared with experiment."
+      }
     },
     "source_location": "Full text (IOP HTML): Sec. 4 setup (Fig. 12), Sec. 4.2 Fig. 14 (waveforms), Fig. 16 (ne), Sec. 4.3-4.4 Figs. 17-19 (simulation)",
     "confidence": "full_text; E is calculated not measured; laser focus not reported; Sec. 3 Te 1-3 eV belongs to a different (HV diode) experiment and is excluded"
@@ -110,41 +118,104 @@
       "result": "output peak power and waveform almost independent of beam direction and intensity; delay and jitter smaller with beam along E or higher intensity; OES and simulation consistent"
     },
     "source_location": "Abstract only (IEEE blocked)",
-    "confidence": "abstract; pressure probably 0.2 MPa (as in EPL/PSST) but unverified"
+    "confidence": "abstract; pressure probably 0.2 MPa (as in EPL/PSST) but unverified; P4 2015_6.pdf is Beilin EPL, not this IEEE paper"
   },
   {
     "id": "shlapakovski2016_pop",
     "citation": "A. Shlapakovski, S. Gorev, Ya. E. Krasik, Improved operation of a microwave pulse compressor with a laser-triggered high-pressure gas plasma switch, Phys. Plasmas 23, 080702 (2016)",
     "doi": "10.1063/1.4960981",
-    "url": "https://www.osti.gov/biblio/22599933",
+    "url": "https://plasma.technion.ac.il/files/2017/02/2016_5.pdf",
     "gas": "dry air",
-    "pressure_MPa": null,
-    "f_GHz": null,
+    "pressure_MPa": 0.26,
+    "f_GHz": 2.7658,
     "E_kV_cm": null,
-    "laser": {"lambda_nm": [213, 532], "E_mJ": null, "tau_ns": null, "waist_um": null},
+    "laser": {"lambda_nm": [213, 532], "E_mJ": null, "E_mJ_max_by_wavelength": {"213": 5, "532": 50}, "tau_ns": 5, "waist_um": null},
     "observables": {
       "P_in_kW_max": 450,
       "pulse_us": 1.8,
       "beam": "along E",
-      "focused_center": {"efficiency": 0.47, "P_out_MW": 14, "delay_ns": "<1", "jitter": "minimized"},
-      "unfocused": {"efficiency": 0.20, "P_out_MW": 6}
+      "lens_focal_length_mm": {"213_nm": 340, "532_nm": 419},
+      "ratio_definition": "peak output power / stored power, not integrated energy efficiency",
+      "focused_center": {"peak_power_extraction_ratio": 0.47, "P_out_MW_213nm": [13, 14], "P_out_MW_532nm_max": 12},
+      "focused_back_wall_213nm": {"peak_power_extraction_ratio": 0.35, "laser_to_output_delay_ns": "<1"},
+      "unfocused": {"peak_power_extraction_ratio_max": 0.20, "P_out_MW": [5, 6]}
     },
-    "source_location": "Abstract (OSTI 22599933)",
-    "confidence": "abstract"
+    "source_location": "Full text, setup and results pp. 1-3; https://doi.org/10.1063/1.4960981",
+    "confidence": "full_text; center and back-wall focus results are distinct; spot size not stated"
   },
   {
     "id": "shlapakovski2015_pop_sim",
     "citation": "A. S. Shlapakovski, L. Beilin, Y. Hadas, E. Schamiloglu, Ya. E. Krasik, Phys. Plasmas 22, 073111 (2015)",
     "doi": "10.1063/1.4926819",
-    "url": "https://www.osti.gov/biblio/22490985",
-    "gas": "He",
+    "url": "https://plasma.technion.ac.il/files/2016/04/2015_7.pdf",
+    "gas": "He and air (separate simulated cases)",
+    "pressure_MPa": {"He": 0.2, "air": 0.3},
+    "f_GHz": {"He": 2.7668, "air": 2.9802},
+    "E_kV_cm": null,
+    "laser": {"lambda_nm": null, "E_mJ": null, "tau_ns": null, "waist_um": null},
+    "observables": {
+      "type": "SIMULATION ONLY (MAGIC gas-conductivity model with prescribed seed particles)",
+      "result": "filamentary plasma growth, skin-effect screening and cavity-plasma feedback",
+      "seed": "1.2 mm cube at 1e-11 C/cm3, approximately 1.1e5 electron equivalents; assumed input",
+      "peak_power_extraction_ratios": {"compact_seed": 0.33, "elongated_dense_seed": 0.75}
+    },
+    "source_location": "Full text, sections II-IV; https://doi.org/10.1063/1.4926819",
+    "confidence": "full_text; simulation inputs and outputs, not experimental measurements"
+  },
+  {
+    "id": "shafir2018_prl",
+    "citation": "G. Shafir et al., Ionization-Induced Self-Channeling of an Ultrahigh-Power Subnanosecond Microwave Beam in a Neutral Gas, Phys. Rev. Lett. 120, 135003 (2018)",
+    "doi": "10.1103/PhysRevLett.120.135003",
+    "url": "https://plasma.technion.ac.il/files/2018/08/2018_4.pdf",
+    "gas": "He and air",
+    "pressure_MPa": {"illustrated_He": 0.0045, "illustrated_air": 0.001},
+    "f_GHz": 9.6,
+    "E_kV_cm": null,
+    "laser": {"lambda_nm": null, "E_mJ": null, "tau_ns": null, "waist_um": null},
+    "observables": {
+      "microwave_power_MW_max": 500,
+      "pulse_ns": "<1",
+      "measured": "antenna transmission, neon-lamp microwave pattern and optical emission",
+      "interpretation": "self-channeling and hollow plasma-density profiles interpreted using models and simulation",
+      "pressure_label_conflict": "the abstract reverses the He/air labels relative to the body and figures",
+      "scope": "RF-driven low-pressure gas study; no laser or argon comparison"
+    },
+    "source_location": "Full text pp. 1-4; https://doi.org/10.1103/PhysRevLett.120.135003",
+    "confidence": "full_text; pressure-label inconsistency between abstract and figures"
+  },
+  {
+    "id": "shafir2018_pop",
+    "citation": "G. Shafir et al., The interaction of intense, ultra-short microwave beams with the plasma generated by gas ionization, Phys. Plasmas 25, 032308 (2018)",
+    "doi": "10.1063/1.5023715",
+    "url": "https://plasma.technion.ac.il/files/2018/08/2018_3.pdf",
+    "gas": "He and air",
+    "pressure_MPa": [0.0001, 0.1],
+    "f_GHz": 9.6,
+    "E_kV_cm": null,
+    "laser": {"lambda_nm": null, "E_mJ": null, "tau_ns": null, "waist_um": null},
+    "observables": {
+      "microwave_power_MW_max": 500,
+      "pulse_FWHM_ns": 0.6,
+      "He_4p5kPa_ne_cm3": [2e14, 8e14],
+      "ne_method": "He line intensities interpreted by time-dependent collisional-radiative modeling using PIC electron distributions; not independent Stark density",
+      "scope": "RF-driven low-pressure gas study; no laser or argon comparison"
+    },
+    "source_location": "Full text, sections II-IV; https://doi.org/10.1063/1.5023715",
+    "confidence": "full_text; electron density is model-dependent inference from spectroscopy"
+  },
+  {
+    "id": "krasik2019_plasma_shafir",
+    "citation": "Ya. E. Krasik, J. G. Leopold, G. Shafir et al., Experiments designed to study the non-linear transition of high-power microwaves through plasmas and gases, Plasma 2, 6 (2019)",
+    "doi": "10.3390/plasma2010006",
+    "url": "https://doi.org/10.3390/plasma2010006",
+    "gas": null,
     "pressure_MPa": null,
     "f_GHz": null,
     "E_kV_cm": null,
     "laser": {"lambda_nm": null, "E_mJ": null, "tau_ns": null, "waist_um": null},
-    "observables": {"type": "SIMULATION ONLY (MAGIC)", "result": "filamentary plasma growth; skin-effect screening of RF field"},
-    "source_location": "Abstract (OSTI 22490985)",
-    "confidence": "abstract; not experimental data"
+    "observables": {"note": "Metadata lead only; no experimental values extracted."},
+    "source_location": "Publisher metadata; full text not accessed",
+    "confidence": "metadata_only"
   },
   {
     "id": "maksimov2024_pop",

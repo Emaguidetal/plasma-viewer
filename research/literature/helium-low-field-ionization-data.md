@@ -105,8 +105,8 @@ The rate coefficient k_i(E/N) is the quantity to compare with α/N × v_d from s
    - A steady-state Townsend α counts every Penning ion, however late it is produced.
    - In a breakdown lasting 100 ns – 1 µs, a delayed (metastable → Penning) ion contributes only if its formation time is short compared with the growth time.
    - At 1.48 MPa the relevant time constants are tenths of µs to µs per ppm (Section 3). The *effective* low-field ionization in your experiment therefore lies between the pure-He BOLOS value and the impurity-enhanced swarm value, and that position depends on time.
-4. **Conclusion.** The BOLOS pure-He rates (≈ 10⁴ s⁻¹ at 8 Td and ≈ 10⁷ s⁻¹ at 14 Td) are not contradicted by any measurement I could access. Measured breakdown at 20–50 kV/cm peak (3.9–9.7 Td rms) within ≤ 1 µs therefore probably needs at least one of the following (INF; not confirmed for your setup):
-   - a laser-produced seed density well above 10⁴ electrons;
+4. **Conclusion.** The BOLOS pure-He rates (≈ 10⁴ s⁻¹ at 8 Td and ≈ 10⁷ s⁻¹ at 14 Td) are not contradicted by any measurement I could access. The user-reported nominal 20–50 kV/cm breakdown range is not an independently calibrated local-field measurement. If those fields and the assumed short delay are confirmed, possible explanations include the following (INF; not established for the setup):
+   - a laser-produced seed count well above 10⁴ electrons (not a density);
    - local field enhancement;
    - the peak field rather than the rms field mattering near threshold (ionization is strongly nonlinear in E/N);
    - impurity Penning or stepwise (metastable) ionization, which depends on density.

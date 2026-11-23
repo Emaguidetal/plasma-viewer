@@ -82,6 +82,11 @@ applyTo: 'simulations/rf_plasma/**/*.py'
   - Particle `ux` is γv.
   - The PIC EEDF tail in He is far below a same-mean-energy Maxwellian, so
     Maxwellian filament tables overestimate ionization.
+  - Never validate RF drift from single snapshots: with N ~ 2000 macros, the
+    snapshot SE v_th/sqrt(N) is ~30 % of the drift (seed-to-seed NRMSE ~0.44).
+    Add `picmi.ReducedDiagnostic` `ParticleMomentum`/`ParticleEnergy`/
+    `ParticleNumber` every ~20 steps, and average in RF phase windows. Normalize
+    energy budgets by gross field work, never by the near-zero net (work - loss).
 - At 1 MPa He, 532 nm needs 11 photons: 1–10 mJ alone gives a ~1e-12 J
   absorbed, micrometre seed. Even at ~5e24 m^-3, a 5–13 µm channel (~MΩ/m)
   cannot load a 3 GHz mode. The reflector is the RF-driven volume plasma, and
@@ -124,3 +129,24 @@ applyTo: 'simulations/rf_plasma/**/*.py'
   and incomplete kinetic timesteps; separate photon escape from total energy
   disposal. A tiny perturbation of ambient gas energy needs an explicit
   floating-point resolution bound, not a misleading relative-closure claim.
+- `excited_avalanche` (radial reaction-diffusion with excited reservoirs): never put
+  diagnostic counters or one-way global sources in the BDF state or its sparsity. Their
+  dense rows force one finite-difference column group per unknown (10x slower). Exactly
+  zero columns (e.g. molecular ions where n_e underflows) make scipy's adaptive num_jac
+  overflow its step factor ("Factor is exactly singular"). Supply a fixed-step
+  `approx_derivative(..., sparsity=(S, group_columns(S)))` Jacobian. Integrate counters
+  afterwards with the log-mean rule, which is exact for exponential growth.
+- He/Ar ordering lessons: in pure-gas dilute avalanches Ar/He stays at about 2 for every
+  excited-state channel. Dense-regime (e-e) rates reverse it only at x >= 1e-4 and
+  <= 10 Td. Dense-seed thresholds deposit 6-8 eV/atom (not self-consistent), so always
+  report an energy ledger. A photon-feedback comparison must include He's own prompt
+  He2(A) Hopfield emission (Y ~ 0.1); without it the result is biased toward Ar.
+- Keep estimated laser seeding distinct from a modeled dense plasma: absence of a visible
+  spark alone neither proves nor excludes an x ~ 1e-4 seed. Label dense-seed scans as
+  hypothetical, compare them with the user's estimated density and its uncertainty, and map
+  density to the seed volume before comparing total electrons.
+- Match observables before claiming validation against the Technion S-band switch: the
+  measured laser-to-light-onset delay is not the model's cavity field-collapse proxy, and the Stark
+  density is not a peak-axis density. The published 16.6/22.3 kV/cm fields were calculated
+  from power with peak/RMS convention unclear; an illustrative multiplier fitted to an
+  assumed probability is not an independent field calibration.

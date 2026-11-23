@@ -5,8 +5,8 @@
 | Item | Value |
 | --- | --- |
 | Search date | 2026-11-20 |
-| Review type | **Targeted starting point, not a systematic review.** There is no PRISMA protocol, and IEEE Xplore and AIP full texts could not be opened. |
-| Sources used | OpenAlex (metadata, reconstructed abstracts, ORCID author filters), Crossref (until rate-limited), OSTI (AIP abstracts), IOPscience HTML full text (EPL, PSST), arXiv API, publisher landing pages |
+| Review type | **Targeted starting point, not a systematic review.** The source-access update includes selected full texts from the Technion P4 publications page. |
+| Sources used | [Technion P4 publications](https://plasma.technion.ac.il/publications/), IOPscience full text (EPL, PSST), OpenAlex, Crossref, OSTI abstracts, publisher records |
 | Machine-readable companion | [experimental_data.json](experimental_data.json) |
 | Related workspace reviews | [laser-induced-plasma-in-gases.md](laser-induced-plasma-in-gases.md), [laser-induced-plasma-rf-waveguide.md](laser-induced-plasma-rf-waveguide.md), [standing-wave-helium-plasma-reflector.md](standing-wave-helium-plasma-reflector.md), [rf-plasma-simulation-benchmarks.md](rf-plasma-simulation-benchmarks.md) |
 
@@ -19,12 +19,15 @@
 
 ## Access limitations
 
-- **IEEE Xplore** (TPS 2014, TPS 2015, ICOPS abstracts) was blocked by a bot challenge, so only abstracts were available.
-- **AIP** (`pubs.aip.org`: PoP 2015, PoP 2016, JAP 2013 and 2014, PoP 2024 and 2025) returned HTTP 403, so only abstracts were available, via OSTI or OpenAlex.
-- **MDPI** (*Plasma* 2019 and 2025) returned 403. PDF downloads (IOP, JACoW) returned binary content that could not be parsed.
-- **Full text was read** for only two papers:
-  - Beilin et al., *EPL* **109**, 25001 (2015).
-  - Yatom et al., *PSST* **25**, 064001 (2016), §4.
+- Full texts consulted: Beilin et al. (2015), Yatom et al. (2016, §4), Shlapakovski et al.
+  (2015 PoP; [P4 PDF](https://plasma.technion.ac.il/files/2016/04/2015_7.pdf)), Shlapakovski
+  et al. (2016 PoP; [P4 PDF](https://plasma.technion.ac.il/files/2017/02/2016_5.pdf)),
+  and Shafir et al. (2018 [PoP](https://plasma.technion.ac.il/files/2018/08/2018_3.pdf) and
+  [PRL](https://plasma.technion.ac.il/files/2018/08/2018_4.pdf)).
+- The **2015 IEEE beam-orientation paper remains abstract-only**. The P4 file named `2015_6.pdf`
+  contains Beilin's EPL paper, not that IEEE paper; it must not be used to claim IEEE full-text access.
+- Other blocked publisher papers remain at their individually stated abstract or metadata level.
+  In particular, the 2019 MDPI paper co-authored by Shafir remains metadata-only.
 - I could not read figure axes digitally. Values marked "Fig. N" come from the text describing that figure, not from digitizing it.
 - **Gleizer:** I found no Gleizer-authored compressor or plasma-switch paper. Hadas appears on TPS 2014, JAP 2014, PoP 2015 and TPS 2015.
 
@@ -44,7 +47,8 @@ They report delay and jitter, output pulse shape and peak power, extraction effi
 
 ## 2. Conceptual switch sequence
 
-This is a conceptual schematic, not to scale. The order of events is taken from Yatom 2016 §4 and Beilin 2015 (FT) and from the Shlapakovski 2015 PoP abstract (ABS). Specific timescales apply only to the conditions given in the tables below.
+This is a conceptual schematic, not to scale. The sequence uses Yatom 2016 §4, Beilin 2015, and
+the Shlapakovski 2015 PoP simulation (FT). Specific timescales apply only to the conditions below.
 
 ```mermaid
 flowchart LR
@@ -69,7 +73,7 @@ flowchart LR
 | Waveguide | WR-284 (72 × 34 mm) cavity; switch is an H-plane tee whose side arm is shorted by a deformable copper membrane. The laser port is λg/4 from the short. | FT | Yatom 2016 §4 / Fig. 12; Beilin 2015 Fig. 1 |
 | Laser | Continuum Surelite Nd:YAG, 532 nm, ≤ 50 mJ | FT | both |
 | Laser pulse duration | **~7 ns FWHM (EPL) vs 4 ns FWHM (PSST)** | UNC | Beilin 2015 setup; Yatom 2016 §4 |
-| Focusing / spot size | **Not reported** in either full text. TPS 2015 used an unfocused beam; PoP 2016 compared focused (at the guide centre) with unfocused. | FT (absence) / ABS | — |
+| Focusing / spot size | **Not reported** for the helium Beilin/Yatom cases. TPS 2015 used an unfocused beam (ABS); PoP 2016 describes center and back-wall focusing in air but does not state the focal spot size. | FT (absence) / ABS | — |
 | Laser direction | Through a hole in the narrow wall (⟂E) or a slot on the wide-wall centreline (∥E) | FT | Yatom 2016 §4 |
 | Diagnostics | 4QuikE camera (2 ns frames, ~7.35 µm/pixel) through a 7 × 2 mm slot; spectroscopy through a 5 mm hole; RF detectors on input and output | FT | Yatom 2016 §4 |
 
@@ -82,15 +86,15 @@ These are measured values. The field before triggering is calculated from measur
 | Gas, pressure | He, 2×10^5 Pa = **0.20 MPa** (≈ 29 psi absolute) | FT | Beilin 2015; Yatom 2016 §4.2 |
 | Why the power was reduced | The text says helium breaks down at a field 5–6 times lower than dry air, so magnetron power was lowered to avoid self-breakdown. | FT | Yatom 2016 §4 |
 | RF field at switch before triggering | 15–20 kV/cm (EPL introduction). The two cases are **22.3 kV/cm** at P_cav ≈ 860 kW and **16.6 kV/cm** at P_cav ≈ 470 kW, both calculated from measured cavity traveling-wave power. The text does not say whether these are peak or RMS values. | FT (calculated) / UNC (peak or RMS) | Yatom 2016 §4.2; Beilin 2015 |
-| Reduced field (DER) | 22.3 kV/cm → E/N ≈ 46 Td; 16.6 kV/cm → ≈ 34 Td. Assumes N = p/kT at 300 K = 4.83×10^25 m^-3. E/p ≈ 14.9 and 11.1 V cm^-1 Torr^-1. | DER | — |
+| Reduced field (DER) | At 300 K, inserting the reported magnitudes directly gives E/N ≈ 46.2 and 34.4 Td. If those magnitudes are sinusoidal peaks, the RMS values are instead ≈ 32.7 and 24.3 Td. The source convention is unknown. | DER / UNC | N = p/kT = 4.83×10^25 m^-3 |
 | Output pulse | ≈ 8 ns FWHM; peak ≈ 90–330 kW. Fig. 3c shows single pulses at about 90, 250 and 300 kW. | FT | Beilin 2015 |
-| Delay | The low-power case was delayed 30 ± 15 ns relative to the high-power case. In PSST case (b) (low field, laser ⟂E), the delay was about 30 ns longer than in cases (a) and (c). The absolute delay for helium is not stated in the text I read. | FT | Beilin 2015; Yatom 2016 §4.2 / Fig. 14 |
+| Delay | **Laser entrance to optical-emission onset:** the low-output-power group was 30 ± 15 ns later than the high-power group. The ±15 ns is the sum of the ±6 and ±9 ns jitters, not a stated confidence interval. This is not a measured field-collapse delay. | FT | Beilin 2015 experimental results; Yatom 2016 §4.2 / Fig. 14 |
 | Jitter | ±6 ns at high power (31 shots); ±9 ns at low power (39 shots). Microwave-output jitter matched the optical-emission jitter. | FT | Beilin 2015 |
 | Effect of laser direction | With the beam ∥E, plasma emission appears a few ns earlier; rise time and peak ne are similar. TPS 2015 abstract: delay and jitter are smaller for ∥E or higher intensity; output peak power and waveform are almost unaffected. | FT / ABS | Yatom 2016 §4.2; Shlapakovski 2015 TPS |
 | Electron density (Stark, He I 388.865 nm) | Rises to **≈ 6×10^16 cm^-3** at ≈ 300 kW output, about 3× the value at ≈ 90 kW. Time resolution 0.25 ns. Instrumental width 0.064 nm; van der Waals width 0.0158 nm; line-width error ≈ 0.005 nm. | FT | Beilin 2015 Fig. 3; Yatom 2016 Fig. 16 |
 | ne (He I 447.15 nm, ratio of forbidden to allowed components) | ≈ 10^16 cm^-3 | FT | Yatom 2016 §4.2 |
 | Te, gas temperature | Not reported for the microwave switch. The Te of 1–3 eV in Yatom 2016 §3 belongs to a separate HV-diode helium discharge and must **not** be used here. | FT | Yatom 2016 §3 |
-| Extraction efficiency | Experiment ≈ 33%, agreeing with MAGIC simulation | FT | Yatom 2016 §4.3 |
+| Extraction ratio | The nominal-seed MAGIC case gives ≈ 33%; its output waveform is compared with experiment. The ≈ 75% elongated-seed case is also a simulation. | FT (model) | Shlapakovski 2015 PoP, §§III–IV |
 
 ### 3.3 Dry air at 0.2–0.3 MPa (imaging data; different gas)
 
@@ -102,39 +106,49 @@ These are measured values. The field before triggering is calculated from measur
 | Filament | Usually one, at most four; diameter 0.2–0.6 mm; grows along E at ≈ 5×10^7 cm/s. Emission is visible 5.1 ns before extraction (0.5 mm long) and fills the 7 mm window by +8.5 ns, the output peak. | | FT | same |
 | Density estimate | ≤ 10^17 cm^-3, estimated from filament size and expansion | | FT (cited) / ABS | Beilin 2015 citing TPS 2014 |
 
-### 3.4 Improved operation in dry air (PoP 2016; abstract only)
+### 3.4 Improved operation in dry air (PoP 2016; full text)
 
 | Quantity | Value | Label |
 | --- | --- | --- |
-| Input | ≤ 450 kW, 1.8 µs | ABS |
-| Laser | 213 nm or 532 nm, beam ∥E | ABS |
-| Focused at the guide centre | ≈ 47% efficiency, ≈ 14 MW output; delay < 1 ns; minimal jitter | ABS |
-| Unfocused | ≈ 20% efficiency, ≈ 6 MW | ABS |
-| Pressure, focal length, spot size, which wavelength gave which result | Not in the abstract | — |
+| Gas and RF | Dry air, 0.26 MPa absolute, 2.7658 GHz, 300–450 kW input, 1.8 µs | FT |
+| Laser | Along E; 213 or 532 nm, ≈ 5 ns FWHM; up to 5 or 50 mJ respectively | FT |
+| Focusing | 340 mm (213 nm) or 419 mm (532 nm) focal-length lens; focus at waveguide center or back wall. Spot size is not stated. | FT |
+| Center focus | Peak-power extraction ratio ≈ 47%; 213 nm result ≈ 13–14 MW (532 nm maximum ≈ 12 MW) | FT |
+| Back-wall focus | With 213 nm, laser-to-output appearance delay < 1 ns and peak-power extraction ratio ≈ 35% | FT |
+| Unfocused | Peak-power extraction ratio ≤ 20%, output ≈ 5–6 MW | FT |
 
-Comparing the 0.2–0.3 MW outputs in EPL with the 6–14 MW outputs in PoP 2016 suggests that the compressor configuration or charging differed. I could not check this because the full text was closed.
+The 47% center-focus result and sub-nanosecond back-wall result are **different configurations**.
+The reported ratio is based on power, not an integrated-energy efficiency. These air results do
+not validate a helium field-collapse proxy.
 
 ### 3.5 Measured values vs simulation outputs
 
 | Experimental (measured) | Simulation (MAGIC 3D PIC / gas-conductivity model) |
 | --- | --- |
-| Input and output RF waveforms, delay, jitter, output FWHM and peak, efficiency ≈ 33% (He) | Waveforms for preset fields of 16.6 and 22.3 kV/cm (Beilin 2015 Fig. 4); efficiency ≈ 33% with the nominal seed |
-| ne(t) from Stark broadening (He) | Filament growth with skin-effect screening (Yatom 2016 Figs. 17–18; PoP 2015 abstract) |
-| Filament diameter and velocity from imaging (air) | A filament-shaped seed of 10^-5 C/cm³ (10^6× the nominal seed) gives ≈ 75% efficiency (Yatom 2016 Fig. 19) |
+| Input and output RF waveforms, delay, jitter, output FWHM and peak | Waveforms for preset fields of 16.6 and 22.3 kV/cm (Beilin 2015 Fig. 4); modeled peak-power extraction ≈ 33% with the nominal seed |
+| ne(t) from Stark broadening (He) | Filament growth with skin-effect screening (Yatom 2016 Figs. 17–18; PoP 2015 full text) |
+| Filament diameter and velocity from imaging (air) | A filament-shaped seed of 10^-5 C/cm³ (10^6× the nominal seed) gives a modeled peak-power extraction ratio ≈ 75% (Yatom 2016 Fig. 19) |
 | — | Simulation inputs: Townsend fit α = C·E·exp(−D·E^-1/2); seed is a 1.2 mm cube at 10^-11 C/cm³ with 10^4 cm^-3 background (Beilin 2015) |
 
-The seed charge and α(E) fit are **model assumptions**, not measurements. Our model should not adopt them as validation targets.
+The seed charge and α(E) fit are **model assumptions**, not measurements. The 1.2 mm cube at
+10^-11 C/cm³ corresponds to about 1.1×10^5 electron equivalents; it is a simulation input, not a
+measured laser-seed count. Our model should not adopt it as an experimental validation target.
 
-## 4. Related Leopold and Krasik breakdown data (X-band, gas-filled tube; abstract only)
+## 4. Shafir, Leopold and Krasik X-band gas studies
 
-These use a different source and band: ns pulses of about 300 MW at 9.6 GHz in a gas-filled dielectric tube. They are useful mainly for helium-versus-other-gas trends and threshold definitions.
+These are RF-driven gas studies without the laser-triggered compressor geometry. Pressure and
+transmission thresholds are not field-threshold measurements for the user's high-pressure cavity.
 
 | Paper | Key data | Label |
 | --- | --- | --- |
+| Shafir et al., PRL **120**, 135003 (2018) | He and air, 9.6 GHz, ≤ 500 MW, < 1 ns. Antenna, neon-lamp and optical signals support self-channeling; the density profile is interpreted with modeling. Figure cases use He at 4.5 kPa and air at 1 kPa; the abstract reverses these labels, so the inconsistency is retained. No Ar. | FT / UNC |
+| Shafir et al., PoP **25**, 032308 (2018) | He and air at 0.1–100 kPa, 9.6 GHz, ≈ 0.6 ns. At He 4.5 kPa, line-intensity analysis gives n_e ≈ 2–8×10^14 cm^-3 using a collisional-radiative model with PIC electron distributions; it is not an independent Stark measurement. | FT (model-dependent diagnostic) |
 | Maksimov et al., PoP **31**, 122109 (2024) | Pulse ≈ 300 MW, ≈ 0.7 ns. Threshold defined as the pressure at which transmitted energy falls to ≈ 30%: air 0.4×10^5 Pa, Ar 1×10^5 Pa, **He 1.8×10^5 Pa**, SF6 0.2×10^5 Pa. Plasma is diffuse below 5×10^4 Pa and streamer-like above 10^5 Pa. | ABS |
 | Maksimov et al., PoP **32**, 053303 (2025) | Pulse ≈ 300 MW, ≈ 0.8 ns, ≈ 9.6 GHz. Helium below 1 kPa and H2 below 0.5 kPa do not attenuate the pulse. Helium emission lasts ≈ 20 ns and peaks within ≤ 5 ns. | ABS |
 
-The abstracts do not give field amplitudes, so the 2024 helium "threshold" pressure cannot be converted to E/N without the full text.
+The 2024 abstract does not give calibrated field amplitudes; its pressure thresholds cannot
+establish the ordering of Ar and He breakdown fields at a common pressure.
+In Shafir's line spectra, **He II denotes singly ionized helium, He⁺**, not He²⁺ or molecular He₂⁺.
 
 ## 5. Mapping to the user's 50–250 psi range (inference, not data)
 
@@ -146,14 +160,17 @@ The abstracts do not give field amplitudes, so the 2024 helium "threshold" press
 | 145 psi (1 MPa) | 1.00 | — | ≈ 112 kV/cm |
 | 250 psi | 1.724 | 1.825 | ≈ 192 / 204 kV/cm |
 
-Constant E/N scaling is a similarity *assumption*. It neglects:
+Constant E/N scaling is a similarity *assumption*, using the reported field magnitudes as given;
+their peak/RMS convention is unknown. Equal numerical E/N alone does not ensure similarity. It neglects:
 
 - three-body conversion (He⁺ → He₂⁺), which scales as p²;
 - the change in diffusion losses with pΛ;
 - the shorter avalanche time at higher N;
 - gas impurities, which strongly affect helium (Penning ionization).
 
-For comparison, the standing-wave runs used 8 MV/m = 80 kV/cm at 1 MPa, which is ≈ 33 Td at 300 K (DER). That is in the same reduced-field range as the Technion low-field case (≈ 34 Td). Their high-field case (≈ 46 Td) corresponds to about 112 kV/cm at 1 MPa.
+For comparison, inserting the standing-wave run's 8 MV/m = 80 kV/cm peak into E/N at 1 MPa,
+300 K gives ≈ 33 Td; its sinusoidal RMS value is ≈ 23 Td. The Technion field convention is
+unknown, so apparent numerical equality with its low-field magnitude does not establish a matched field.
 
 ## 6. Other validation datasets
 
@@ -179,18 +196,19 @@ For comparison, the standing-wave runs used 8 MV/m = 80 kV/cm at 1 MPa, which is
 | Observable | Experimental value and conditions | How to compare in our model |
 | --- | --- | --- |
 | No self-breakdown before trigger | He 0.2 MPa holds 16.6–22.3 kV/cm (calculated) for µs fill times without triggering | Run RF-only at 0.2 MPa with matching fill time; plasma must stay below switching density for ≥ 1 µs |
-| Laser-to-output delay and its dependence on field | Air: 24 ns (0.2 MPa) and 43 ns (0.3 MPa). He: +30 ± 15 ns when the field falls from 22.3 to 16.6 kV/cm | Sweep E at 0.2 MPa He; compare Δdelay, not absolute delay, because the trigger reference differs |
-| Jitter | He: ±6 / ±9 ns; air: ±1.4 / ±1.9 ns; focused beam (PoP 2016): "minimal", with delay < 1 ns | Monte-Carlo over seed density and laser energy (statistical) |
-| ne(t) peak | He: ≈ 6×10^16 cm^-3 = 6×10^22 m^-3 at 300 kW output; ≈ 2×10^16 cm^-3 at 90 kW (DER from the text's "≈ 3× lower"). Line-of-sight, through a 5 mm hole | Spatially averaged filament ne over the collection volume, with 0.25 ns resolution |
+| Delay and its dependence on drive | Air: laser-to-output delay ≈ 24 and 43 ns. He: laser-to-light-onset difference +30 ± 15 ns between output-power groups | Compare the same observable and trigger reference in the compressor geometry; the present field-collapse proxy is not a matched delay |
+| Jitter | He: ±6 / ±9 ns; air: ±1.4 / ±1.9 ns. PoP 2016: back-wall-focused UV gives output delay < 1 ns | Monte-Carlo over seed density and laser energy only with measured input distributions |
+| Stark-inferred ne(t) | He: ≈ 6×10^16 cm^-3 = 6×10^22 m^-3 at 300 kW output; ≈ 2×10^16 cm^-3 at 90 kW (DER from the text's "≈ 3× lower"). Line-of-sight, through a 5 mm hole | Forward-model the line-of-sight spectrum and instrument response, including the 0.25 ns temporal resolution, and apply the same Stark fitting procedure |
 | Filament geometry | Air: 0.2–0.6 mm diameter; ≈ 5×10^7 cm/s along E | Needs an ionization-wave model; the current subgrid filament has a radius of only 5–13 µm |
-| Output pulse | ≈ 8 ns FWHM, 90–330 kW (He); efficiency ≈ 33% | Requires the full compressor cavity and tee geometry, not the matched guide |
+| Output pulse | ≈ 8 ns FWHM, 90–330 kW (He); the ≈ 33% extraction ratio is a modeled result | Requires the full compressor cavity and tee geometry, not the matched guide |
 | Change in reflection or transmission | Not reported as S-parameters; inferred from the extracted pulse | Use output-arm energy, not port \|Γ\| |
 
 **Recommended first validation case.**
 
 - Helium at 0.2 MPa, 2.767 GHz, field before triggering of 22.3 and 16.6 kV/cm.
 - 532 nm, 50 mJ trigger, 4–7 ns long (run both because the sources disagree). The focus is unknown, so scan the waist.
-- Targets: Δdelay ≈ 30 ns between the two fields, and ne approaching 6×10^16 cm^-3 at the high field.
+- Compare the laser-to-light-onset difference and a forward-modeled, spatially and temporally
+  averaged optical diagnostic; do not identify a field-collapse proxy or peak-axis value with them.
 - Only after that, extrapolate to 0.34–1.7 MPa.
 
 ## 8. Annotated bibliography
@@ -205,11 +223,11 @@ For comparison, the standing-wave runs used 8 MV/m = 80 kV/cm at 1 MPa, which is
    - Gives a laser pulse of 4 ns, which conflicts with EPL.
 3. **L. Beilin, A. S. Shlapakovski, M. Donskoy, Y. Hadas, U. Dai, Ya. E. Krasik**, "Fast-framing optical imaging of plasma formation in resonant microwave pulse compressor," *IEEE Trans. Plasma Sci.* **42**, 1346–1352 (2014). <https://doi.org/10.1109/TPS.2014.2316204>. **ABS**.
    - The original dry-air (0.2–0.3 MPa) imaging study; density estimated from expansion.
-4. **A. Shlapakovski, L. Beilin, Y. Hadas, E. Schamiloglu, Ya. E. Krasik**, "Operation of a microwave pulse compressor with a laser-triggered plasma switch at different laser beam directions," *IEEE Trans. Plasma Sci.* **43**(7), 2140–2145 (2015). <https://doi.org/10.1109/TPS.2015.2436055>. **ABS**.
+4. **A. Shlapakovski, L. Beilin, Y. Hadas, E. Schamiloglu, Ya. E. Krasik**, "Operation of a microwave pulse compressor with a laser-triggered plasma switch at different laser beam directions," *IEEE Trans. Plasma Sci.* **43**(7), 2140–2145 (2015). <https://doi.org/10.1109/TPS.2015.2436055>. **ABS**; the P4 `2015_6.pdf` is a different EPL paper.
    - Helium with an unfocused beam: compares ∥E and ⟂E, and intensity effects on delay and jitter.
-5. **A. Shlapakovski, S. Gorev, Ya. E. Krasik**, "Improved operation of a microwave pulse compressor with a laser-triggered high-pressure gas plasma switch," *Phys. Plasmas* **23**, 080702 (2016). <https://doi.org/10.1063/1.4960981>. **ABS**.
-   - Dry air with focused 213/532 nm light: 47% efficiency, 14 MW output, delay < 1 ns.
-6. **A. S. Shlapakovski, L. Beilin, Y. Hadas, E. Schamiloglu, Ya. E. Krasik**, *Phys. Plasmas* **22**, 073111 (2015). <https://doi.org/10.1063/1.4926819>. **ABS**.
+5. **A. Shlapakovski, S. Gorev, Ya. E. Krasik**, "Improved operation of a microwave pulse compressor with a laser-triggered high-pressure gas plasma switch," *Phys. Plasmas* **23**, 080702 (2016). <https://doi.org/10.1063/1.4960981>. [P4 full text](https://plasma.technion.ac.il/files/2017/02/2016_5.pdf). **FT**.
+   - Dry air: the 47% center-focus power ratio and < 1 ns back-wall delay are distinct cases.
+6. **A. S. Shlapakovski, L. Beilin, Y. Hadas, E. Schamiloglu, Ya. E. Krasik**, *Phys. Plasmas* **22**, 073111 (2015). <https://doi.org/10.1063/1.4926819>. [P4 full text](https://plasma.technion.ac.il/files/2016/04/2015_7.pdf). **FT**.
    - MAGIC simulation of filament growth and skin-effect screening. Simulation only.
 7. **A. Shlapakovski, L. Beilin, Y. Bliokh, M. Donskoy, Y. Hadas, E. Schamiloglu, Ya. E. Krasik**, "Numerical simulations of output pulse extraction from a high-power microwave compressor with a plasma switch," *J. Appl. Phys.* **115**, 173302 (2014). <https://doi.org/10.1063/1.4875379>. **ABS**.
    - PIC, gas-conductivity and hybrid models; studies how ionization rate, RF field and pressure matter. Simulation only.
@@ -217,6 +235,10 @@ For comparison, the standing-wave runs used 8 MV/m = 80 kV/cm at 1 MPa, which is
    - Earlier S-band prototype without a laser: 1.5 MW, 12 ns, about 13.2 dB gain. Context only.
 
 **Leopold and Krasik X-band gas breakdown**
+
+**G. Shafir et al.**, "Ionization-Induced Self-Channeling of an Ultrahigh-Power Subnanosecond Microwave Beam in a Neutral Gas," *Phys. Rev. Lett.* **120**, 135003 (2018). <https://doi.org/10.1103/PhysRevLett.120.135003>. [P4 full text](https://plasma.technion.ac.il/files/2018/08/2018_4.pdf). **FT / UNC**: abstract and figure gas-pressure labels conflict.
+
+**G. Shafir et al.**, "The interaction of intense, ultra-short microwave beams with the plasma generated by gas ionization," *Phys. Plasmas* **25**, 032308 (2018). <https://doi.org/10.1063/1.5023715>. [P4 full text](https://plasma.technion.ac.il/files/2018/08/2018_3.pdf). **FT**: the density inferred from emission is model-dependent.
 
 9. **V. Maksimov, Y. Cao, A. Haim, N. Asmedianov, A. Kostinskiy, J. G. Leopold, Ya. E. Krasik**, *Phys. Plasmas* **31**, 122109 (2024). <https://doi.org/10.1063/5.0238887>. **ABS**, CC-BY.
    - Breakdown thresholds at 9.6 GHz and 300 MW in several gases, including helium.
@@ -242,6 +264,7 @@ For comparison, the standing-wave runs used 8 MV/m = 80 kV/cm at 1 MPa, which is
 
 ## 9. Next steps that would most improve the data
 
-- Get the full texts of TPS 2015 (helium, unfocused beam) and PoP 2016 (focused beam: pressure, lens, spot size), through a library or the authors. These are the main missing laser parameters.
+- Obtain the actual TPS 2015 full text through a library or the authors; its beam parameters and
+  the 2016 focused spot size remain unresolved.
 - Digitize Beilin 2015 Fig. 3 (ne(t)) and Fig. 4 (waveforms) and Yatom 2016 Figs. 13–16 from the PDFs for quantitative overlays. Record the digitization uncertainty.
 - Get the MacDonald 1949 data, or the tables in MacDonald's *Microwave Breakdown in Gases* (Wiley, 1966), so that the RF-only threshold can be checked against pΛ.

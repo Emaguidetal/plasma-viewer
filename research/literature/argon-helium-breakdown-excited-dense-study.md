@@ -2,7 +2,7 @@
 
 **Status:** exploratory modelling, not experimentally validated. Session of 22–23 Nov 2026. Every step was
 reviewed by the workspace plasma-physics reviewer agent; its corrections are included. Rate data were compiled
-by the literature agent ([rate compilation](../source/cases/excited_state_rates.md)).
+by the literature agent ([rate compilation](../simulations/rf_plasma/cases/excited_state_rates.md)).
 
 ## Executive summary
 
@@ -22,15 +22,15 @@ argon needs about **2.2× helium's field**. This study tested candidate channels
    reaches x = nₑ/N ≳ 10⁻⁴, electron–electron collisions rebuild the energetic tail. Argon then ionizes
    **faster** than helium below about 7 Td (x = 10⁻⁴) or about 10 Td (x = 10⁻³). At x = 10⁻² and 30–50 Td the two
    gases are within about 25 %. In the dilute limit helium is faster by 10 to 40 000×.
-3. **A hypothetical dense argon seed can lower the Ar threshold, but it does not represent your laser seed.**
+3. **A hypothetical dense argon seed can lower the Ar threshold, but greatly exceeds your seed estimate.**
    You report no visible spark with the laser alone and estimate a seed density near 10⁶ electrons/cm³. The
-   counterfactual dense-plasma case (x₀ ≈ 10⁻⁴; about 10¹⁶ electrons/cm³ at 200 psig) gives a modelled Ar/He of
+   hypothetical dense-plasma case (x₀ ≈ 10⁻⁴; about 10¹⁶ electrons/cm³ at 200 psig) gives a modelled Ar/He of
    0.69–0.99 (nominal rates; 0.53–1.43 across rate uncertainties). It is roughly ten orders of magnitude denser
    than your estimate and is not evidence that the actual laser seed helps argon this way. In this prescribed-seed
    scenario, the calculation also assumes the RF field acts fully inside the plasma; a perpendicular cylinder
    would screen the field by roughly 50–500× at x₀ = 10⁻⁴. The scenario makes Ar break down **faster** than He
    (2.8 vs 6.0 ns at 150 kV/cm, 200 psig), unlike your observed slower, more variable Ar. These are limitations
-   and outputs of the hypothetical dense-seed case, not evidence about the weak laser seed.
+   and outputs of the hypothetical dense-seed case, not evidence about the actual laser seed, whose density is unmeasured.
    - The runs deposit at least 6–8 eV per atom in the argon core, so the fixed gas density and field are not
      self-consistent; treat the result as a qualitative sensitivity only.
 4. **RF-only: strong VUV photon feedback can nearly reverse the ordering, but requires high effective efficiency.**
@@ -40,14 +40,14 @@ argon needs about **2.2× helium's field**. This study tested candidate channels
    estimate is η ≲ 0.1 (high-field wall fraction × survival against back-diffusion; not a measured bound), where
    the ratio remains above one. Feedback is a **quantified candidate**, not a demonstrated explanation.
 
-**Bottom line.** With the measured laser-seed estimate and the reviewer's low-η estimate, the model does not
+**Bottom line.** With the user-estimated laser seed and the reviewer's low-η estimate, the model does not
 reproduce Ar < He. Its high-efficiency wall-feedback scenarios can reverse the RF-only ordering, but η is not
 measured and those scenarios are not a demonstrated explanation. The dense-seed calculation is a prescribed
 initial-condition sensitivity, not a model of laser ionization and not established as your experiment's seed. The
 gas-detuning estimate predicts the opposite direction from your observation if fields were inferred from forward
-power assuming resonance. Helium itself also breaks down at about 3.9× lower field than any pure-helium model
-predicts. Per-gas resonance and field calibration, seed density, and wall feedback remain unresolved; §8 lists the
-decisive measurements.
+power assuming resonance. An illustrative 3.91 field multiplier fitted to one assumed helium probability is not
+an independently measured field calibration or an established universal model error. Per-gas resonance and field
+calibration, seed density, and wall feedback remain unresolved; §8 lists the decisive measurements.
 
 ## 1. Experimental reference and the question
 
@@ -59,15 +59,30 @@ decisive measurements.
 | Gases | He, Ar, N₂, 99.999 % |
 | Observations (user, qualitative) | Breakdown field Ar < He ≪ N₂ (laser-triggered and RF-only); Ar is slower and has more jitter. The laser alone makes no visible Ar spark; it seeds the RF avalanche. User-estimated seed density is ~10⁶ electrons/cm³; its volume and measurement basis are not specified. |
 
-At 200 psig, 30 kV/cm peak is only **E_rms/N ≈ 5.9 Td**. In the dilute-avalanche picture, direct ionization at that
-reduced field is negligible in every gas within microseconds. The experiment therefore already operates outside the
-dilute-avalanche regime that earlier models assumed.
+If the local peak field is 30 kV/cm at 200 psig, **E_rms/N ≈ 5.9 Td**. In this dilute-avalanche calculation,
+direct ionization at that reduced field is negligible within microseconds. The discrepancy does not by itself
+identify the missing mechanism or establish the actual local field.
+
+### Relation to the newly accessible P4 publications
+
+- The [S-band compressor study](https://plasma.technion.ac.il/files/2016/04/2015_7.pdf) models helium at
+  0.20 MPa and describes filament growth, screening and cavity feedback. Its seeded MAGIC results are simulations,
+  not an Ar/He threshold measurement.
+- Shafir et al. studied [microwave self-channeling](https://doi.org/10.1103/PhysRevLett.120.135003) and
+  [gas ionization](https://doi.org/10.1063/1.5023715) in helium and air at 9.6 GHz and substantially lower
+  pressures. Those experiments do not establish argon's field threshold in this switch.
+- [Maksimov et al. (2024)](https://doi.org/10.1063/5.0238887) report gas-dependent **pressure** thresholds
+  for transmitted-energy reduction under a short X-band pulse. A pressure threshold at a given drive is not a
+  calibrated breakdown **field** at matched pressure. It cannot determine the present Ar/He field ordering.
+
+The paper conditions and evidence labels are compared in the
+[experimental-data review](experimental-data-krasik-leopold.md).
 
 ## 2. What was modelled
 
 ```mermaid
 flowchart LR
-  S["Seed electrons<br/>(weak laser seed, or one background electron;<br/>dense seed is only a hypothetical sensitivity)"] --> A["Dilute avalanche<br/>two-term Boltzmann rates<br/>at E_eff/N"]
+  S["Seed electrons<br/>(assumed weak laser seed, or one background electron;<br/>dense seed is a hypothetical sensitivity)"] --> A["Dilute avalanche<br/>two-term Boltzmann rates<br/>at E_eff/N"]
   A -->|"excitation ≫ ionization<br/>(Ar: 10²–10⁴ per ionization)"| X["Excited reservoirs<br/>Ar(4s), Ar₂* ; He*, He₂* ; N₂(A), N₂(a′)"]
   X -->|"stepwise, pooling,<br/>Hornbeck–Molnar"| A
   X -->|"VUV excimer photons"| W["Cu walls:<br/>photoelectrons (η·Y)"]
@@ -80,7 +95,7 @@ flowchart LR
 *Schematic of the channels in the model, not measured data. Which branch dominates depends on pressure, field, seed and
 the uncertain rate data discussed below.*
 
-**Model** ([excited_avalanche.py](../source/src/rf_plasma/excited_avalanche.py)):
+**Model** ([excited_avalanche.py](../simulations/rf_plasma/src/rf_plasma/excited_avalanche.py)):
 
 - **Geometry.** A radial reaction–diffusion avalanche: a cylinder (2 mm laser line seed) or a sphere (single
   electron, RF-only). The field is uniform over the avalanche, which is millimetres across against a
@@ -90,12 +105,12 @@ the uncertain rate data discussed below.*
   contains only about 0.2 electrons on average; conditional on a seed electron being present, one electron is the
   appropriate discrete starting count. A sensitivity run is reported in §3.
 - **Electron rates** at the RF effective field from two-term Boltzmann solutions (BOLOS + IST-Lisbon LXCat). New
-  per-state excitation-count tables ([swarm_excited.py](../source/src/rf_plasma/swarm_excited.py)).
-- **Excited reservoirs and kinetics** from [excited_kinetics.json](../source/cases/excited_kinetics.json).
+  per-state excitation-count tables ([swarm_excited.py](../simulations/rf_plasma/src/rf_plasma/swarm_excited.py)).
+- **Excited reservoirs and kinetics** from [excited_kinetics.json](../simulations/rf_plasma/cases/excited_kinetics.json).
   Every coefficient carries its source and verification label; low and high sets use the stated uncertainty factors.
 - **Dense regime.** The Boltzmann equation with e–e collisions (Hagelaar & Pitchford 2005) plus Coulomb e–ion
   momentum transfer, solved at the local ionization degree
-  ([swarm_ee.py](../source/src/rf_plasma/swarm_ee.py), [dense_regime.py](../source/src/rf_plasma/dense_regime.py)).
+  ([swarm_ee.py](../simulations/rf_plasma/src/rf_plasma/swarm_ee.py), [dense_regime.py](../simulations/rf_plasma/src/rf_plasma/dense_regime.py)).
 - **Wall photoemission.** A 0-D population of wall-born avalanches fed by radiating states with efficiency η·Y.
 - **Field window and criterion.** Laser at t = 0, 100 ns of flat RF, then ring-down with τ = 35.7 ns; RF-only uses
   a 5 µs flat pulse. Breakdown when the electron count reaches N_br = 10¹² (10¹³ for dense seeds). e_cal = 1, i.e.
@@ -119,7 +134,7 @@ unless otherwise noted:
 | RF-only, + excited states | 15 / 33 / 118 | 25 / 54 / 200 | 35 / 73 / 281 | 44 / 92 / 360 | 62 / 128 / 518 |
 | RF-only, + Hornbeck–Molnar b = 1 | 12 / 25 / 118 | 19 / 40 / 200 | 27 / 55 / 281 | 34 / 68 / 360 | 49 / 94 / 518 |
 
-![Left: thresholds versus pressure for He, Ar and N₂ with direct, nominal and Hornbeck–Molnar variants. Middle: Ar/He threshold ratio for every laser-seeded variant, all near 2. Right: RF-only ratios; only photon feedback with η ≥ 0.3 falls below 1.](../data/excited_avalanche/fig_mechanisms.png)
+![Left: thresholds versus pressure for He, Ar and N₂ with direct, nominal and Hornbeck–Molnar variants. Middle: Ar/He threshold ratio for every laser-seeded variant, all near 2. Right: RF-only ratios; only photon feedback with η ≥ 0.3 falls below 1.](../simulations/rf_plasma/results/excited_avalanche/fig_mechanisms.png)
 
 *Every dilute-avalanche variant keeps argon harder to break down than helium (ratio about 2). The only exception is
 RF-only with strong photon feedback (dashed curves, right), discussed in §6.*
@@ -141,7 +156,7 @@ effective Gaussian cylinder volume 2πσ²L ≈ 2.1×10⁻⁷ cm³; the user's e
 The solver treats the 0.214 mean as a deterministic input: it does not model seed-presence probability, discrete
 occupancy or shot-to-shot seed-count statistics. These values are threshold sensitivities, not per-shot predictions
 or breakdown probabilities.
-The machine-readable sensitivity output is [laser_seed_sensitivity.json](../data/excited_avalanche/laser_seed_sensitivity.json).
+The machine-readable sensitivity output is [laser_seed_sensitivity.json](../simulations/rf_plasma/results/excited_avalanche/laser_seed_sensitivity.json).
 
 **Why.** The table of excitations per direct ionization explains it.
 
@@ -171,24 +186,25 @@ N = 2.41 × 10²⁶ m⁻³ (10 bar):
 | 10⁻³ | 10 Td | 2.4 × 10⁻¹⁹ | 3.8 × 10⁻¹⁹ | **Ar by 1.5** |
 | 10⁻² | 30 Td | 1.3 × 10⁻¹⁷ | 1.1 × 10⁻¹⁷ | about equal |
 
-![Left: ionization rate coefficient versus E/N for He and Ar at ionization degrees 0 to 1e-2. Right: Ar/He ratio, below 1 in the dilute limit and above 1 at high ionization degree and low E/N.](../data/excited_avalanche/fig_dense_regime.png)
+![Left: ionization rate coefficient versus E/N for He and Ar at ionization degrees 0 to 1e-2. Right: Ar/He ratio, below 1 in the dilute limit and above 1 at high ionization degree and low E/N.](../simulations/rf_plasma/results/excited_avalanche/fig_dense_regime.png)
 
 *At low E/N, electron–electron collisions refill the high-energy tail. Argon gains much more because its
 ionization threshold is lower (15.8 vs 24.6 eV), its elastic energy loss per collision is about 10× smaller
 (heavier atom) and its low-energy collision rate is small (Ramsauer minimum).*
 
 Coulomb e–ion collisions reduce the argon rates by only 10–40 %, and several high-x, low-E/N points did not converge
-(reported as missing in [dense_regime.json](../data/excited_avalanche/dense_regime.json)).
+(reported as missing in [dense_regime.json](../simulations/rf_plasma/results/excited_avalanche/dense_regime.json)).
 An avalanche starting from a few electrons reaches only x ≈ 3 × 10⁻⁶ before its plasma depolarizes the RF field
 (the screening density nₛ ≈ 2–3 ε₀mₑων_m/e², about 10²¹ m⁻³). The dilute model has no depolarization, which is why
 its runs continue to much higher x. The dense-regime rates apply only if the avalanche reaches the stated ionization
 degree; this workspace does not establish that the laser creates such a dense plasma.
 
-## 5. Result 3 — counterfactual dense-seed stress test
+## 5. Result 3 — hypothetical dense-seed stress test
 
 A hypothetical plasma of peak ionization degree x₀ (radius 5 µm, length 2 mm) must grow to 10¹³ electrons. This
-prescribes an initial state; the code does not model its laser production. It is not the observed laser condition:
-you report no visible spark and estimate ~10⁶ electrons/cm³ (visibility alone does not determine sub-visible density). The run
+prescribes an initial state; the code does not model its laser production. Its density is about ten orders of magnitude
+above your estimate of ~10⁶ electrons/cm³, but the actual seed's density and volume are not measured. You report no
+visible spark; visibility alone does not determine sub-visible density. The run
 uses the dense-regime rates and per-cell electron temperature, full excited kinetics, dissociative and three-body
 recombination. The dilute-seed comparison for both gases uses the same heuristic 376-electron baseline; neither
 row models gas-specific laser multiphoton ionization.
@@ -206,11 +222,11 @@ Ar threshold in kV/cm, with the Ar/He ratio in brackets:
 | Ar dense seed — recombination to ground | 29 (0.99) | 54 (1.19) | 76 (1.27) | 96 (1.29) | 130 (1.28) |
 | He with the same prescribed dense seed (sensitivity) | 16 | 25 | 35 | 43 | 60 |
 
-![Left: thresholds versus pressure for helium with the baseline seed and argon with the baseline and hypothetical prescribed dense seed, with the low–high rate band. Right: Ar/He threshold ratios for the dense-seed sensitivities.](../data/excited_avalanche/fig_spark.png)
+![Left: thresholds versus pressure for helium with the baseline seed and argon with the baseline and hypothetical prescribed dense seed, with the low–high rate band. Right: Ar/He threshold ratios for the dense-seed sensitivities.](../simulations/rf_plasma/results/excited_avalanche/fig_spark.png)
 
 *A hypothetical dense argon seed can bring the argon threshold to or below helium's, most clearly at 50–100 psig,
 but the result spans 0.53–1.43 across rate uncertainties. With equal dense seeds argon stays 1.3–1.7× above helium.
-This does not describe the reported weak laser seed.*
+This does not establish the density or behavior of the experimental laser seed.*
 
 **Caveats (reviewer, highest priority first).** Together they make this prescribed-seed sensitivity qualitative only.
 
@@ -220,7 +236,7 @@ This does not describe the reported weak laser seed.*
    actual shape and orientation are not measured; this is a limitation of the sensitivity case, not an observed
    effect of a measured laser-produced plasma.
 2. **The prescribed dense seed makes argon faster, not slower.** Where both gases break down in this scenario, its
-   Ar delays are shorter than He's (§7). This does not test the actual weak laser seed.
+   Ar delays are shorter than He's (§7). This does not measure or characterize the actual laser seed.
 3. **Energy is not self-consistent.** At threshold the argon runs deposit at least 6–8 eV per atom in the prescribed
    dense-seed core
    (about 5 mJ at 200 psig; helium 1.4–2.7 eV per atom). That is comparable to the RF energy stored in the cavity.
@@ -299,21 +315,22 @@ does not validate timing for the user's estimated weak seed. A dash means no bre
 | Ar, RF-only + photon feedback η = 1 | 1.3 µs ± 74 ns | 350 ± 26 ns | 15 ± 1.3 ns | 3.7 ns | 1.5 ns | 0.51 ns |
 | He, RF-only + photon feedback η = 1 | 119 ± 10 ns | 18 ± 1.3 ns | 2.4 ± 0.16 ns | 0.84 ns | 0.42 ns | 0.17 ns |
 
-![Breakdown probability, median delay and jitter versus peak field at 200 psig for He and Ar with the baseline laser seed, a hypothetical prescribed dense Ar seed, RF-only, and RF-only with photon feedback.](../data/excited_avalanche/fig_delays.png)
+![Breakdown probability, median delay and jitter versus peak field at 200 psig for He and Ar with the baseline laser seed, a hypothetical prescribed dense Ar seed, RF-only, and RF-only with photon feedback.](../simulations/rf_plasma/results/excited_avalanche/fig_delays.png)
 
 *With the heuristic 376-electron baseline, the dilute model predicts slower Ar than He at the same field, the same
 qualitative direction as your observation. This is not a timing prediction for the estimated weak seed: the delay
 distribution has not been rerun with a measured or justified seed-count distribution. The prescribed dense Ar seed
-is the exception in that counterfactual; it makes argon faster than helium. With photon feedback, argon
+is the exception in that hypothetical case; it makes argon faster than helium. With photon feedback, argon
 RF-only breakdown appears at 30–50 kV/cm with **microsecond** delays. At 30 kV/cm and 200 psig the 4.6 µs median
 and its spread are truncated by the end of the 5 µs pulse (p90 = 4.9 µs; 8 % of shots do not break down). The
 RF-only times are measured from the appearance of the first electron; the random wait for that electron
 (statistical lag) is extra and gas dependent.*
 
-**Reading against the experiment.** You run at about 30 kV/cm. In the pure-gas model at ≥ 100 psig, neither gas
-breaks down there within the laser window. That is the same 3–4× field gap noted for helium (e_cal ≈ 3.9).
-- The counterfactual dense Ar seed gives breakdown at 30 kV/cm only at 50 psig, and with shorter delays than helium;
-  it is not the reported laser-seed condition.
+**Reading against the experiment.** You report operation around 30 kV/cm. In the pure-gas model at ≥ 100 psig,
+neither gas breaks down there within the laser window. The separate e_cal ≈ 3.91 fit is an illustrative
+single-point sensitivity, not a measured conversion between model and physical field.
+- The hypothetical dense Ar seed gives breakdown at 30 kV/cm only at 50 psig, and with shorter delays than helium;
+  its density greatly exceeds the reported seed estimate but is not independently excluded by a seed measurement.
 - Strong photon feedback gives RF-only argon breakdown at 30–50 kV/cm with µs delays, but only at η ≈ 1.
 
 The weak-seed case and η ≤ 0.1 feedback do not reproduce Ar < He. Higher-η feedback can reverse the modeled
@@ -322,9 +339,10 @@ unknown; it remains a candidate rather than an established explanation.
 
 ## 8. What remains unexplained, and the decisive tests
 
-**Unexplained.** Helium needs about 3.9× less field in the experiment than in any pure-helium model (e_cal ≈ 3.9),
-and no variant here removes that gap. A shared cause is the simplest explanation: field calibration, local field
-enhancement, or seeding by surfaces or residual charge.
+**Unexplained.** The pure-gas helium calculation does not reproduce the reported low-field behaviour under its
+nominal assumptions, and the 3.91 multiplier is not an independent calibration. Possible contributors include field
+calibration, local field enhancement, and seeding by surfaces or residual charge; the present data do not establish
+which is responsible.
 
 **Quantitative check: wall feedback can help; detuning alone has the wrong sign.** At 200 psig, the RF-only
 threshold ratios are Ar/He = 2.09, 1.40, 0.99 and 0.80 for η = 0, 0.1, 0.3 and 1, respectively (§6). Thus it
@@ -355,7 +373,7 @@ the opposite.
 
 **Decisive measurements, in order.**
 
-1. **Measure the laser seed directly:** density and volume (with a diagnostic sensitive to the weak, non-visible
+1. **Measure the laser seed directly:** density and volume (with a diagnostic sensitive to a potentially weak, non-visible
    plasma), plus wavelength, pulse energy, duration and focus. This resolves whether ~10⁶ cm⁻³ is a peak or
    volume-average estimate and fixes the initial electron count.
 2. **Threshold versus laser energy:** for an avalanche seed, increasing seed count should shift threshold smoothly;
@@ -371,19 +389,19 @@ the opposite.
 
 ## Evidence and reproducibility
 
-- Code: [excited_avalanche.py](../source/src/rf_plasma/excited_avalanche.py),
-  [excited_study.py](../source/src/rf_plasma/excited_study.py),
-  [swarm_excited.py](../source/src/rf_plasma/swarm_excited.py),
-  [swarm_ee.py](../source/src/rf_plasma/swarm_ee.py),
-  [dense_regime.py](../source/src/rf_plasma/dense_regime.py),
-  [excited_figures.py](../source/src/rf_plasma/excited_figures.py);
-  tests in [test_excited_avalanche.py](../source/tests/test_excited_avalanche.py).
-- Data: [thresholds.json](../data/excited_avalanche/thresholds.json),
-  [spark.json](../data/excited_avalanche/spark.json),
-  [laser_seed_sensitivity.json](../data/excited_avalanche/laser_seed_sensitivity.json),
-  [dense_regime.json](../data/excited_avalanche/dense_regime.json),
-  [delays.json](../data/excited_avalanche/delays.json).
-- Rate sources and verification labels: [excited_state_rates.md](../source/cases/excited_state_rates.md).
+- Code: [excited_avalanche.py](../simulations/rf_plasma/src/rf_plasma/excited_avalanche.py),
+  [excited_study.py](../simulations/rf_plasma/src/rf_plasma/excited_study.py),
+  [swarm_excited.py](../simulations/rf_plasma/src/rf_plasma/swarm_excited.py),
+  [swarm_ee.py](../simulations/rf_plasma/src/rf_plasma/swarm_ee.py),
+  [dense_regime.py](../simulations/rf_plasma/src/rf_plasma/dense_regime.py),
+  [excited_figures.py](../simulations/rf_plasma/src/rf_plasma/excited_figures.py);
+  tests in [test_excited_avalanche.py](../simulations/rf_plasma/tests/test_excited_avalanche.py).
+- Data: [thresholds.json](../simulations/rf_plasma/results/excited_avalanche/thresholds.json),
+  [spark.json](../simulations/rf_plasma/results/excited_avalanche/spark.json),
+  [laser_seed_sensitivity.json](../simulations/rf_plasma/results/excited_avalanche/laser_seed_sensitivity.json),
+  [dense_regime.json](../simulations/rf_plasma/results/excited_avalanche/dense_regime.json),
+  [delays.json](../simulations/rf_plasma/results/excited_avalanche/delays.json).
+- Rate sources and verification labels: [excited_state_rates.md](../simulations/rf_plasma/cases/excited_state_rates.md).
   Key primary or secondary sources: Stankov et al. 2022 PSST 31 125002; Kemaneci et al. 2017 J. Phys. D 50 245203;
   Millet et al. 1982 J. Phys. B 15 2935; Santorelli et al. 2021 EPJC; Deloche et al. 1976 PRA 13 1140; Schröter et
   al. 2018 PCCP 20 24263; Hagelaar & Pitchford 2005 PSST 14 722.
