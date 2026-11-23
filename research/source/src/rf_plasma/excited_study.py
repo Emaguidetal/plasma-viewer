@@ -1,5 +1,5 @@
 """Mechanism study for the excited-state avalanche (rf_plasma.excited_avalanche): breakdown thresholds by gas,
-pressure and mechanism variant, laser-seeded (cylinder, common seed) and RF-only (sphere, single electron).
+pressure and mechanism variant, laser-seeded (cylinder, heuristic 376-electron baseline) and RF-only (sphere, single electron).
 
 CLI:
     python -m rf_plasma.excited_study thresholds [--workers 12] [--out results/excited_avalanche]
@@ -42,11 +42,11 @@ VARIANTS = {
     "direct_screen": dict(excited=False, criterion="screen"),
     "nominal_screen": dict(criterion="screen"),
     "high_screen": dict(kset="high", criterion="screen"),
-    # laser-made dense plasma (peak ionization degree x0, radius 5 um), dense-regime e-e/e-ion rates
+    # Hypothetical prescribed dense seed (peak ionization degree x0, radius 5 um); no laser-formation model.
     "spark1e-4": dict(spark_x0=1e-4),
 }
 MODES = {
-    # laser line seed: common He-law seed 376 electrons, sigma = w0/(2 sqrt(k)), L ~ 0.86 z_R
+    # Baseline laser-line seed: heuristic He-law estimate (376 electrons), not derived from the user's laser data.
     "laser": dict(geometry="cylinder", n0=376.0, sigma0_m=4.1e-6, length_m=2.03e-3, t_flat_s=100e-9),
     # RF-only: one electron present at the start of a 5 us flat pulse (most favourable arrival time)
     "rf": dict(geometry="sphere", n0=1.0, sigma0_m=1e-6, t_flat_s=5e-6),
@@ -134,7 +134,8 @@ def _delay_grid_task(args):
 
 
 def sample_delays(g: dict, n_shots=2000, seed=1, sig_p=0.02, sig_el=0.03, k_order=6.0) -> dict:
-    """Monte Carlo over RF power (field ~ sqrt(P)), laser energy (N0 ~ E^k) and the Yule factor W ~ Gamma(N0)/N0
+    """Monte Carlo over RF power (field ~ sqrt(P)), the 376-electron laser baseline (N0 ~ E^k) and Yule factor
+    W ~ Gamma(N0)/N0
     (RF-only: N0 = 1, W ~ Exp(1)), by log-linear interpolation of the tabulated breakdown times."""
     import numpy as np
     from scipy.interpolate import RegularGridInterpolator
@@ -227,10 +228,11 @@ DR_ALT = {"Ar": ("Ar2t", "ground"), "He": ("He2", "ground")}
 
 
 def spark(out=OUT, workers=14, gases=("He", "Ar"), psig=PSIG, x0s=(0.0, 1e-4)):
-    """Seed-density scan: threshold for a laser-made plasma of peak ionization degree x0 (radius 5 um, cylinder)
+    """Counterfactual seed-density scan: threshold for a plasma of peak ionization degree x0 (radius 5 um, cylinder)
     to grow to N_br = max(1e13, 10 N0) electrons, with k_iz and Te from the dense-regime e-e/e-ion tables, for the
     nominal / low / high kinetics sets and alternative recombination products. The applied field is assumed to act
-    inside the plasma (no depolarization: valid only for a thin line along E). x0 = 0 is the 376-electron seed."""
+    inside the plasma (no depolarization: valid only for a thin line along E). x0 = 0 is the heuristic 376-electron
+    baseline, not a measured laser seed."""
     out = Path(out)
     tasks = [(g, p, x, k, "nominal") for g in gases for p in psig for x in x0s for k in ("nominal", "low", "high")]
     tasks += [(g, p, x, "nominal", d) for g in gases for p in psig for x in x0s if x > 0 for d in DR_ALT[g]]
@@ -256,9 +258,33 @@ def resample(out=OUT):
     return done
 
 
+def laser_seed_sensitivity(out=OUT, psig=200.0, seeds=(0.214, 1.0, 376.0)):
+    """Recompute nominal laser-line thresholds for density-inferred, conditional-one-electron and baseline seeds."""
+    from . import excited_avalanche as xa
+
+    out = Path(out)
+    out.mkdir(parents=True, exist_ok=True)
+    rows = []
+    for seed in seeds:
+        for gas in ("He", "Ar"):
+            case = replace(make_case(gas, psig, "laser", "nominal"), n0=float(seed))
+            e = xa.threshold(case, xa.Swarm(gas))
+            rows.append(dict(gas=gas, psig=psig, seed_electrons=float(seed),
+                             threshold_kV_cm=e / 1e5 if math.isfinite(e) else None))
+    result = {
+        "description": (
+            "Nominal laser-line threshold sensitivity. 0.214 is the mean count implied by 1e6 cm^-3 "
+            "over the model effective Gaussian volume, not a physical fractional electron."
+        ),
+        "rows": rows,
+    }
+    (out / "laser_seed_sensitivity.json").write_text(json.dumps(result, indent=2))
+    return result
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser()
-    ap.add_argument("what", choices=["thresholds", "delays", "spark", "resample"])
+    ap.add_argument("what", choices=["thresholds", "delays", "spark", "resample", "laser-seed"])
     ap.add_argument("--workers", type=int, default=12)
     ap.add_argument("--out", default=str(OUT))
     ap.add_argument("--modes", nargs="+", default=["laser", "rf"])
@@ -272,6 +298,8 @@ def main(argv=None):
         spark(a.out, a.workers)
     elif a.what == "resample":
         resample(a.out)
+    elif a.what == "laser-seed":
+        laser_seed_sensitivity(a.out)
     else:
         delays(a.out, a.workers, a.modes, ("nominal", "spark1e-4") if a.variants == list(VARIANTS) else a.variants,
                a.gases, a.psig)

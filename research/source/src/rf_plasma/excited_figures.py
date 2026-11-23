@@ -108,28 +108,28 @@ def fig_spark(plt):
 
     fig, ax = plt.subplots(1, 2, figsize=(12, 4.6))
     a = ax[0]
-    a.plot(PSIG, get("He", 0.0), "-o", c=COL["He"], label="He, multiphoton seed (no spark)")
-    a.plot(PSIG, get("Ar", 0.0), ":o", c=COL["Ar"], label="Ar, multiphoton seed")
-    a.plot(PSIG, get("Ar", 1e-4), "-s", c=COL["Ar"], label="Ar, dense spark x0 = 1e-4 (density assumed)")
+    a.plot(PSIG, get("He", 0.0), "-o", c=COL["He"], label="He, baseline seed (376 electrons)")
+    a.plot(PSIG, get("Ar", 0.0), ":o", c=COL["Ar"], label="Ar, baseline seed (376 electrons)")
+    a.plot(PSIG, get("Ar", 1e-4), "-s", c=COL["Ar"], label="Ar, hypothetical dense seed x0 = 1e-4")
     lo, hi = np.array(get("Ar", 1e-4, "low")), np.array(get("Ar", 1e-4, "high"))
-    a.fill_between(PSIG, np.fmin(lo, hi), np.fmax(lo, hi), color=COL["Ar"], alpha=0.2, label="Ar spark, low-high rates")
-    a.plot(PSIG, get("He", 1e-4), "--s", c=COL["He"], label="He, same dense seed (not observed)")
+    a.fill_between(PSIG, np.fmin(lo, hi), np.fmax(lo, hi), color=COL["Ar"], alpha=0.2, label="Ar dense seed, low-high rates")
+    a.plot(PSIG, get("He", 1e-4), "--s", c=COL["He"], label="He, same prescribed dense seed")
     a.set(yscale="log", xlabel="pressure (psig)", ylabel="threshold peak field (kV/cm)",
           title="Seed to N_br = 1e13; field assumed inside the plasma")
     a.legend(fontsize=7)
     a.grid(alpha=0.3, which="both")
     a = ax[1]
-    for lab, y in (("Ar spark / He multiphoton (nominal)", np.array(get("Ar", 1e-4)) / np.array(get("He", 0.0))),
+    for lab, y in (("Ar dense seed / He multiphoton (nominal)", np.array(get("Ar", 1e-4)) / np.array(get("He", 0.0))),
                    ("  low rates", np.array(get("Ar", 1e-4, "low")) / np.array(get("He", 0.0, "low"))),
                    ("  high rates", np.array(get("Ar", 1e-4, "high")) / np.array(get("He", 0.0, "high"))),
                    ("  recombination -> Ar2*", np.array(get("Ar", 1e-4, "nominal", "Ar2t")) / np.array(get("He", 0.0))),
                    ("  recombination -> ground", np.array(get("Ar", 1e-4, "nominal", "ground")) / np.array(get("He", 0.0))),
                    ("same seed x0 = 1e-4 (Ar / He)", np.array(get("Ar", 1e-4)) / np.array(get("He", 1e-4))),
-                   ("multiphoton seed, both", np.array(get("Ar", 0.0)) / np.array(get("He", 0.0)))):
+                   ("baseline seed, both", np.array(get("Ar", 0.0)) / np.array(get("He", 0.0)))):
         a.plot(PSIG, y, "-o", ms=4, label=lab)
     a.axhline(1, c="k", lw=1)
     a.set(xlabel="pressure (psig)", ylabel="Ar / He threshold ratio", ylim=(0.3, 3),
-          title="Dense Ar spark: qualitative only (field inside, no heating)")
+          title="Counterfactual dense Ar seed: qualitative only")
     a.legend(fontsize=7)
     a.grid(alpha=0.3)
     fig.tight_layout()
@@ -144,8 +144,8 @@ def fig_delays(plt):
     d = [x for x in json.loads(p.read_text()) if "mc" in x]
     psig = 200.0
     fig, ax = plt.subplots(1, 3, figsize=(15, 5.2))
-    cases = ((("laser", "nominal"), "o", "-", "laser, multiphoton seed"),
-             (("laser", "spark1e-4"), "s", "--", "laser, dense spark x0=1e-4"),
+    cases = ((("laser", "nominal"), "o", "-", "laser, baseline seed (376 electrons)"),
+             (("laser", "spark1e-4"), "s", "--", "laser, hypothetical dense seed x0=1e-4"),
              (("rf", "nominal"), "^", ":", "RF-only"),
              (("rf", "eta1"), "v", "-.", "RF-only + photon feedback η=1"))
     for (mode, var), mk, ls, lab0 in cases:

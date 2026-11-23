@@ -27,7 +27,8 @@
       <h1 id="page-title">Why would argon break down more easily than helium?</h1>
       <p class="lead">In the sealed WR-284 switch cavity (2.95 GHz, 50–300 psig), argon is observed to break down at a
         lower field than helium, and nitrogen at a much higher one, with laser triggering and RF-only. Argon is also
-        slower and more variable. We tested every physical channel that could produce that ordering.</p>
+        slower and more variable. The laser alone produces no visible Ar spark; it supplies an avalanche seed,
+        estimated by the user at about 10⁶ electrons/cm³. We tested candidate channels that could produce that ordering.</p>
       <div class="actions">
         <a class="button primary" href="argon-helium-breakdown-excited-dense-study.pdf">Read the report (PDF)</a>
         <a class="button" href="../research/literature/argon-helium-breakdown-excited-dense-study.md">Markdown version</a>
@@ -71,15 +72,17 @@
         </article>
         <article class="topic-card">
           <figure>
-            <img src="fig_spark.png" alt="Thresholds and Ar/He ratios for a dense argon laser spark compared with a dilute helium seed, with rate-uncertainty band." loading="lazy">
-            <figcaption>Dense Ar spark versus He multiphoton seed (field assumed inside the plasma).</figcaption>
+            <img src="fig_spark.png" alt="Counterfactual thresholds and Ar/He ratios for a dense argon seed compared with a dilute helium seed, with rate-uncertainty band." loading="lazy">
+            <figcaption>Counterfactual dense Ar seed versus He multiphoton seed (field assumed inside the plasma).</figcaption>
           </figure>
           <div class="card-body">
-            <span class="tag">3 / Laser spark</span>
-            <h3>A dense argon spark helps, but not as built</h3>
-            <p>Seeding argon with a dense spark gives Ar/He of 0.69–0.99 (0.53–1.43 across rates). However, the laser line is
-              perpendicular to E, which screens the field inside the spark by about 50–500×. The spark also makes argon
-              <em>faster</em>, and it deposits about 6–8 eV per atom. Qualitative only.</p>
+            <span class="tag">3 / Dense-seed stress test</span>
+            <h3>The dense-seed result is not the measured laser condition</h3>
+            <p>The modeled x₀ = 10⁻⁴ seed is roughly 10 orders of magnitude denser than the user's ~10⁶ electrons/cm³
+              estimate. In the same assumed focal-line volume that estimate corresponds to a mean of 0.214 electrons;
+              conditional on one seed electron, the 200-psig thresholds shift only from 73/155 to 77/164 kV/cm
+              (He/Ar), leaving Ar/He ≈ 2.12. The dense-seed result is counterfactual; field screening and heating
+              further limit its relevance.</p>
           </div>
         </article>
         <article class="topic-card">
@@ -90,9 +93,10 @@
           <div class="card-body">
             <span class="tag">4 / Photon feedback &amp; delays</span>
             <h3>VUV wall feedback: not excluded, not demonstrated</h3>
-            <p>Excimer photons can release electrons from the copper walls. RF-only Ar/He drops below 1 only at
-              implausibly high efficiency (η ≥ 0.3–1). At η ≈ 0.1 it stays at 1.25–1.92. With strong feedback,
-              argon RF-only breakdown appears at 30–50 kV/cm with microsecond delays.</p>
+            <p>Excimer photons can release electrons from the copper walls. At 200 psig, RF-only Ar/He is 2.09
+              without feedback, 1.40 at η = 0.1, 0.99 at η = 0.3, and 0.80 at η = 1. At η ≈ 0.1 it remains above
+              one across pressures. In the idealized η = 1 case, with an electron present at pulse start, argon
+              RF-only breakdown appears at 30–50 kV/cm with microsecond delays.</p>
           </div>
         </article>
       </div>
@@ -100,16 +104,17 @@
 
     <section class="resources" aria-labelledby="next">
       <h2 id="next">Bottom line and decisive tests</h2>
-      <p>No self-consistent pure-gas mechanism reproduces Ar &lt; He at the experimental fields. Helium itself
-        already breaks down at about 3.9× lower field than any pure-helium model. The most likely common cause lies
-        outside the gas kinetics: how the field is determined for each gas (calibration, cavity tuning), local field
-        enhancement, or surfaces. Gas permittivity alone detunes the cavity by about 11 MHz in Ar and N₂ at 200 psig,
-        so the field per gas must be calibrated.</p>
+      <p>No validated mechanism yet reproduces Ar &lt; He at the experimental fields. At fixed frequency and forward
+        power, the modeled field factors at 200 psig are 0.956 for He and 0.379 for Ar. Applied to the nominal
+        threshold ratio, this would make the reported Ar/He ratio about 5.29 (not below 1); across 50–300 psig the
+        estimate is 2.66–7.00. Detuning alone therefore worsens the discrepancy. Reversing the nominal modeled
+        threshold ratio requires an Ar/He local-field or calibration advantage greater than 2.09. Helium also
+        breaks down at about 3.9× lower field than the pure-helium model predicts. Per-gas tuning and field
+        calibration are essential.</p>
       <ol>
-        <li>Quantify the laser-only spark in Ar (size, brightness) and its absence in He.</li>
-        <li>Measure the threshold versus laser energy, and versus laser–RF delay.</li>
-        <li>Compare the laser axis along versus perpendicular to E.</li>
-        <li>Measure f₀ and Q_L for each gas and pressure, and document how the field is inferred.</li>
+        <li>Measure the weak laser-seed density and volume, with wavelength, pulse energy, duration and focus.</li>
+        <li>Measure threshold versus laser energy and laser–RF delay.</li>
+        <li>Measure f₀ and Q<sub>L</sub> for each gas and pressure; retune and document how peak local field is inferred.</li>
         <li>Record RF-only delay distributions in Ar, and test a VUV-opaque, low-photoyield wall liner.</li>
       </ol>
       <div class="actions">

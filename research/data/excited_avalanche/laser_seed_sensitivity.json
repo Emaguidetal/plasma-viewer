@@ -1,0 +1,41 @@
+{
+  "description": "Nominal laser-line threshold sensitivity. 0.214 is the mean count implied by 1e6 cm^-3 over the model effective Gaussian volume, not a physical fractional electron.",
+  "rows": [
+    {
+      "gas": "He",
+      "psig": 200.0,
+      "seed_electrons": 0.214,
+      "threshold_kV_cm": 78.26151074076033
+    },
+    {
+      "gas": "Ar",
+      "psig": 200.0,
+      "seed_electrons": 0.214,
+      "threshold_kV_cm": 166.43404192980563
+    },
+    {
+      "gas": "He",
+      "psig": 200.0,
+      "seed_electrons": 1.0,
+      "threshold_kV_cm": 77.29226078369018
+    },
+    {
+      "gas": "Ar",
+      "psig": 200.0,
+      "seed_electrons": 1.0,
+      "threshold_kV_cm": 164.25972862166086
+    },
+    {
+      "gas": "He",
+      "psig": 200.0,
+      "seed_electrons": 376.0,
+      "threshold_kV_cm": 73.06216174924572
+    },
+    {
+      "gas": "Ar",
+      "psig": 200.0,
+      "seed_electrons": 376.0,
+      "threshold_kV_cm": 154.64875530379956
+    }
+  ]
+}
