@@ -110,7 +110,7 @@ def fig_spark(plt):
     a = ax[0]
     a.plot(PSIG, get("He", 0.0), "-o", c=COL["He"], label="He, multiphoton seed (no spark)")
     a.plot(PSIG, get("Ar", 0.0), ":o", c=COL["Ar"], label="Ar, multiphoton seed")
-    a.plot(PSIG, get("Ar", 1e-4), "-s", c=COL["Ar"], label="Ar, dense spark x0 = 1e-4 (hypothesized)")
+    a.plot(PSIG, get("Ar", 1e-4), "-s", c=COL["Ar"], label="Ar, dense spark x0 = 1e-4 (density assumed)")
     lo, hi = np.array(get("Ar", 1e-4, "low")), np.array(get("Ar", 1e-4, "high"))
     a.fill_between(PSIG, np.fmin(lo, hi), np.fmax(lo, hi), color=COL["Ar"], alpha=0.2, label="Ar spark, low-high rates")
     a.plot(PSIG, get("He", 1e-4), "--s", c=COL["He"], label="He, same dense seed (not observed)")
@@ -129,7 +129,7 @@ def fig_spark(plt):
         a.plot(PSIG, y, "-o", ms=4, label=lab)
     a.axhline(1, c="k", lw=1)
     a.set(xlabel="pressure (psig)", ylabel="Ar / He threshold ratio", ylim=(0.3, 3),
-          title="Only a dense Ar spark brings Ar to or below He")
+          title="Dense Ar spark: qualitative only (field inside, no heating)")
     a.legend(fontsize=7)
     a.grid(alpha=0.3)
     fig.tight_layout()
